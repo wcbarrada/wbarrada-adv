@@ -4,9 +4,8 @@ Conteúdo da pasta:
 
 | Arquivo | Função |
 |---|---|
-| `index.html` | Site público, agenda, Área do cliente e Área do advogado (`#cliente`, `#admin`) |
+| `index.html` | Site público, agenda, Área do cliente e Área do advogado (`#cliente`, `#admin`), com o CSS embutido |
 | `app.js` | Lógica da aplicação |
-| `styles.css` | Visual |
 | `config.js` | Endereço e chave pública do banco de dados |
 | `logo.png` | Logo com fundo transparente |
 | `fonts/` | Fontes do site e respectivas licenças (SIL OFL 1.1) |

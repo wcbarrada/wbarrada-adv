@@ -40,8 +40,8 @@ shutil.copy(os.path.join(SRC,'assets','icon.png'), d+'/icon.png')
 # Em modo demonstração (config.js sem Supabase), o site não deve ser indexado
 DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not None
 NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
-# Pacote de hospedagem usa fontes próprias; a prévia em arquivo único segue com o Google Fonts
-wr(d+'/styles.css', rd(os.path.join(SRC,'fonts.css')) + css)
+# Pacote de hospedagem: fontes próprias e CSS embutido (FCP); a prévia em arquivo único segue com o Google Fonts
+HOST_CSS = rd(os.path.join(SRC,'fonts.css')) + css
 shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')
 wr(d+'/app.js', app)
 shutil.copy(os.path.join(SRC,'config.js'), d+'/config.js')
@@ -76,15 +76,15 @@ idx = f'''<!doctype html>
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<link rel="stylesheet" href="styles.css">
+<style>{HOST_CSS}</style>
 <style>body{{margin:0}}[hidden]{{display:none!important}}img{{max-width:100%}}</style>
 </head>
 <body>
 {HOST_BODY}
-{QR}
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script src="config.js"></script>
-<script src="app.js"></script>
+{QR.replace('<script src','<script defer src')}
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+<script defer src="config.js"></script>
+<script defer src="app.js"></script>
 </body>
 </html>
 '''
