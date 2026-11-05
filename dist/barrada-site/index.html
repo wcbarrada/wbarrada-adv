@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Wanderson Barrada · Advogado em Campos, Cordeiro e Cantagalo</title>
 <meta name="robots" content="noindex">
@@ -25,9 +25,10 @@
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preload" href="fonts/bodoni-moda-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/bodoni-moda-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/public-sans-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 <style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 </head>
@@ -35,7 +36,7 @@
 <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#inicio" aria-label="WBarrada Advogado, início"><img src="logo.png" alt="WBarrada Advogado"></a>
+    <a class="brand" href="#inicio" aria-label="WBarrada Advogado, início"><img src="logo.png" alt="WBarrada Advogado" width="470" height="151"></a>
     <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav id="nav">
       <a href="#sobre">Sobre</a>
@@ -48,7 +49,7 @@
     </nav>
   </div>
 </header>
-<aside class="demo-bar" id="demoBar" aria-label="Aviso de demonstração" hidden>
+<aside class="demo-bar" id="demoBar" aria-label="Aviso de demonstração">
   <div class="wrap">
     <span><b>Modo demonstração.</b> Dados de exemplo, gravados só neste navegador.</span>
     <span>Cliente: <code>cliente@demo.com</code> · Advogado: <code>admin@demo.com</code> · senha <code>demo123</code></span>
@@ -59,7 +60,7 @@
 <div id="siteView">
 <main id="inicio">
   <section class="hero" id="conteudo">
-    <svg class="arc" viewBox="0 0 800 520" aria-hidden="true"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#b98f4c" stop-opacity="0"/><stop offset=".55" stop-color="#e4c58e" stop-opacity=".9"/><stop offset="1" stop-color="#b98f4c" stop-opacity=".1"/></linearGradient></defs><path d="M40 470 C 220 160, 520 60, 780 90" fill="none" stroke="url(#g)" stroke-width="2"/><path d="M110 500 C 300 220, 560 130, 790 150" fill="none" stroke="url(#g)" stroke-width="1" opacity=".5"/></svg>
+    <svg class="arc" width="800" height="520" viewBox="0 0 800 520" aria-hidden="true"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#b98f4c" stop-opacity="0"/><stop offset=".55" stop-color="#e4c58e" stop-opacity=".9"/><stop offset="1" stop-color="#b98f4c" stop-opacity=".1"/></linearGradient></defs><path d="M40 470 C 220 160, 520 60, 780 90" fill="none" stroke="url(#g)" stroke-width="2"/><path d="M110 500 C 300 220, 560 130, 790 150" fill="none" stroke="url(#g)" stroke-width="1" opacity=".5"/></svg>
     <div class="wrap grid">
       <div>
         <p class="eyebrow">Advocacia · Campos dos Goytacazes, Cordeiro, Cantagalo e online</p>
@@ -393,7 +394,7 @@
   <div class="wrap">
     <div class="grid">
       <div style="display:grid;gap:14px;align-content:start">
-        <img src="logo.png" alt="WBarrada Advogado">
+        <img src="logo.png" alt="WBarrada Advogado" width="470" height="151">
         <p>Wanderson Corrêa Barrada · OAB/RJ 164.135</p>
         <p>Campos dos Goytacazes · Cordeiro · Cantagalo · online</p>
       </div>

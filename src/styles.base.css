@@ -62,13 +62,14 @@ section{padding-block:clamp(64px,9vw,112px)}
 .hero .cred span b{color:var(--fg);font-weight:500}
 .next{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;min-width:0}
 .next h2{font-size:1.2rem;margin-bottom:4px}
-.next ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px}
+.next ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px;align-content:start;min-height:332px}
 .next li button{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;color:var(--fg);font:inherit;cursor:pointer;transition:border-color .2s}
 .next li button:hover{border-color:var(--gold-2)}
 .next .d{font:500 .95rem var(--mono);color:var(--gold);font-variant-numeric:tabular-nums;min-width:5.2em}
 .next .m{font-size:.86rem;color:var(--muted)}
 .next .go{font-size:.8rem;color:var(--gold)}
 .next .foot{margin-top:16px;font-size:.8rem;color:var(--muted)}
+@media (max-width:480px){.next ul{min-height:435px}}
 @media (max-width:860px){.hero .grid{grid-template-columns:1fr}.hero .arc{width:140%;right:-50%;top:-12%}}
 
 /* Áreas */

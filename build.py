@@ -17,7 +17,7 @@ fonts = '''<link rel="preconnect" href="https://fonts.googleapis.com">
 QR = '<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>'
 # CSP comum: cabeçalho (_headers, Cloudflare Pages) e <meta> (GitHub Pages, que não aceita cabeçalhos próprios)
 CSP_BASE = ("default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; "
+  "style-src 'self' 'unsafe-inline'; font-src 'self'; "
   "img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; "
   "object-src 'none'; base-uri 'self'; form-action 'self'")
 HEADERS = f'''/*
@@ -40,11 +40,17 @@ shutil.copy(os.path.join(SRC,'assets','icon.png'), d+'/icon.png')
 # Em modo demonstração (config.js sem Supabase), o site não deve ser indexado
 DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not None
 NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
-wr(d+'/styles.css', css)
+# Pacote de hospedagem usa fontes próprias; a prévia em arquivo único segue com o Google Fonts
+wr(d+'/styles.css', rd(os.path.join(SRC,'fonts.css')) + css)
+shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')
+PRELOAD = '\n'.join(f'<link rel="preload" href="fonts/{f}.woff2" as="font" type="font/woff2" crossorigin>' for f in ['bodoni-moda-normal','bodoni-moda-italic','public-sans-normal','ibm-plex-mono-400'])
 wr(d+'/app.js', app)
 shutil.copy(os.path.join(SRC,'config.js'), d+'/config.js')
 shutil.copy('supabase/schema.sql', d+'/supabase/schema.sql')
 shutil.copy(os.path.join(SRC,'LEIA-ME.md'), d+'/LEIA-ME.md')
+# Em modo demonstração, a barra de aviso já vem visível: revelá-la por JS deslocaria a página (CLS)
+HOST_BODY = body.replace('__LOGO__','logo.png')
+if DEMO: HOST_BODY = HOST_BODY.replace('id="demoBar" aria-label="Aviso de demonstração" hidden>','id="demoBar" aria-label="Aviso de demonstração">')
 idx = f'''<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -71,12 +77,12 @@ idx = f'''<!doctype html>
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-{fonts}
+{PRELOAD}
 <link rel="stylesheet" href="styles.css">
 <style>body{{margin:0}}[hidden]{{display:none!important}}img{{max-width:100%}}</style>
 </head>
 <body>
-{body.replace('__LOGO__','logo.png')}
+{HOST_BODY}
 {QR}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>

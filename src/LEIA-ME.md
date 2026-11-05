@@ -9,6 +9,7 @@ Conteúdo da pasta:
 | `styles.css` | Visual |
 | `config.js` | Endereço e chave pública do banco de dados |
 | `logo.png` | Logo com fundo transparente |
+| `fonts/` | Fontes do site e respectivas licenças (SIL OFL 1.1) |
 | `foto.jpg` | **[INSERIR]** Sua foto profissional (retrato 4:5). Informe o nome do arquivo em `config.js` > `foto` |
 | `supabase/schema.sql` | Criação do banco, regras de acesso e funções de reserva |
 
