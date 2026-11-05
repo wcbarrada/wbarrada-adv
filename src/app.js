@@ -214,6 +214,7 @@ function SupabaseAPI(){
   const friendly = m => /Token has expired|otp_expired|invalid.*token/i.test(m) ? "Código incorreto ou expirado. Confira ou peça um novo."
     : /Signups not allowed/i.test(m) ? "Não encontramos cadastro com este e-mail. Use a opção Criar conta."
     : /only request this after|rate limit/i.test(m) ? "Aguarde um minuto antes de pedir outro código."
+    : /Error sending/i.test(m) ? "Não foi possível enviar o e-mail agora. Tente novamente em instantes ou fale com o escritório."
     : m;
   let cachedUser; const uidNow = async()=> (await sb.auth.getSession()).data.session?.user?.id;
   sb.auth.onAuthStateChange((ev)=>{ cachedUser=undefined;
