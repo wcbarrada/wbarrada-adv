@@ -42,7 +42,8 @@ DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not
 NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
 # Pacote de hospedagem usa fontes próprias; a prévia em arquivo único segue com o Google Fonts
 wr(d+'/styles.css', rd(os.path.join(SRC,'fonts.css')) + css)
-shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')wr(d+'/app.js', app)
+shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')
+wr(d+'/app.js', app)
 shutil.copy(os.path.join(SRC,'config.js'), d+'/config.js')
 shutil.copy('supabase/schema.sql', d+'/supabase/schema.sql')
 shutil.copy(os.path.join(SRC,'LEIA-ME.md'), d+'/LEIA-ME.md')
