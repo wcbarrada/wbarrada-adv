@@ -75,7 +75,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 ## Estado atual
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4.
-- Hospedagem atual: GitHub Pages via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.
+- Hospedagem atual: GitHub Pages (`https://wcbarrada.github.io/wbarrada-adv/`) via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.
 
 ## Decisões pendentes do usuário (Fase 2)
 | # | Decisão | Recomendação |
