@@ -76,7 +76,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 ## Estado atual
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4.
-- Hospedagem atual: GitHub Pages (`https://wcbarrada.github.io/wbarrada-adv/`) via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.
+- Hospedagem atual: GitHub Pages com o domínio `https://wbarrada.adv.br/` (DNS no registro.br, modo avançado) via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.
 - Itens Should de acessibilidade e SEO corrigidos em 05/11/2026, exceto `telephone` e `postalCode` no JSON-LD (dados pendentes). Com `supabaseUrl` vazio, o build adiciona `noindex`. Ao adotar domínio próprio, trocar `SITE_URL` em `build.py`.
 - O pacote de hospedagem usa fontes próprias (`src/fonts.css`, `src/assets/fonts/`), sem Google Fonts e sem `preload`, que atrasou o FCP nos testes com rede lenta simulada. O CSS é embutido no `index.html` e os scripts usam `defer`, para reduzir o FCP. `dist/artifact.html` ainda carrega do Google.
 
@@ -87,7 +87,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 | D2 | Acesso à Área do cliente | Código enviado por e-mail, sem senha (exige SMTP próprio). Implementado para clientes e advogado; não testado no Supabase real |
 | D3 | Confirmação de pagamento | Manual no MVP; gateway com webhook depois |
 | D4 | Plano do Supabase | Free nos testes; Pro (US$ 25/mês em 05/11/2026) ao abrir para clientes |
-| D5 | Domínio | `wbarrada.adv.br`, ainda não registrado; preço e documentos exigidos pelo registro.br [VERIFICAR] |
+| D5 | Domínio | `wbarrada.adv.br`, registrado em 05/11/2026 |
 
 ## Backlog da Fase 3 (originado da Fase 4)
 **Must**

@@ -4,7 +4,7 @@ import base64, os, re, shutil
 ROOT=os.path.dirname(os.path.abspath(__file__)); os.chdir(ROOT)
 SRC='src'; LOGO=os.path.join(SRC,'assets','logo.png')
 # Endereço público: trocar aqui ao adotar domínio próprio
-SITE_URL='https://wcbarrada.github.io/wbarrada-adv/'
+SITE_URL='https://wbarrada.adv.br/'
 b64 = base64.b64encode(open(LOGO,'rb').read()).decode()
 rd = lambda p: open(p, encoding='utf-8').read()
 wr = lambda p, s: open(p, 'w', encoding='utf-8', newline='\n').write(s)
