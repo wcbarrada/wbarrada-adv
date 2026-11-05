@@ -716,13 +716,11 @@ const Admin = {
       <div class="toolbar"><div class="chips">${Object.entries(F).map(([k,[l]])=>`<button data-f="${k}" aria-pressed="${this.filter===k}">${l}</button>`).join("")}</div>
         <input type="search" id="adQ" placeholder="Buscar nome, CPF ou protocolo" value="${esc(this.q)}"></div>
       <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Data</th><th>Cliente</th><th>Modalidade</th><th>Assunto</th><th>Valor</th><th>Status</th></tr></thead><tbody>
-      ${list.length?list.map(a=>`<tr class="row ${this.open===a.id?"open":""}" data-row="${a.id}" tabindex="0" aria-expanded="${this.open===a.id}" aria-label="${esc(`${brDate(spDate(a.inicio))} ${spTime(a.inicio)}, ${a.cliente?.nome||""}: ${this.open===a.id?"ocultar":"ver"} detalhes`)}"><td class="mono">${brDate(spDate(a.inicio))}<br>${spTime(a.inicio)}</td><td>${esc(a.cliente?.nome||"")}${a.comprovante_path&&a.status==="aguardando_pagamento"?`<br><small style="color:var(--warn)">comprovante enviado</small>`:""}</td><td>${esc(modName(a.modalidade_id))}</td><td>${esc(a.assunto||"")}</td><td class="mono">${esc(money(a.valor))}</td><td><span class="pill ${a.status}">${STATUS[a.status]||a.status}</span></td></tr>${this.open===a.id?det(a):""}`).join(""):`<tr><td colspan="6" class="muted" style="padding:28px 14px;text-align:center">Nenhum agendamento neste filtro.</td></tr>`}
+      ${list.length?list.map(a=>`<tr class="row ${this.open===a.id?"open":""}" data-row="${a.id}"><td class="mono"><button type="button" class="rowbtn" data-rowbtn aria-expanded="${this.open===a.id}" aria-label="${esc(`${brDate(spDate(a.inicio))} ${spTime(a.inicio)}, ${a.cliente?.nome||""}: detalhes do agendamento`)}">${brDate(spDate(a.inicio))}<br>${spTime(a.inicio)}</button></td><td>${esc(a.cliente?.nome||"")}${a.comprovante_path&&a.status==="aguardando_pagamento"?`<br><small style="color:var(--warn)">comprovante enviado</small>`:""}</td><td>${esc(modName(a.modalidade_id))}</td><td>${esc(a.assunto||"")}</td><td class="mono">${esc(money(a.valor))}</td><td><span class="pill ${a.status}">${STATUS[a.status]||a.status}</span></td></tr>${this.open===a.id?det(a):""}`).join(""):`<tr><td colspan="6" class="muted" style="padding:28px 14px;text-align:center">Nenhum agendamento neste filtro.</td></tr>`}
       </tbody></table></div>`;
     $$("[data-f]").forEach(b=>b.onclick=()=>{ this.filter=b.dataset.f; this.drawBookings(); });
     const q_=$("#adQ"); q_.oninput=()=>{ this.q=q_.value; const pos=q_.selectionStart; this.drawBookings(); const n=$("#adQ"); n.focus(); n.setSelectionRange(pos,pos); };
-    const toggleRow=id=>{ this.open = this.open===id?null:id; this.confirm=null; this.drawBookings(); const r=$(`[data-row="${CSS.escape(id)}"]`); if(r) r.focus(); };
-    $$("[data-row]").forEach(r=>{ r.onclick=()=>toggleRow(r.dataset.row);
-      r.onkeydown=ev=>{ if(ev.target===r && (ev.key==="Enter"||ev.key===" ")){ ev.preventDefault(); toggleRow(r.dataset.row); } }; });
+    $$("[data-row]").forEach(r=>r.onclick=()=>{ const id=r.dataset.row; this.open = this.open===id?null:id; this.confirm=null; this.drawBookings(); $(`[data-row="${CSS.escape(id)}"] [data-rowbtn]`)?.focus(); });
     $$("[data-b]").forEach(b=>b.onclick=async ev=>{
       ev.stopPropagation(); const id=b.dataset.id, k=b.dataset.b;
       const upd=async(patch,okMsg)=>{ try{ await busy(b,()=>API.updateBooking(id,patch)); toast(okMsg); this.rows=await API.listBookings(); await refreshPublic(); renderNext(); this.drawBookings(); }catch(err){ toast(err.message,true); } };
@@ -864,7 +862,8 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
 (async function init(){
   $("#demoBar").hidden = API.mode!=="demo";
   $("#year").textContent = todaySP().slice(0,4);
-  $("#privDate").textContent = SITE.privacidadeAtualizada || brDate(todaySP());
+  // Sem data informada em config.js, a política não exibe "Última atualização"
+  if(SITE.privacidadeAtualizada){ $("#privDate").textContent = SITE.privacidadeAtualizada; $("#privUpd").hidden = false; }
   if(SITE.foto){ const ph=$("#portrait .portrait-ph"); const img=new Image(); img.alt="Wanderson Corrêa Barrada, advogado"; img.src=SITE.foto; img.onload=()=>ph.replaceWith(img); }
   try{
     await refreshPublic();

@@ -70,7 +70,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .tbl th{text-align:left;font:600 .72rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
 .tbl td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
 .tbl tr.row{cursor:pointer}
-.tbl tr.row:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
+.rowbtn{background:none;border:0;padding:0;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .opts.n1{grid-template-columns:minmax(0,1fr)}
 .opts.n2{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (max-width:760px){.opts.n2{grid-template-columns:1fr}}

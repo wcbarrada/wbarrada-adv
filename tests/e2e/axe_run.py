@@ -16,7 +16,8 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch()
         for vw,label in [((1280,900),"desk"),((390,844),"mob")]:
-            ctx=await b.new_context(viewport={"width":vw[0],"height":vw[1]}); pg=await ctx.new_page()
+            # bypass_csp: a CSP do site bloqueia o axe injetado como script em linha
+            ctx=await b.new_context(viewport={"width":vw[0],"height":vw[1]},bypass_csp=True); pg=await ctx.new_page()
             await pg.goto(BASE); await pg.wait_for_timeout(800); await axe(pg,f"{label}:home")
             # wizard steps
             await pg.locator("#nextList li button").first.click(); await pg.wait_for_timeout(200)
