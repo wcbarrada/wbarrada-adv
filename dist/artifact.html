@@ -969,8 +969,8 @@ function DemoAPI(){
     async getPublicData(){ return clone({config:db.config, modalidades:db.modalidades.slice().sort((a,b)=>a.ordem-b.ordem), disponibilidade:db.disponibilidade, bloqueios:db.bloqueios, extras:db.extras}); },
     async getBusy(de,ate){ expireOld(); const a=Date.parse(de), b=Date.parse(ate); return db.agendamentos.filter(x=>["aguardando_pagamento","confirmado"].includes(x.status)&&Date.parse(x.inicio)<b&&Date.parse(x.fim)>a).map(x=>({inicio:x.inicio,fim:x.fim})); },
     async getUser(){ return pubUser(user()); },
-    async sendCode({email,signup}){ const e=email.trim().toLowerCase(); if(!db.users.some(x=>x.email.toLowerCase()===e)){ if(!signup) throw new Error("Não encontramos cadastro com este e-mail. Use a opção Criar conta."); db.users.push(Object.assign({id:uid(),email:email.trim()},signup)); save(); } return wait(); },
-    async verifyCode(email,code){ if(code!==DEMO_CODE) throw new Error("Código incorreto ou expirado. Confira ou peça um novo."); const u=db.users.find(x=>x.email.toLowerCase()===email.trim().toLowerCase()); me=u.id; save(); return wait(pubUser(u)); },
+    async sendCode({email,signup}){ const e=email.trim().toLowerCase(); if(!db.users.some(x=>x.email.toLowerCase()===e)){ if(!signup) throw new Error("Não encontramos cadastro com este e-mail. Use a opção Criar conta."); db.users.push({id:uid(),email:email.trim(),nome:"",cpf:"",telefone:""}); save(); } return wait(); },
+    async verifyCode(email,code,signup){ if(code!==DEMO_CODE) throw new Error("Código incorreto ou expirado. Confira ou peça um novo."); const u=db.users.find(x=>x.email.toLowerCase()===email.trim().toLowerCase()); if(signup && !u.nome) Object.assign(u,signup); me=u.id; save(); return wait(pubUser(u)); },
     async signOut(){ me=null; save(); },
     async updateProfile(p){ const u=user(); Object.assign(u,{nome:p.nome,telefone:p.telefone,cpf:p.cpf??u.cpf}); save(); return wait(pubUser(u)); },
     async createBooking(o){
@@ -1042,8 +1042,13 @@ function SupabaseAPI(){
       cachedUser={id:s.user.id,email:s.user.email,nome:p.nome||"",cpf:p.cpf||"",telefone:p.telefone||"",isAdmin:!!adm};
       return cachedUser;
     },
-    async sendCode({email,signup}){ chk(await sb.auth.signInWithOtp({email:email.trim(),options:{shouldCreateUser:!!signup,data:signup||undefined,emailRedirectTo:location.origin+location.pathname+"#cliente"}})); },
-    async verifyCode(email,code){ chk(await sb.auth.verifyOtp({email:email.trim(),token:code,type:"email"})); cachedUser=undefined; return this.getUser(); },
+    async sendCode({email,signup}){ chk(await sb.auth.signInWithOtp({email:email.trim(),options:{shouldCreateUser:!!signup,emailRedirectTo:location.origin+location.pathname+"#cliente"}})); },
+    async verifyCode(email,code,signup){
+      chk(await sb.auth.verifyOtp({email:email.trim(),token:code,type:"email"}));
+      // Nome, CPF e telefone só são gravados depois de confirmar o e-mail, e nunca sobrescrevem um cadastro existente
+      if(signup){ const id=await uidNow(); chk(await sb.from("profiles").update(signup).eq("id",id).eq("nome","")); }
+      cachedUser=undefined; return this.getUser();
+    },
     async signOut(){ await sb.auth.signOut(); cachedUser=null; },
     async updateProfile(p){ const id=await uidNow(); chk(await sb.from("profiles").update({nome:p.nome,telefone:p.telefone,cpf:p.cpf}).eq("id",id)); cachedUser=undefined; return this.getUser(); },
     async createBooking(o){ return chk(await sb.rpc("criar_agendamento",{p_modalidade:o.modalidade_id,p_inicio:o.inicio,p_assunto:o.assunto,p_parte:o.parte||"",p_resumo:o.resumo,p_forma:o.forma||"pix"})); },
@@ -1295,7 +1300,7 @@ async function doAuth(prefix, mode){
   if(mode==="code"){
     const code=v("codigo").replace(/\s/g,"");
     if(!/^\d{6,10}$/.test(code)) throw new Error("Informe o código recebido por e-mail.");
-    const user=await API.verifyCode(AuthFlow[prefix].email,code);
+    const user=await API.verifyCode(AuthFlow[prefix].email,code,AuthFlow[prefix].signup);
     delete AuthFlow[prefix]; return {user};
   }
   const email=v("email");
