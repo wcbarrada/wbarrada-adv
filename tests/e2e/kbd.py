@@ -50,7 +50,7 @@ async def main():
         out["alvos<24px admin-agenda"]=await pg.evaluate(JS_TARGETS)
         out["título por tela"]=await pg.title()
         # skip link on non-site views
-        out["destino do skip link visível em #admin"]=await pg.evaluate("!document.getElementById('conteudo').closest('[hidden]')")
+        await pg.evaluate("document.querySelector('.skip').click()"); out["foco após o link de salto em #admin"]=await pg.evaluate("document.activeElement.tagName+': '+document.activeElement.textContent.trim()")
         # reflow 320 / zoom 200% (640)
         for w in (320,640):
             m=await b.new_page(viewport={"width":w,"height":800})

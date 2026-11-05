@@ -1,8 +1,10 @@
-import base64, os, shutil
+import base64, os, re, shutil
 # Gera dist/artifact.html (prévia em arquivo único) e dist/barrada-site/ (pacote de hospedagem).
 # Uso: python3 build.py  (executar na raiz do projeto)
 ROOT=os.path.dirname(os.path.abspath(__file__)); os.chdir(ROOT)
 SRC='src'; LOGO=os.path.join(SRC,'assets','logo.png')
+# Endereço público: trocar aqui ao adotar domínio próprio
+SITE_URL='https://wcbarrada.github.io/wbarrada-adv/'
 b64 = base64.b64encode(open(LOGO,'rb').read()).decode()
 rd = lambda p: open(p, encoding='utf-8').read()
 wr = lambda p, s: open(p, 'w', encoding='utf-8', newline='\n').write(s)
@@ -33,6 +35,11 @@ wr('dist/artifact.html', art)
 # 2) hosting package
 d='dist/barrada-site'; shutil.rmtree(d, ignore_errors=True); os.makedirs(d+'/supabase')
 shutil.copy(LOGO, d+'/logo.png')
+shutil.copy(os.path.join(SRC,'assets','og-image.png'), d+'/og-image.png')
+shutil.copy(os.path.join(SRC,'assets','icon.png'), d+'/icon.png')
+# Em modo demonstração (config.js sem Supabase), o site não deve ser indexado
+DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not None
+NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
 wr(d+'/styles.css', css)
 wr(d+'/app.js', app)
 shutil.copy(os.path.join(SRC,'config.js'), d+'/config.js')
@@ -45,18 +52,25 @@ idx = f'''<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="{CSP_BASE}; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Wanderson Barrada · Advogado · Previdenciário e Direito Público · Campos, Cordeiro e Cantagalo</title>
-<meta name="description" content="Advocacia previdenciária e em Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, com atendimento presencial e por videochamada. OAB/RJ nº 164.135.">
+<title>Wanderson Barrada · Advogado em Campos, Cordeiro e Cantagalo</title>
+{NOINDEX}<link rel="canonical" href="{SITE_URL}">
+<meta name="description" content="Advocacia previdenciária e em Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, presencial e por videochamada. OAB/RJ nº 164.135.">
 <meta name="theme-color" content="#0e0d0b">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Wanderson Corrêa Barrada · Advogado">
 <meta property="og:description" content="Previdenciário e Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ. Agendamento online.">
-<meta property="og:image" content="logo.png">
+<meta property="og:url" content="{SITE_URL}">
+<meta property="og:image" content="{SITE_URL}og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
+<meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","email":"wcbarrada.adv@gmail.com","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"}},{{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}}]}}
+{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"}},{{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}}]}}
 </script>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 {fonts}
 <link rel="stylesheet" href="styles.css">
 <style>body{{margin:0}}[hidden]{{display:none!important}}img{{max-width:100%}}</style>
@@ -72,5 +86,26 @@ idx = f'''<!doctype html>
 '''
 wr(d+'/index.html', idx)
 wr(d+'/_headers', HEADERS)
+wr(d+'/robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n')
+wr(d+'/sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{SITE_URL}</loc></url></urlset>\n')
+wr(d+'/404.html', f'''<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Página não encontrada · WBarrada Advogado</title>
+<link rel="icon" href="{SITE_URL}icon.png">
+<style>body{{margin:0;min-height:100vh;display:grid;place-content:center;gap:16px;padding:24px;background:#0e0d0b;color:#f2ebdb;font:1rem/1.5 system-ui,sans-serif;text-align:center}}h1{{margin:0;font:500 2rem Georgia,serif}}p{{margin:0;color:#aba38e}}a{{color:#e4c58e}}</style>
+</head>
+<body>
+<main>
+<h1>Página não encontrada</h1>
+<p>O endereço acessado não existe neste site.</p>
+<p><a href="{SITE_URL}">Ir para a página inicial</a></p>
+</main>
+</body>
+</html>
+''')
 open(d+'/.nojekyll','w').close()
 print('ok', len(art))

@@ -94,7 +94,7 @@ function payBlockHTML(cfg, bk, idp){
     ${safeUrl(cfg.link_cartao) ? `<a class="btn" href="${esc(safeUrl(cfg.link_cartao))}" target="_blank" rel="noopener">Pagar com cartão</a>` : `<p class="note"><span class="ph">[INSERIR LINK DE PAGAMENTO]</span> O link é cadastrado na Área do advogado.</p>`}
   </div>
   <div class="field" style="margin-top:18px"><label for="rc-${idp}">Enviar comprovante (imagem ou PDF)</label><input type="file" id="rc-${idp}" data-receipt="${esc(bk.id)}" accept="image/jpeg,image/png,application/pdf"></div>
-  <p class="note" data-rcmsg="${esc(bk.id)}">${bk.comprovante_path?"Comprovante já enviado. Você pode enviar outro, se precisar.":""}</p>`;
+  <p class="note" role="status" data-rcmsg="${esc(bk.id)}">${bk.comprovante_path?"Comprovante já enviado. Você pode enviar outro, se precisar.":""}</p>`;
 }
 function hydratePay(root){
   $$("[data-qr]", root).forEach(el=>{ const code=el.dataset.code; if(code && window.QRCode && !el.dataset.done){ el.dataset.done="1"; el.innerHTML=""; try{ new QRCode(el,{text:code,width:160,height:160,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }catch(e){ el.className="qr empty"; el.textContent="Use o copia e cola."; } } });
@@ -374,7 +374,7 @@ function renderNext(){
 /* ---------------- agendamento (wizard) ---------------- */
 const W = { step:1, mod:null, area:"", date:null, time:null, month:null, booking:null, authTab:"login" };
 
-function goStep(n){
+function goStep(n,noFocus){
   W.step=n;
   $$(".pane[data-step]").forEach(p=>p.hidden = Number(p.dataset.step)!==n);
   $$("#steps li").forEach((li,i)=>{ li.className = i+1===n?"on":(i+1<n?"done":""); });
@@ -382,6 +382,7 @@ function goStep(n){
   if(n===3) renderAuthSlot();
   if(n===4) renderPayStep();
   if(n===5) renderDone();
+  if(!noFocus){ const p=$(`.pane[data-step="${n}"]`), t=p.querySelector("h3")||p; t.tabIndex=-1; t.focus(); }
 }
 $$("[data-back]").forEach(b=>b.onclick=()=>goStep(Number(b.dataset.back)));
 
@@ -462,7 +463,7 @@ function authFormHTML(prefix, tab, opts={}){
     <div class="field"><label for="${prefix}-email">E-mail</label><input id="${prefix}-email" type="email" autocomplete="email"></div>
     ${reset?"":`<div class="field"><label for="${prefix}-senha">Senha${signup?" (mínimo 6 caracteres)":""}</label><input id="${prefix}-senha" type="password" autocomplete="${signup?"new-password":"current-password"}"></div>`}
     ${opts.inline?"":`<button class="btn" type="submit">${signup?"Criar conta":reset?"Enviar link de redefinição":"Entrar"}</button>`}
-    <p class="msg" data-authmsg="${prefix}" style="margin:0"></p>
+    <p class="msg" role="alert" data-authmsg="${prefix}" style="margin:0"></p>
     ${signup||opts.noReset?"":reset?`<button type="button" class="linkbtn" data-authtab="login" data-pfx="${prefix}">Voltar para o login</button>`:`<button type="button" class="linkbtn" data-authtab="reset" data-pfx="${prefix}">Esqueci minha senha</button>`}
   </form>`;
 }
@@ -580,11 +581,11 @@ const Client = {
     const root=$("#clientRoot"); App.user=await API.getUser();
     if(App.passwordRecovery && API.mode==="supabase"){ return this.renderRecovery(root); }
     if(!App.user){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h2>Entre para acompanhar suas consultas</h2><p class="who">Veja o status, envie comprovantes, acesse o link da videochamada e cancele quando precisar.</p></div></div>
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Entre para acompanhar suas consultas</h1><p class="who">Veja o status, envie comprovantes, acesse o link da videochamada e cancele quando precisar.</p></div></div>
       <div class="auth-card">${authFormHTML("cl", this.authTab)}</div>`;
       return;
     }
-    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h2>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h2><p class="who">${esc(App.user.email)}</p></div>
+    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h1><p class="who">${esc(App.user.email)}</p></div>
       <div class="btns"><a class="btn sm" href="#agenda">Nova consulta</a>${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
       <div class="subtabs" role="tablist"><button role="tab" data-ctab="consultas" aria-selected="${this.tab==="consultas"}">Minhas consultas</button><button role="tab" data-ctab="dados" aria-selected="${this.tab==="dados"}">Meus dados</button></div>
       <div id="clBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
@@ -615,9 +616,9 @@ const Client = {
       </article>`;
     };
     $("#clBody").innerHTML = `
-      <h3 style="margin-bottom:14px">Próximas consultas</h3>
+      <h2 style="margin-bottom:14px">Próximas consultas</h2>
       ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span><a class="btn sm" href="#agenda">Agendar consulta</a></div>`}
-      ${past.length?`<h3 style="margin:36px 0 14px">Histórico</h3><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
+      ${past.length?`<h2 style="margin:36px 0 14px">Histórico</h2><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
     hydratePay($("#clBody"));
     $$("[data-act]", $("#clBody")).forEach(b=>b.onclick=async()=>{
       const id=b.dataset.id, act=b.dataset.act;
@@ -636,14 +637,14 @@ const Client = {
         <div class="field"><label for="pf-tel">WhatsApp</label><input id="pf-tel" data-mask="tel" maxlength="15" value="${esc(u.telefone)}"></div>
       </div>
       <div class="field"><label for="pf-email">E-mail</label><input id="pf-email" value="${esc(u.email)}" disabled></div>
-      <button class="btn" type="submit" style="width:max-content">Salvar dados</button><p class="msg" id="pfMsg" style="margin:0"></p></form>`;
+      <button class="btn" type="submit" style="width:max-content">Salvar dados</button><p class="msg" role="alert" id="pfMsg" style="margin:0"></p></form>`;
     $("#pfForm").onsubmit=async e=>{ e.preventDefault(); const nome=$("#pf-nome").value.trim(), cpf=$("#pf-cpf").value, tel=$("#pf-tel").value;
       if(nome.split(/\s+/).length<2) return $("#pfMsg").textContent="Informe nome e sobrenome.";
       if(cpf && !cpfOK(cpf)) return $("#pfMsg").textContent="CPF inválido.";
       try{ App.user=await busy(e.submitter,()=>API.updateProfile({nome,cpf,telefone:tel})); toast("Dados salvos."); $("#pfMsg").textContent=""; }catch(err){ $("#pfMsg").textContent=err.message; } };
   },
   renderRecovery(root){
-    root.innerHTML=`<div class="auth-card"><h3>Defina uma nova senha</h3><form id="rcForm" novalidate><div class="field"><label for="rc-p">Nova senha (mínimo 6 caracteres)</label><input id="rc-p" type="password" autocomplete="new-password"></div><button class="btn" type="submit">Salvar senha</button><p class="msg" id="rcMsg" style="margin:0"></p></form></div>`;
+    root.innerHTML=`<div class="auth-card"><h2>Defina uma nova senha</h2><form id="rcForm" novalidate><div class="field"><label for="rc-p">Nova senha (mínimo 6 caracteres)</label><input id="rc-p" type="password" autocomplete="new-password"></div><button class="btn" type="submit">Salvar senha</button><p class="msg" role="alert" id="rcMsg" style="margin:0"></p></form></div>`;
     $("#rcForm").onsubmit=async e=>{ e.preventDefault(); const p=$("#rc-p").value; if(p.length<6) return $("#rcMsg").textContent="A senha precisa ter pelo menos 6 caracteres.";
       try{ await busy(e.submitter,()=>API.setNewPassword(p)); App.passwordRecovery=false; toast("Senha atualizada."); this.render(); }catch(err){ $("#rcMsg").textContent=err.message; } };
   }
@@ -657,23 +658,23 @@ const Admin = {
   async render(){
     const root=$("#adminRoot"); App.user=await API.getUser();
     if(!App.user){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Acesso restrito</h2><p class="who">Entre com a conta de administrador do escritório.</p></div></div>
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Acesso restrito</h1><p class="who">Entre com a conta de administrador do escritório.</p></div></div>
       <div class="auth-card">${authFormHTML("ad","login",{noTabs:true,noReset:true})}</div>`;
       return;
     }
     if(!App.user.isAdmin){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Acesso restrito</h2><p class="who">A conta ${esc(App.user.email)} não tem permissão de administrador.</p></div><div class="btns"><a class="btn ghost sm" href="#cliente">Ir para a Área do cliente</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>`;
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Acesso restrito</h1><p class="who">A conta ${esc(App.user.email)} não tem permissão de administrador.</p></div><div class="btns"><a class="btn ghost sm" href="#cliente">Ir para a Área do cliente</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>`;
       $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
       return;
     }
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
-    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Painel do escritório</h2><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
+    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
       <div class="btns"><a class="btn ghost sm" href="#agenda">Ver agenda pública</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
       <div class="subtabs" role="tablist">${T.map(([k,l])=>`<button role="tab" data-atab="${k}" aria-selected="${this.tab===k}">${l}</button>`).join("")}</div>
       <div id="adBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
     $$("[data-atab]").forEach(b=>b.onclick=()=>{ this.tab=b.dataset.atab; this.week=null; this.render(); });
-    try{ await this["tab_"+this.tab](); }catch(err){ $("#adBody").innerHTML=`<p class="msg">${esc(err.message)}</p>`; }
+    try{ await this["tab_"+this.tab](); }catch(err){ $("#adBody").innerHTML=`<p class="msg" role="alert">${esc(err.message)}</p>`; }
   },
 
   /* ----- agendamentos ----- */
@@ -751,13 +752,13 @@ const Admin = {
       <div class="week">${[1,2,3,4,5,6,0].map(d=>`<div class="day ${this.week[d].length?"":"off"}"><b>${WDL[d]}</b><div class="ranges">
         ${this.week[d].map((r,i)=>`<span class="range"><input type="time" value="${r.inicio}" data-wd="${d}" data-i="${i}" data-k="inicio" aria-label="Início"> até <input type="time" value="${r.fim}" data-wd="${d}" data-i="${i}" data-k="fim" aria-label="Fim"><button data-rm="${d}:${i}" aria-label="Remover faixa">×</button></span>`).join("")}
         <button class="addr" data-add="${d}">+ faixa</button>${this.week[d].length?"":`<span class="note">sem atendimento</span>`}</div></div>`).join("")}</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center"><button class="btn" id="saveWeek">Salvar grade semanal</button><button class="btn ghost" id="undoWeek">Descartar alterações</button><span class="msg" id="wkMsg" style="margin:0"></span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center"><button class="btn" id="saveWeek">Salvar grade semanal</button><button class="btn ghost" id="undoWeek">Descartar alterações</button><span class="msg" role="alert" id="wkMsg" style="margin:0"></span></div>
 
       <div class="two">
-        <div class="panel"><h4>Dias bloqueados</h4><p class="note">Feriados, férias, audiências. Bloqueia o dia inteiro.</p>
+        <div class="panel"><h2>Dias bloqueados</h2><p class="note">Feriados, férias, audiências. Bloqueia o dia inteiro.</p>
           <div class="row-form"><input type="date" id="bqD" min="${t}" aria-label="Data"><select id="bqM" aria-label="Modalidade">${modOpts("",true)}</select><input id="bqT" placeholder="Motivo (opcional)" aria-label="Motivo"><button class="btn sm" id="bqAdd">Bloquear</button></div>
           <ul class="plist">${App.pub.bloqueios.filter(b=>b.data>=t).sort((a,b)=>a.data.localeCompare(b.data)).map(b=>`<li><span><span class="mono">${brDate(b.data)}</span> · ${b.modalidade_id?esc((mods.find(m=>m.id===b.modalidade_id)||{}).nome):"todas"}${b.motivo?` · <span class="muted">${esc(b.motivo)}</span>`:""}</span><button class="x" data-dbq="${b.id}" aria-label="Remover bloqueio">×</button></li>`).join("")||`<li class="muted">Nenhum bloqueio futuro.</li>`}</ul></div>
-        <div class="panel"><h4>Horários avulsos</h4><p class="note">Abre uma faixa em data específica, fora da grade semanal.</p>
+        <div class="panel"><h2>Horários avulsos</h2><p class="note">Abre uma faixa em data específica, fora da grade semanal.</p>
           <div class="row-form"><input type="date" id="exD" min="${t}" aria-label="Data"><select id="exM" aria-label="Modalidade">${modOpts(this.modSel,false)}</select><input type="time" id="exA" value="09:00" aria-label="Início"><input type="time" id="exB" value="12:00" aria-label="Fim"><button class="btn sm" id="exAdd">Abrir</button></div>
           <ul class="plist">${App.pub.extras.filter(x=>x.data>=t).sort((a,b)=>a.data.localeCompare(b.data)).map(x=>`<li><span><span class="mono">${brDate(x.data)} · ${String(x.inicio).slice(0,5)}–${String(x.fim).slice(0,5)}</span> · ${esc((mods.find(m=>m.id===x.modalidade_id)||{}).nome)}</span><button class="x" data-dex="${x.id}" aria-label="Remover horário">×</button></li>`).join("")||`<li class="muted">Nenhum horário avulso futuro.</li>`}</ul></div>
       </div>`;
@@ -795,10 +796,10 @@ const Admin = {
       <td><button class="btn ghost sm" data-msave="${esc(m.id)}">Salvar</button></td></tr>`;
     $("#adBody").innerHTML=`
       <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor ao escolher a modalidade no agendamento, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
-      <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th></th></tr></thead>
+      <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th>Ação</th></tr></thead>
       <tbody>${mods.map(row).join("")}</tbody></table></div>
-      <div class="panel" style="margin-top:28px;max-width:760px"><h4>Nova modalidade</h4>
-        <div class="row-form"><input id="nmN" placeholder="Nome, ex.: Presencial · Cordeiro"><select id="nmT"><option value="presencial">Presencial</option><option value="online">Online</option></select><input id="nmD" placeholder="Endereço ou descrição"><input id="nmV" type="number" min="0" step="0.01" placeholder="Valor"><button class="btn sm" id="nmAdd">Adicionar</button></div>
+      <div class="panel" style="margin-top:28px;max-width:760px"><h2>Nova modalidade</h2>
+        <div class="row-form"><input id="nmN" aria-label="Nome da modalidade" placeholder="Nome, ex.: Presencial · Cordeiro"><select id="nmT" aria-label="Tipo de atendimento"><option value="presencial">Presencial</option><option value="online">Online</option></select><input id="nmD" aria-label="Endereço ou descrição" placeholder="Endereço ou descrição"><input id="nmV" aria-label="Valor" type="number" min="0" step="0.01" placeholder="Valor"><button class="btn sm" id="nmAdd">Adicionar</button></div>
         <p class="note">Depois de criar, cadastre os horários dela em Agenda e horários.</p></div>`;
     $$("[data-msave]").forEach(b=>b.onclick=async()=>{
       const tr=b.closest("tr"), g=k=>$(`[data-k="${k}"]`,tr);
@@ -817,11 +818,11 @@ const Admin = {
     const n=(id,l,v,extra="")=>`<div class="field"><label for="cf-${id}">${l}</label><input id="cf-${id}" type="number" min="0" value="${esc(v)}" ${extra}></div>`;
     const s=(id,l,v,ph="")=>`<div class="field"><label for="cf-${id}">${l}</label><input id="cf-${id}" value="${esc(v||"")}" placeholder="${esc(ph)}"></div>`;
     $("#adBody").innerHTML=`<form id="cfForm" novalidate style="max-width:860px">
-      <div class="form-sec"><h4>Consulta</h4><div class="fgrid3">${n("duracao_min","Duração (minutos)",c.duracao_min)}${n("intervalo_min","Intervalo entre consultas (min)",c.intervalo_min)}</div></div>
-      <div class="form-sec"><h4>Regras da agenda</h4><div class="fgrid3">${n("antecedencia_horas","Antecedência mínima (horas)",c.antecedencia_horas)}${n("horizonte_dias","Agenda aberta por (dias)",c.horizonte_dias)}${n("reserva_expira_horas","Reserva sem pagamento expira em (horas)",c.reserva_expira_horas)}${n("cancelamento_horas","Cliente cancela até (horas antes)",c.cancelamento_horas)}</div></div>
-      <div class="form-sec"><h4>Pagamento</h4><div class="fgrid3">${s("pix_chave","Chave PIX",c.pix_chave,"CPF, e-mail, telefone ou aleatória")}${s("pix_nome","Nome do recebedor (até 25)",c.pix_nome)}${s("pix_cidade","Cidade do recebedor (até 15)",c.pix_cidade)}</div>${s("link_cartao","Link de pagamento com cartão",c.link_cartao,"https://…")}</div>
-      <div class="form-sec"><h4>Contato e política</h4>${s("whatsapp","WhatsApp do escritório (só números, com 55 e DDD)",c.whatsapp,"5522999999999")}<div class="field"><label for="cf-politica">Política de cancelamento (exibida ao cliente)</label><textarea id="cf-politica">${esc(c.politica||"")}</textarea></div></div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn" type="submit">Salvar configurações</button>${API.mode==="demo"?`<button class="btn ghost" type="button" id="resetDemo">Restaurar dados de exemplo</button>`:""}<span class="msg" id="cfMsg" style="margin:0"></span></div></form>`;
+      <div class="form-sec"><h2>Consulta</h2><div class="fgrid3">${n("duracao_min","Duração (minutos)",c.duracao_min)}${n("intervalo_min","Intervalo entre consultas (min)",c.intervalo_min)}</div></div>
+      <div class="form-sec"><h2>Regras da agenda</h2><div class="fgrid3">${n("antecedencia_horas","Antecedência mínima (horas)",c.antecedencia_horas)}${n("horizonte_dias","Agenda aberta por (dias)",c.horizonte_dias)}${n("reserva_expira_horas","Reserva sem pagamento expira em (horas)",c.reserva_expira_horas)}${n("cancelamento_horas","Cliente cancela até (horas antes)",c.cancelamento_horas)}</div></div>
+      <div class="form-sec"><h2>Pagamento</h2><div class="fgrid3">${s("pix_chave","Chave PIX",c.pix_chave,"CPF, e-mail, telefone ou aleatória")}${s("pix_nome","Nome do recebedor (até 25)",c.pix_nome)}${s("pix_cidade","Cidade do recebedor (até 15)",c.pix_cidade)}</div>${s("link_cartao","Link de pagamento com cartão",c.link_cartao,"https://…")}</div>
+      <div class="form-sec"><h2>Contato e política</h2>${s("whatsapp","WhatsApp do escritório (só números, com 55 e DDD)",c.whatsapp,"5522999999999")}<div class="field"><label for="cf-politica">Política de cancelamento (exibida ao cliente)</label><textarea id="cf-politica">${esc(c.politica||"")}</textarea></div></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn" type="submit">Salvar configurações</button>${API.mode==="demo"?`<button class="btn ghost" type="button" id="resetDemo">Restaurar dados de exemplo</button>`:""}<span class="msg" role="alert" id="cfMsg" style="margin:0"></span></div></form>`;
     $("#cfForm").onsubmit=async e=>{ e.preventDefault();
       const g=id=>$(`#cf-${id}`).value.trim(), num=id=>Number(g(id));
       const o={duracao_min:num("duracao_min"),intervalo_min:num("intervalo_min"),antecedencia_horas:num("antecedencia_horas"),horizonte_dias:num("horizonte_dias"),reserva_expira_horas:num("reserva_expira_horas"),cancelamento_horas:num("cancelamento_horas"),
@@ -843,19 +844,26 @@ function onAuthChanged(stay){
   if(App.route==="admin") Admin.render();
   if(W.step===3 && !stay) renderAuthSlot();
 }
-function route(){
+const BASE_TITLE=document.title, TITLES={cliente:"Área do cliente",admin:"Área do advogado",privacidade:"Política de Privacidade"};
+function focusView(){
+  const t=$(`${{site:"#siteView",cliente:"#clientView",admin:"#adminView",privacidade:"#privacyView"}[App.route]} h1`);
+  if(t){ t.tabIndex=-1; t.focus(); }
+}
+function route(ev){
   const h=location.hash.replace("#","");
   const r = ["cliente","admin","privacidade"].includes(h) ? h : "site";
   App.route=r;
   $("#siteView").hidden = r!=="site"; $("#clientView").hidden = r!=="cliente"; $("#adminView").hidden = r!=="admin"; $("#privacyView").hidden = r!=="privacidade";
   $("#waFloat").hidden = r!=="site";
-  if(r==="cliente") Client.render();
-  else if(r==="admin") Admin.render();
-  else if(h){ const el=document.getElementById(h); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth"})); }
+  document.title = r==="site" ? BASE_TITLE : `${TITLES[r]} · WBarrada Advogado`;
+  const done = r==="cliente" ? Client.render() : r==="admin" ? Admin.render() : null;
+  if(r==="site" && h){ const el=document.getElementById(h); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth"})); }
   else window.scrollTo(0,0);
-  if(r!=="site") window.scrollTo(0,0);
+  // Em troca de tela (hashchange), o foco vai para o título da nova tela
+  if(ev && r!=="site") Promise.resolve(done).then(focusView);
 }
 window.addEventListener("hashchange", route);
+$(".skip").onclick=e=>{ e.preventDefault(); focusView(); };
 $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded",o); };
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
 
@@ -868,10 +876,10 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
   try{
     await refreshPublic();
     App.user = await API.getUser();
-    renderMods(); renderNext(); goStep(1);
+    renderMods(); renderNext(); goStep(1,true);
   }catch(err){
     $("#nextList").innerHTML=`<li class="msg">Não foi possível carregar a agenda: ${esc(err.message)}</li>`;
-    $("#modOpts").innerHTML=`<p class="msg">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;
+    $("#modOpts").innerHTML=`<p class="msg" role="alert">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;
   }
   route();
 })();

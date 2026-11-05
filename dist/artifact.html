@@ -5,7 +5,7 @@
 <style>
 /* Layout: cabeçalho fixo · hero em duas colunas (tese + próximos horários) · áreas 3×2 · perfil · agenda em etapas · dúvidas · rodapé institucional */
 :root{
-  --ink:#0e0d0b; --panel:#17150f; --panel-2:#211d15; --line:#322c20; --line-2:#4a4130;
+  --ink:#0e0d0b; --panel:#17150f; --panel-2:#211d15; --line:#322c20; --line-2:#4a4130; --field-line:#76694f;
   --fg:#f2ebdb; --muted:#aba38e; --gold:#e4c58e; --gold-2:#b98f4c; --gold-ink:#1a150c;
   --ok:#93c7a0; --warn:#e3a95e; --err:#e58a7a;
   --display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
@@ -15,7 +15,8 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+[tabindex="-1"]:focus{outline:none}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 body{background:var(--ink);color:var(--fg);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased}
 a{color:var(--gold)}
@@ -64,7 +65,7 @@ section{padding-block:clamp(64px,9vw,112px)}
 .hero .cred{margin-top:36px;display:flex;flex-wrap:wrap;gap:10px 28px;font:400 .82rem var(--mono);color:var(--muted)}
 .hero .cred span b{color:var(--fg);font-weight:500}
 .next{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;min-width:0}
-.next h3{font-size:1.2rem;margin-bottom:4px}
+.next h2{font-size:1.2rem;margin-bottom:4px}
 .next ul{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px}
 .next li button{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;color:var(--fg);font:inherit;cursor:pointer;transition:border-color .2s}
 .next li button:hover{border-color:var(--gold-2)}
@@ -125,7 +126,7 @@ section{padding-block:clamp(64px,9vw,112px)}
 @media (max-width:760px){.opts{grid-template-columns:1fr}}
 .field{display:grid;gap:6px}
 .field label{font-size:.84rem;color:var(--muted)}
-.field input,.field select,.field textarea{width:100%;font:inherit;font-size:.98rem;color:var(--fg);background:var(--ink);border:1px solid var(--line-2);border-radius:var(--r);padding:.75em .85em}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:.98rem;color:var(--fg);background:var(--ink);border:1px solid var(--field-line);border-radius:var(--r);padding:.75em .85em}
 .field textarea{min-height:120px;resize:vertical}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);outline:none}
 .field .err{color:var(--err);font-size:.8rem;min-height:1em}
@@ -178,7 +179,7 @@ section{padding-block:clamp(64px,9vw,112px)}
 .qr.empty{background:var(--panel-2);border:1px dashed var(--line-2);color:var(--muted);font:400 .78rem var(--mono);text-align:center;padding:14px}
 .qr img,.qr canvas{width:160px!important;height:160px!important}
 .code{display:flex;gap:8px;margin-top:8px}
-.code input{flex:1;min-width:0;font:400 .8rem var(--mono);background:var(--ink);color:var(--fg);border:1px solid var(--line-2);border-radius:var(--r);padding:.7em}
+.code input{flex:1;min-width:0;font:400 .8rem var(--mono);background:var(--ink);color:var(--fg);border:1px solid var(--field-line);border-radius:var(--r);padding:.7em}
 .note{font-size:.84rem;color:var(--muted);line-height:1.55}
 .note.warn{color:var(--warn)}
 .ph{font-family:var(--mono);color:var(--warn)}
@@ -211,7 +212,7 @@ details ul{padding-left:1.1em;display:grid;gap:4px}
 footer{border-top:1px solid var(--line);background:var(--panel);padding-block:56px 40px}
 footer .grid{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(2,minmax(0,1fr));gap:36px}
 footer img{height:54px;width:auto}
-footer h4{margin:0 0 10px;font:600 .74rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+footer h2{margin:0 0 10px;font:600 .74rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 footer p,footer address{font-style:normal;color:var(--muted);font-size:.9rem}
 footer .legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:.78rem;color:var(--muted);display:grid;gap:6px}
 @media (max-width:760px){footer .grid{grid-template-columns:1fr}}
@@ -224,8 +225,9 @@ footer .legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .top nav a.link-area{color:var(--gold);opacity:1}
 
 .view-app{padding-block:clamp(36px,6vw,64px) clamp(56px,8vw,96px);min-height:70vh}
+.view-app h2{font-size:1.35rem}
 .app-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px}
-.app-head h2{font-size:clamp(1.8rem,3.4vw,2.4rem)}
+.app-head h1{font-size:clamp(1.8rem,3.4vw,2.4rem)}
 .app-head .who{color:var(--muted);font-size:.9rem;margin-top:6px}
 .app-head .btns{display:flex;flex-wrap:wrap;gap:10px}
 .btn.sm{padding:.65em 1em;font-size:.85rem}
@@ -234,7 +236,7 @@ footer .legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .linkbtn{background:none;border:0;padding:0;color:var(--gold);font:inherit;font-size:.88rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
 .auth-card{max-width:460px;border:1px solid var(--line-2);border-radius:12px;background:var(--panel);padding:clamp(22px,4vw,34px);display:grid;gap:18px}
-.auth-card h3{font-size:1.5rem}
+.auth-card h2{font-size:1.5rem}
 .auth-card form{display:grid;gap:14px}
 .auth-inline{border:1px solid var(--line);border-radius:10px;background:var(--ink);padding:20px;display:grid;gap:16px}
 .logged-as{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;background:var(--ink);font-size:.92rem}
@@ -259,7 +261,7 @@ footer .legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .bk .val{font:500 .95rem var(--mono);color:var(--fg)}
 .bk .acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:14px;border-top:1px solid var(--line)}
 .bk .extra{grid-column:1/-1}
-.bk.past{opacity:.72}
+.bk.past{background:none}
 @media (max-width:620px){.bk{grid-template-columns:auto minmax(0,1fr)}.bk .right{grid-column:1/-1;justify-items:start;text-align:left;grid-auto-flow:column;justify-content:start;align-items:center;gap:14px}}
 .pill{display:inline-flex;align-items:center;gap:6px;font:500 .74rem var(--mono);padding:.35em .7em;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
@@ -281,7 +283,7 @@ footer .legal{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button{background:var(--panel);border:1px solid var(--line-2);color:var(--muted);border-radius:99px;padding:.45em .9em;font:500 .82rem var(--body);cursor:pointer}
 .chips button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
-.toolbar input[type=search]{background:var(--ink);border:1px solid var(--line-2);color:var(--fg);border-radius:var(--r);padding:.6em .8em;font:inherit;font-size:.9rem;min-width:0;width:min(260px,100%)}
+.toolbar input[type=search]{background:var(--ink);border:1px solid var(--field-line);color:var(--fg);border-radius:var(--r);padding:.6em .8em;font:inherit;font-size:.9rem;min-width:0;width:min(260px,100%)}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
 table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .tbl th{text-align:left;font:600 .72rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
@@ -302,7 +304,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .det-grid .full{grid-column:1/-1}
 @media (max-width:760px){.det-grid{grid-template-columns:1fr}}
 .row-form{display:flex;gap:8px;flex-wrap:wrap}
-.row-form input,.row-form select,.row-form textarea{flex:1;min-width:140px;background:var(--ink);border:1px solid var(--line-2);color:var(--fg);border-radius:var(--r);padding:.6em .75em;font:inherit;font-size:.9rem}
+.row-form input,.row-form select,.row-form textarea{flex:1;min-width:140px;background:var(--ink);border:1px solid var(--field-line);color:var(--fg);border-radius:var(--r);padding:.6em .75em;font:inherit;font-size:.9rem}
 
 .week{display:grid;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .week .day{display:grid;grid-template-columns:7.5em minmax(0,1fr);gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:center}
@@ -312,7 +314,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .ranges{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .range{display:inline-flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:var(--r);padding:4px 6px 4px 8px}
 .range input{background:var(--ink);border:1px solid var(--line);color:var(--fg);border-radius:4px;padding:.3em .4em;font:400 .88rem var(--mono);width:6.6em}
-.range button,.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.05rem;padding:0 4px;line-height:1}
+.range button,.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:1.05rem;padding:0 4px;line-height:1;min-width:24px;min-height:24px;display:inline-flex;align-items:center;justify-content:center}
 .range button:hover,.x:hover{color:var(--err)}
 .addr{background:none;border:1px dashed var(--line-2);color:var(--gold);border-radius:var(--r);padding:.45em .8em;font:500 .82rem var(--body);cursor:pointer}
 @media (max-width:560px){.week .day{grid-template-columns:1fr;gap:8px}}
@@ -323,16 +325,16 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-top:36px}
 @media (max-width:860px){.two{grid-template-columns:1fr}}
 .panel{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:20px;display:grid;gap:14px;align-content:start;min-width:0}
-.panel h4{margin:0;font:600 1rem var(--body)}
+.panel h2{margin:0;font:600 1rem var(--body)}
 .plist{list-style:none;margin:0;padding:0;display:grid;gap:0}
 .plist li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem;align-items:center}
 .plist li:last-child{border-bottom:0}
 .plist .mono{font-family:var(--mono)}
 .form-sec{display:grid;gap:14px;padding-block:6px 22px;border-bottom:1px solid var(--line);margin-bottom:22px}
-.form-sec h4{margin:0;font:600 .74rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.form-sec h2{margin:0;font:600 .74rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .fgrid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 18px}
 @media (max-width:760px){.fgrid3{grid-template-columns:1fr}}
-.mods-tbl input,.mods-tbl select{width:100%;background:var(--ink);border:1px solid var(--line-2);color:var(--fg);border-radius:4px;padding:.5em .6em;font:inherit;font-size:.88rem}
+.mods-tbl input,.mods-tbl select{width:100%;background:var(--ink);border:1px solid var(--field-line);color:var(--fg);border-radius:4px;padding:.5em .6em;font:inherit;font-size:.88rem}
 .mods-tbl td{vertical-align:middle}
 
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--ink);padding:.8em 1.2em;border-radius:var(--r);font-weight:600;font-size:.9rem;z-index:50;max-width:calc(100% - 32px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
@@ -390,12 +392,13 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .ccard{background:var(--panel);padding:22px;display:grid;gap:6px;align-content:start;min-width:0}
 .ccard .lbl{font:600 .72rem var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .ccard b{font-weight:600;overflow-wrap:anywhere}
-.ccard a,.ccard .linkbtn{font-size:.88rem;justify-self:start}
+.ccard a,.ccard .linkbtn{font-size:.88rem;justify-self:start;min-height:24px;display:inline-flex;align-items:center}
 .ccard .sel{user-select:all}
 @media (max-width:860px){.contact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:520px){.contact-grid{grid-template-columns:1fr}}
 .prose{max-width:760px;display:grid;gap:12px}
-.prose h3{font-size:1.25rem;margin-top:16px}
+.prose h1{font-size:clamp(2rem,4vw,2.9rem)}
+.prose h2{font-size:1.25rem;margin-top:16px}
 .prose p,.prose li{color:var(--muted);line-height:1.65}
 .prose ul{padding-left:1.2em;margin:0;display:grid;gap:6px}
 .prose b{color:var(--fg)}
@@ -422,12 +425,12 @@ footer{padding-bottom:88px}
     </nav>
   </div>
 </header>
-<div class="demo-bar" id="demoBar" hidden>
+<aside class="demo-bar" id="demoBar" aria-label="Aviso de demonstração" hidden>
   <div class="wrap">
     <span><b>Modo demonstração.</b> Dados de exemplo, gravados só neste navegador.</span>
     <span>Cliente: <code>cliente@demo.com</code> · Advogado: <code>admin@demo.com</code> · senha <code>demo123</code></span>
   </div>
-</div>
+</aside>
 
 <!-- ======================= SITE PÚBLICO ======================= -->
 <div id="siteView">
@@ -451,7 +454,7 @@ footer{padding-bottom:88px}
       </div>
       <aside class="next" aria-labelledby="nextTitle">
         <p class="eyebrow">Agenda</p>
-        <h3 id="nextTitle">Próximos horários livres</h3>
+        <h2 id="nextTitle">Próximos horários livres</h2>
         <p class="muted" style="font-size:.88rem">Escolha um horário para começar o agendamento.</p>
         <ul id="nextList"><li class="loading-note"><span class="spin"></span> Carregando agenda</li></ul>
         <p class="foot">Outros dias e modalidades na <a href="#agenda">agenda completa</a>.</p>
@@ -555,7 +558,7 @@ footer{padding-bottom:88px}
               <p class="note" style="margin-top:8px">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
             </div>
           </div>
-          <p class="msg" id="msg1"></p>
+          <p class="msg" role="alert" id="msg1"></p>
           <div class="actions"><span></span><button class="btn" id="to2">Escolher data e horário</button></div>
         </div>
 
@@ -574,7 +577,7 @@ footer{padding-bottom:88px}
               <div class="slot-grid" id="slotGrid"></div>
             </div>
           </div>
-          <p class="msg" id="msg2"></p>
+          <p class="msg" role="alert" id="msg2"></p>
           <div class="actions"><button class="btn ghost" data-back="1">Voltar</button><button class="btn" id="to3">Continuar</button></div>
         </div>
 
@@ -587,7 +590,7 @@ footer{padding-bottom:88px}
             <div class="field full"><label for="resumo">Resumo do caso</label><textarea id="resumo" placeholder="Conte em poucas linhas o que aconteceu e o que você precisa. Se já houver processo, informe o número. Não é preciso descrever doenças ou laudos aqui: isso fica para a consulta."></textarea></div>
             <label class="check full"><input type="checkbox" id="lgpd"><span>Li a <a href="#privacidade">Política de Privacidade</a> e concordo com o uso destes dados para o agendamento e a análise preliminar do caso, sob sigilo profissional.</span></label>
           </div>
-          <p class="msg" id="msg3"></p>
+          <p class="msg" role="alert" id="msg3"></p>
           <div class="actions"><button class="btn ghost" data-back="2">Voltar</button><button class="btn" id="to4">Reservar horário</button></div>
         </div>
 
@@ -598,7 +601,7 @@ footer{padding-bottom:88px}
             <dl class="summary" id="sum4"></dl>
             <div id="payBox"></div>
           </div>
-          <p class="msg" id="msg4"></p>
+          <p class="msg" role="alert" id="msg4"></p>
           <div class="actions"><button class="btn ghost" id="payLater">Concluir depois</button><button class="btn" id="to5">Concluir</button></div>
         </div>
 
@@ -648,7 +651,7 @@ footer{padding-bottom:88px}
         <div class="field"><label for="waNome">Seu primeiro nome (opcional)</label><input id="waNome" maxlength="40" autocomplete="given-name"></div>
         <div class="field"><label for="waPreview">Mensagem</label><textarea id="waPreview" rows="4" readonly></textarea></div>
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span id="waGo"></span><button type="button" class="btn ghost" id="waCopy">Copiar mensagem</button></div>
-        <p class="msg" id="waMsg" style="margin:0"></p>
+        <p class="msg" role="alert" id="waMsg" style="margin:0"></p>
       </form>
     </div>
   </section>
@@ -724,44 +727,44 @@ footer{padding-bottom:88px}
 </div>
 
 <!-- ======================= POLÍTICA DE PRIVACIDADE ======================= -->
-<div id="privacyView" class="view-app" hidden>
+<main id="privacyView" class="view-app" hidden>
   <div class="wrap prose">
     <p class="eyebrow"><b>§</b>LGPD</p>
-    <h2>Política de Privacidade</h2>
+    <h1>Política de Privacidade</h1>
     <p class="muted">Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais).<span id="privUpd" hidden> Última atualização: <span id="privDate"></span>.</span></p>
-    <h3>Quem trata os dados</h3>
+    <h2>Quem trata os dados</h2>
     <p>Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135, Rua Evandro do Vale Moreira, 69, sala 102, Cantagalo/RJ. Contato para assuntos de dados pessoais: wcbarrada.adv@gmail.com.</p>
-    <h3>Quais dados são coletados</h3>
+    <h2>Quais dados são coletados</h2>
     <ul>
       <li><b>Cadastro na Área do cliente:</b> nome, CPF, telefone, e-mail e senha (guardada de forma cifrada pelo provedor de autenticação).</li>
       <li><b>Agendamento:</b> modalidade, data e horário, assunto, parte contrária informada, resumo do caso e comprovante enviado.</li>
       <li><b>Seção de WhatsApp:</b> nada é gravado. A mensagem é montada no seu navegador e enviada por você, pelo aplicativo.</li>
     </ul>
-    <h3>Para que são usados</h3>
+    <h2>Para que são usados</h2>
     <p>Para identificar você, organizar a agenda, confirmar a consulta e preparar a análise preliminar do caso. Os dados não são vendidos, cedidos para publicidade ou usados para envio de mensagens não solicitadas.</p>
-    <h3>Base legal</h3>
+    <h2>Base legal</h2>
     <p>Execução de procedimentos preliminares relacionados a contrato, a pedido do titular (art. 7º, V), e exercício regular de direitos em processo judicial ou administrativo (art. 7º, VI, e art. 11, II, "d"). Dados de saúde só são tratados quando indispensáveis à causa e, preferencialmente, apresentados na própria consulta.</p>
-    <h3>Com quem são compartilhados</h3>
+    <h2>Com quem são compartilhados</h2>
     <p>Com o provedor de hospedagem do banco de dados e de autenticação usado pelo site, apenas para armazenamento, e com órgãos públicos e o Poder Judiciário quando necessário à atuação contratada.</p>
-    <h3>Por quanto tempo</h3>
+    <h2>Por quanto tempo</h2>
     <p>Pelo tempo necessário ao atendimento e, depois, pelo prazo exigido para a defesa de direitos e o cumprimento de obrigações legais e éticas. <span class="ph">[VERIFICAR: definir prazo de retenção de comprovantes e cadastros sem contratação]</span></p>
-    <h3>Seus direitos</h3>
+    <h2>Seus direitos</h2>
     <p>Confirmar o tratamento, acessar, corrigir, pedir anonimização ou eliminação de dados desnecessários, pedir portabilidade, obter informação sobre compartilhamento e revogar o consentimento, nos termos do art. 18 da LGPD. Os pedidos podem ser feitos pelo e-mail acima. Você também pode corrigir seus dados diretamente na Área do cliente.</p>
-    <h3>Cookies</h3>
+    <h2>Cookies</h2>
     <p>O site não usa cookies de publicidade nem ferramentas de rastreamento. O navegador guarda apenas a sessão de login da Área do cliente.</p>
     <p style="margin-top:28px"><a class="btn ghost" href="#inicio">Voltar ao site</a></p>
   </div>
-</div>
+</main>
 
 <!-- ======================= ÁREA DO CLIENTE ======================= -->
-<div id="clientView" class="view-app" hidden>
+<main id="clientView" class="view-app" hidden>
   <div class="wrap" id="clientRoot"></div>
-</div>
+</main>
 
 <!-- ======================= ÁREA DO ADVOGADO ======================= -->
-<div id="adminView" class="view-app" hidden>
+<main id="adminView" class="view-app" hidden>
   <div class="wrap" id="adminRoot"></div>
-</div>
+</main>
 
 <footer>
   <div class="wrap">
@@ -772,12 +775,12 @@ footer{padding-bottom:88px}
         <p>Campos dos Goytacazes · Cordeiro · Cantagalo · online</p>
       </div>
       <div>
-        <h4>Escritórios</h4>
+        <h2>Escritórios</h2>
         <address>Rua Evandro do Vale Moreira, 69, sala 102<br>Cantagalo · RJ</address>
         <address style="margin-top:12px">Av. Bicok, 41<br>Campos dos Goytacazes · RJ</address>
       </div>
       <div>
-        <h4>Contato</h4>
+        <h2>Contato</h2>
         <p>E-mail: <span style="user-select:all">wcbarrada.adv@gmail.com</span></p>
         <p style="margin-top:6px">WhatsApp: <span id="footTel"></span></p>
         <p style="margin-top:6px">Instagram: <a href="https://www.instagram.com/wbarrada.adv/" target="_blank" rel="noopener">@wbarrada.adv</a></p>
@@ -791,7 +794,7 @@ footer{padding-bottom:88px}
     </div>
   </div>
 </footer>
-<a class="wa-float" id="waFloat" href="#whatsapp" aria-label="Falar pelo WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a>
+<aside aria-label="Atalho para o WhatsApp"><a class="wa-float" id="waFloat" href="#whatsapp" aria-label="Falar pelo WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a></aside>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -892,7 +895,7 @@ function payBlockHTML(cfg, bk, idp){
     ${safeUrl(cfg.link_cartao) ? `<a class="btn" href="${esc(safeUrl(cfg.link_cartao))}" target="_blank" rel="noopener">Pagar com cartão</a>` : `<p class="note"><span class="ph">[INSERIR LINK DE PAGAMENTO]</span> O link é cadastrado na Área do advogado.</p>`}
   </div>
   <div class="field" style="margin-top:18px"><label for="rc-${idp}">Enviar comprovante (imagem ou PDF)</label><input type="file" id="rc-${idp}" data-receipt="${esc(bk.id)}" accept="image/jpeg,image/png,application/pdf"></div>
-  <p class="note" data-rcmsg="${esc(bk.id)}">${bk.comprovante_path?"Comprovante já enviado. Você pode enviar outro, se precisar.":""}</p>`;
+  <p class="note" role="status" data-rcmsg="${esc(bk.id)}">${bk.comprovante_path?"Comprovante já enviado. Você pode enviar outro, se precisar.":""}</p>`;
 }
 function hydratePay(root){
   $$("[data-qr]", root).forEach(el=>{ const code=el.dataset.code; if(code && window.QRCode && !el.dataset.done){ el.dataset.done="1"; el.innerHTML=""; try{ new QRCode(el,{text:code,width:160,height:160,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }catch(e){ el.className="qr empty"; el.textContent="Use o copia e cola."; } } });
@@ -1172,7 +1175,7 @@ function renderNext(){
 /* ---------------- agendamento (wizard) ---------------- */
 const W = { step:1, mod:null, area:"", date:null, time:null, month:null, booking:null, authTab:"login" };
 
-function goStep(n){
+function goStep(n,noFocus){
   W.step=n;
   $$(".pane[data-step]").forEach(p=>p.hidden = Number(p.dataset.step)!==n);
   $$("#steps li").forEach((li,i)=>{ li.className = i+1===n?"on":(i+1<n?"done":""); });
@@ -1180,6 +1183,7 @@ function goStep(n){
   if(n===3) renderAuthSlot();
   if(n===4) renderPayStep();
   if(n===5) renderDone();
+  if(!noFocus){ const p=$(`.pane[data-step="${n}"]`), t=p.querySelector("h3")||p; t.tabIndex=-1; t.focus(); }
 }
 $$("[data-back]").forEach(b=>b.onclick=()=>goStep(Number(b.dataset.back)));
 
@@ -1260,7 +1264,7 @@ function authFormHTML(prefix, tab, opts={}){
     <div class="field"><label for="${prefix}-email">E-mail</label><input id="${prefix}-email" type="email" autocomplete="email"></div>
     ${reset?"":`<div class="field"><label for="${prefix}-senha">Senha${signup?" (mínimo 6 caracteres)":""}</label><input id="${prefix}-senha" type="password" autocomplete="${signup?"new-password":"current-password"}"></div>`}
     ${opts.inline?"":`<button class="btn" type="submit">${signup?"Criar conta":reset?"Enviar link de redefinição":"Entrar"}</button>`}
-    <p class="msg" data-authmsg="${prefix}" style="margin:0"></p>
+    <p class="msg" role="alert" data-authmsg="${prefix}" style="margin:0"></p>
     ${signup||opts.noReset?"":reset?`<button type="button" class="linkbtn" data-authtab="login" data-pfx="${prefix}">Voltar para o login</button>`:`<button type="button" class="linkbtn" data-authtab="reset" data-pfx="${prefix}">Esqueci minha senha</button>`}
   </form>`;
 }
@@ -1378,11 +1382,11 @@ const Client = {
     const root=$("#clientRoot"); App.user=await API.getUser();
     if(App.passwordRecovery && API.mode==="supabase"){ return this.renderRecovery(root); }
     if(!App.user){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h2>Entre para acompanhar suas consultas</h2><p class="who">Veja o status, envie comprovantes, acesse o link da videochamada e cancele quando precisar.</p></div></div>
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Entre para acompanhar suas consultas</h1><p class="who">Veja o status, envie comprovantes, acesse o link da videochamada e cancele quando precisar.</p></div></div>
       <div class="auth-card">${authFormHTML("cl", this.authTab)}</div>`;
       return;
     }
-    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h2>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h2><p class="who">${esc(App.user.email)}</p></div>
+    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h1><p class="who">${esc(App.user.email)}</p></div>
       <div class="btns"><a class="btn sm" href="#agenda">Nova consulta</a>${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
       <div class="subtabs" role="tablist"><button role="tab" data-ctab="consultas" aria-selected="${this.tab==="consultas"}">Minhas consultas</button><button role="tab" data-ctab="dados" aria-selected="${this.tab==="dados"}">Meus dados</button></div>
       <div id="clBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
@@ -1413,9 +1417,9 @@ const Client = {
       </article>`;
     };
     $("#clBody").innerHTML = `
-      <h3 style="margin-bottom:14px">Próximas consultas</h3>
+      <h2 style="margin-bottom:14px">Próximas consultas</h2>
       ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span><a class="btn sm" href="#agenda">Agendar consulta</a></div>`}
-      ${past.length?`<h3 style="margin:36px 0 14px">Histórico</h3><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
+      ${past.length?`<h2 style="margin:36px 0 14px">Histórico</h2><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
     hydratePay($("#clBody"));
     $$("[data-act]", $("#clBody")).forEach(b=>b.onclick=async()=>{
       const id=b.dataset.id, act=b.dataset.act;
@@ -1434,14 +1438,14 @@ const Client = {
         <div class="field"><label for="pf-tel">WhatsApp</label><input id="pf-tel" data-mask="tel" maxlength="15" value="${esc(u.telefone)}"></div>
       </div>
       <div class="field"><label for="pf-email">E-mail</label><input id="pf-email" value="${esc(u.email)}" disabled></div>
-      <button class="btn" type="submit" style="width:max-content">Salvar dados</button><p class="msg" id="pfMsg" style="margin:0"></p></form>`;
+      <button class="btn" type="submit" style="width:max-content">Salvar dados</button><p class="msg" role="alert" id="pfMsg" style="margin:0"></p></form>`;
     $("#pfForm").onsubmit=async e=>{ e.preventDefault(); const nome=$("#pf-nome").value.trim(), cpf=$("#pf-cpf").value, tel=$("#pf-tel").value;
       if(nome.split(/\s+/).length<2) return $("#pfMsg").textContent="Informe nome e sobrenome.";
       if(cpf && !cpfOK(cpf)) return $("#pfMsg").textContent="CPF inválido.";
       try{ App.user=await busy(e.submitter,()=>API.updateProfile({nome,cpf,telefone:tel})); toast("Dados salvos."); $("#pfMsg").textContent=""; }catch(err){ $("#pfMsg").textContent=err.message; } };
   },
   renderRecovery(root){
-    root.innerHTML=`<div class="auth-card"><h3>Defina uma nova senha</h3><form id="rcForm" novalidate><div class="field"><label for="rc-p">Nova senha (mínimo 6 caracteres)</label><input id="rc-p" type="password" autocomplete="new-password"></div><button class="btn" type="submit">Salvar senha</button><p class="msg" id="rcMsg" style="margin:0"></p></form></div>`;
+    root.innerHTML=`<div class="auth-card"><h2>Defina uma nova senha</h2><form id="rcForm" novalidate><div class="field"><label for="rc-p">Nova senha (mínimo 6 caracteres)</label><input id="rc-p" type="password" autocomplete="new-password"></div><button class="btn" type="submit">Salvar senha</button><p class="msg" role="alert" id="rcMsg" style="margin:0"></p></form></div>`;
     $("#rcForm").onsubmit=async e=>{ e.preventDefault(); const p=$("#rc-p").value; if(p.length<6) return $("#rcMsg").textContent="A senha precisa ter pelo menos 6 caracteres.";
       try{ await busy(e.submitter,()=>API.setNewPassword(p)); App.passwordRecovery=false; toast("Senha atualizada."); this.render(); }catch(err){ $("#rcMsg").textContent=err.message; } };
   }
@@ -1455,23 +1459,23 @@ const Admin = {
   async render(){
     const root=$("#adminRoot"); App.user=await API.getUser();
     if(!App.user){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Acesso restrito</h2><p class="who">Entre com a conta de administrador do escritório.</p></div></div>
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Acesso restrito</h1><p class="who">Entre com a conta de administrador do escritório.</p></div></div>
       <div class="auth-card">${authFormHTML("ad","login",{noTabs:true,noReset:true})}</div>`;
       return;
     }
     if(!App.user.isAdmin){
-      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Acesso restrito</h2><p class="who">A conta ${esc(App.user.email)} não tem permissão de administrador.</p></div><div class="btns"><a class="btn ghost sm" href="#cliente">Ir para a Área do cliente</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>`;
+      root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Acesso restrito</h1><p class="who">A conta ${esc(App.user.email)} não tem permissão de administrador.</p></div><div class="btns"><a class="btn ghost sm" href="#cliente">Ir para a Área do cliente</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>`;
       $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
       return;
     }
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
-    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h2>Painel do escritório</h2><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
+    root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
       <div class="btns"><a class="btn ghost sm" href="#agenda">Ver agenda pública</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
       <div class="subtabs" role="tablist">${T.map(([k,l])=>`<button role="tab" data-atab="${k}" aria-selected="${this.tab===k}">${l}</button>`).join("")}</div>
       <div id="adBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
     $$("[data-atab]").forEach(b=>b.onclick=()=>{ this.tab=b.dataset.atab; this.week=null; this.render(); });
-    try{ await this["tab_"+this.tab](); }catch(err){ $("#adBody").innerHTML=`<p class="msg">${esc(err.message)}</p>`; }
+    try{ await this["tab_"+this.tab](); }catch(err){ $("#adBody").innerHTML=`<p class="msg" role="alert">${esc(err.message)}</p>`; }
   },
 
   /* ----- agendamentos ----- */
@@ -1549,13 +1553,13 @@ const Admin = {
       <div class="week">${[1,2,3,4,5,6,0].map(d=>`<div class="day ${this.week[d].length?"":"off"}"><b>${WDL[d]}</b><div class="ranges">
         ${this.week[d].map((r,i)=>`<span class="range"><input type="time" value="${r.inicio}" data-wd="${d}" data-i="${i}" data-k="inicio" aria-label="Início"> até <input type="time" value="${r.fim}" data-wd="${d}" data-i="${i}" data-k="fim" aria-label="Fim"><button data-rm="${d}:${i}" aria-label="Remover faixa">×</button></span>`).join("")}
         <button class="addr" data-add="${d}">+ faixa</button>${this.week[d].length?"":`<span class="note">sem atendimento</span>`}</div></div>`).join("")}</div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center"><button class="btn" id="saveWeek">Salvar grade semanal</button><button class="btn ghost" id="undoWeek">Descartar alterações</button><span class="msg" id="wkMsg" style="margin:0"></span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;align-items:center"><button class="btn" id="saveWeek">Salvar grade semanal</button><button class="btn ghost" id="undoWeek">Descartar alterações</button><span class="msg" role="alert" id="wkMsg" style="margin:0"></span></div>
 
       <div class="two">
-        <div class="panel"><h4>Dias bloqueados</h4><p class="note">Feriados, férias, audiências. Bloqueia o dia inteiro.</p>
+        <div class="panel"><h2>Dias bloqueados</h2><p class="note">Feriados, férias, audiências. Bloqueia o dia inteiro.</p>
           <div class="row-form"><input type="date" id="bqD" min="${t}" aria-label="Data"><select id="bqM" aria-label="Modalidade">${modOpts("",true)}</select><input id="bqT" placeholder="Motivo (opcional)" aria-label="Motivo"><button class="btn sm" id="bqAdd">Bloquear</button></div>
           <ul class="plist">${App.pub.bloqueios.filter(b=>b.data>=t).sort((a,b)=>a.data.localeCompare(b.data)).map(b=>`<li><span><span class="mono">${brDate(b.data)}</span> · ${b.modalidade_id?esc((mods.find(m=>m.id===b.modalidade_id)||{}).nome):"todas"}${b.motivo?` · <span class="muted">${esc(b.motivo)}</span>`:""}</span><button class="x" data-dbq="${b.id}" aria-label="Remover bloqueio">×</button></li>`).join("")||`<li class="muted">Nenhum bloqueio futuro.</li>`}</ul></div>
-        <div class="panel"><h4>Horários avulsos</h4><p class="note">Abre uma faixa em data específica, fora da grade semanal.</p>
+        <div class="panel"><h2>Horários avulsos</h2><p class="note">Abre uma faixa em data específica, fora da grade semanal.</p>
           <div class="row-form"><input type="date" id="exD" min="${t}" aria-label="Data"><select id="exM" aria-label="Modalidade">${modOpts(this.modSel,false)}</select><input type="time" id="exA" value="09:00" aria-label="Início"><input type="time" id="exB" value="12:00" aria-label="Fim"><button class="btn sm" id="exAdd">Abrir</button></div>
           <ul class="plist">${App.pub.extras.filter(x=>x.data>=t).sort((a,b)=>a.data.localeCompare(b.data)).map(x=>`<li><span><span class="mono">${brDate(x.data)} · ${String(x.inicio).slice(0,5)}–${String(x.fim).slice(0,5)}</span> · ${esc((mods.find(m=>m.id===x.modalidade_id)||{}).nome)}</span><button class="x" data-dex="${x.id}" aria-label="Remover horário">×</button></li>`).join("")||`<li class="muted">Nenhum horário avulso futuro.</li>`}</ul></div>
       </div>`;
@@ -1593,10 +1597,10 @@ const Admin = {
       <td><button class="btn ghost sm" data-msave="${esc(m.id)}">Salvar</button></td></tr>`;
     $("#adBody").innerHTML=`
       <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor ao escolher a modalidade no agendamento, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
-      <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th></th></tr></thead>
+      <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th>Ação</th></tr></thead>
       <tbody>${mods.map(row).join("")}</tbody></table></div>
-      <div class="panel" style="margin-top:28px;max-width:760px"><h4>Nova modalidade</h4>
-        <div class="row-form"><input id="nmN" placeholder="Nome, ex.: Presencial · Cordeiro"><select id="nmT"><option value="presencial">Presencial</option><option value="online">Online</option></select><input id="nmD" placeholder="Endereço ou descrição"><input id="nmV" type="number" min="0" step="0.01" placeholder="Valor"><button class="btn sm" id="nmAdd">Adicionar</button></div>
+      <div class="panel" style="margin-top:28px;max-width:760px"><h2>Nova modalidade</h2>
+        <div class="row-form"><input id="nmN" aria-label="Nome da modalidade" placeholder="Nome, ex.: Presencial · Cordeiro"><select id="nmT" aria-label="Tipo de atendimento"><option value="presencial">Presencial</option><option value="online">Online</option></select><input id="nmD" aria-label="Endereço ou descrição" placeholder="Endereço ou descrição"><input id="nmV" aria-label="Valor" type="number" min="0" step="0.01" placeholder="Valor"><button class="btn sm" id="nmAdd">Adicionar</button></div>
         <p class="note">Depois de criar, cadastre os horários dela em Agenda e horários.</p></div>`;
     $$("[data-msave]").forEach(b=>b.onclick=async()=>{
       const tr=b.closest("tr"), g=k=>$(`[data-k="${k}"]`,tr);
@@ -1615,11 +1619,11 @@ const Admin = {
     const n=(id,l,v,extra="")=>`<div class="field"><label for="cf-${id}">${l}</label><input id="cf-${id}" type="number" min="0" value="${esc(v)}" ${extra}></div>`;
     const s=(id,l,v,ph="")=>`<div class="field"><label for="cf-${id}">${l}</label><input id="cf-${id}" value="${esc(v||"")}" placeholder="${esc(ph)}"></div>`;
     $("#adBody").innerHTML=`<form id="cfForm" novalidate style="max-width:860px">
-      <div class="form-sec"><h4>Consulta</h4><div class="fgrid3">${n("duracao_min","Duração (minutos)",c.duracao_min)}${n("intervalo_min","Intervalo entre consultas (min)",c.intervalo_min)}</div></div>
-      <div class="form-sec"><h4>Regras da agenda</h4><div class="fgrid3">${n("antecedencia_horas","Antecedência mínima (horas)",c.antecedencia_horas)}${n("horizonte_dias","Agenda aberta por (dias)",c.horizonte_dias)}${n("reserva_expira_horas","Reserva sem pagamento expira em (horas)",c.reserva_expira_horas)}${n("cancelamento_horas","Cliente cancela até (horas antes)",c.cancelamento_horas)}</div></div>
-      <div class="form-sec"><h4>Pagamento</h4><div class="fgrid3">${s("pix_chave","Chave PIX",c.pix_chave,"CPF, e-mail, telefone ou aleatória")}${s("pix_nome","Nome do recebedor (até 25)",c.pix_nome)}${s("pix_cidade","Cidade do recebedor (até 15)",c.pix_cidade)}</div>${s("link_cartao","Link de pagamento com cartão",c.link_cartao,"https://…")}</div>
-      <div class="form-sec"><h4>Contato e política</h4>${s("whatsapp","WhatsApp do escritório (só números, com 55 e DDD)",c.whatsapp,"5522999999999")}<div class="field"><label for="cf-politica">Política de cancelamento (exibida ao cliente)</label><textarea id="cf-politica">${esc(c.politica||"")}</textarea></div></div>
-      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn" type="submit">Salvar configurações</button>${API.mode==="demo"?`<button class="btn ghost" type="button" id="resetDemo">Restaurar dados de exemplo</button>`:""}<span class="msg" id="cfMsg" style="margin:0"></span></div></form>`;
+      <div class="form-sec"><h2>Consulta</h2><div class="fgrid3">${n("duracao_min","Duração (minutos)",c.duracao_min)}${n("intervalo_min","Intervalo entre consultas (min)",c.intervalo_min)}</div></div>
+      <div class="form-sec"><h2>Regras da agenda</h2><div class="fgrid3">${n("antecedencia_horas","Antecedência mínima (horas)",c.antecedencia_horas)}${n("horizonte_dias","Agenda aberta por (dias)",c.horizonte_dias)}${n("reserva_expira_horas","Reserva sem pagamento expira em (horas)",c.reserva_expira_horas)}${n("cancelamento_horas","Cliente cancela até (horas antes)",c.cancelamento_horas)}</div></div>
+      <div class="form-sec"><h2>Pagamento</h2><div class="fgrid3">${s("pix_chave","Chave PIX",c.pix_chave,"CPF, e-mail, telefone ou aleatória")}${s("pix_nome","Nome do recebedor (até 25)",c.pix_nome)}${s("pix_cidade","Cidade do recebedor (até 15)",c.pix_cidade)}</div>${s("link_cartao","Link de pagamento com cartão",c.link_cartao,"https://…")}</div>
+      <div class="form-sec"><h2>Contato e política</h2>${s("whatsapp","WhatsApp do escritório (só números, com 55 e DDD)",c.whatsapp,"5522999999999")}<div class="field"><label for="cf-politica">Política de cancelamento (exibida ao cliente)</label><textarea id="cf-politica">${esc(c.politica||"")}</textarea></div></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn" type="submit">Salvar configurações</button>${API.mode==="demo"?`<button class="btn ghost" type="button" id="resetDemo">Restaurar dados de exemplo</button>`:""}<span class="msg" role="alert" id="cfMsg" style="margin:0"></span></div></form>`;
     $("#cfForm").onsubmit=async e=>{ e.preventDefault();
       const g=id=>$(`#cf-${id}`).value.trim(), num=id=>Number(g(id));
       const o={duracao_min:num("duracao_min"),intervalo_min:num("intervalo_min"),antecedencia_horas:num("antecedencia_horas"),horizonte_dias:num("horizonte_dias"),reserva_expira_horas:num("reserva_expira_horas"),cancelamento_horas:num("cancelamento_horas"),
@@ -1641,19 +1645,26 @@ function onAuthChanged(stay){
   if(App.route==="admin") Admin.render();
   if(W.step===3 && !stay) renderAuthSlot();
 }
-function route(){
+const BASE_TITLE=document.title, TITLES={cliente:"Área do cliente",admin:"Área do advogado",privacidade:"Política de Privacidade"};
+function focusView(){
+  const t=$(`${{site:"#siteView",cliente:"#clientView",admin:"#adminView",privacidade:"#privacyView"}[App.route]} h1`);
+  if(t){ t.tabIndex=-1; t.focus(); }
+}
+function route(ev){
   const h=location.hash.replace("#","");
   const r = ["cliente","admin","privacidade"].includes(h) ? h : "site";
   App.route=r;
   $("#siteView").hidden = r!=="site"; $("#clientView").hidden = r!=="cliente"; $("#adminView").hidden = r!=="admin"; $("#privacyView").hidden = r!=="privacidade";
   $("#waFloat").hidden = r!=="site";
-  if(r==="cliente") Client.render();
-  else if(r==="admin") Admin.render();
-  else if(h){ const el=document.getElementById(h); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth"})); }
+  document.title = r==="site" ? BASE_TITLE : `${TITLES[r]} · WBarrada Advogado`;
+  const done = r==="cliente" ? Client.render() : r==="admin" ? Admin.render() : null;
+  if(r==="site" && h){ const el=document.getElementById(h); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth"})); }
   else window.scrollTo(0,0);
-  if(r!=="site") window.scrollTo(0,0);
+  // Em troca de tela (hashchange), o foco vai para o título da nova tela
+  if(ev && r!=="site") Promise.resolve(done).then(focusView);
 }
 window.addEventListener("hashchange", route);
+$(".skip").onclick=e=>{ e.preventDefault(); focusView(); };
 $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded",o); };
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
 
@@ -1666,10 +1677,10 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
   try{
     await refreshPublic();
     App.user = await API.getUser();
-    renderMods(); renderNext(); goStep(1);
+    renderMods(); renderNext(); goStep(1,true);
   }catch(err){
     $("#nextList").innerHTML=`<li class="msg">Não foi possível carregar a agenda: ${esc(err.message)}</li>`;
-    $("#modOpts").innerHTML=`<p class="msg">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;
+    $("#modOpts").innerHTML=`<p class="msg" role="alert">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;
   }
   route();
 })();

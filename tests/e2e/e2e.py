@@ -27,7 +27,7 @@ async def main():
         print("proto:", await pg.text_content("#proto"))
         # client area
         await pg.goto(URL+"#cliente"); await pg.wait_for_timeout(700)
-        print("client h2:", await pg.text_content("#clientRoot h2"), "| cards:", await pg.locator(".bk").count())
+        print("client h2:", await pg.text_content("#clientRoot h1"), "| cards:", await pg.locator(".bk").count())
         print("pills:", await pg.locator(".bk .pill").all_text_contents())
         await pg.locator("[data-act=cancel]").first.click(); await pg.wait_for_timeout(200)
         await pg.locator("[data-act=cancel-yes]").first.click(); await pg.wait_for_timeout(500)

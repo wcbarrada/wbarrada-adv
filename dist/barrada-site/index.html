@@ -5,18 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Wanderson Barrada · Advogado · Previdenciário e Direito Público · Campos, Cordeiro e Cantagalo</title>
-<meta name="description" content="Advocacia previdenciária e em Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, com atendimento presencial e por videochamada. OAB/RJ nº 164.135.">
+<title>Wanderson Barrada · Advogado em Campos, Cordeiro e Cantagalo</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://wcbarrada.github.io/wbarrada-adv/">
+<meta name="description" content="Advocacia previdenciária e em Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, presencial e por videochamada. OAB/RJ nº 164.135.">
 <meta name="theme-color" content="#0e0d0b">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Wanderson Corrêa Barrada · Advogado">
 <meta property="og:description" content="Previdenciário e Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ. Agendamento online.">
-<meta property="og:image" content="logo.png">
+<meta property="og:url" content="https://wcbarrada.github.io/wbarrada-adv/">
+<meta property="og:image" content="https://wcbarrada.github.io/wbarrada-adv/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
+<meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","email":"wcbarrada.adv@gmail.com","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"},{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}]}
+{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"https://wcbarrada.github.io/wbarrada-adv/","image":"https://wcbarrada.github.io/wbarrada-adv/og-image.png","email":"wcbarrada.adv@gmail.com","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"},{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}]}
 </script>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -40,12 +48,12 @@
     </nav>
   </div>
 </header>
-<div class="demo-bar" id="demoBar" hidden>
+<aside class="demo-bar" id="demoBar" aria-label="Aviso de demonstração" hidden>
   <div class="wrap">
     <span><b>Modo demonstração.</b> Dados de exemplo, gravados só neste navegador.</span>
     <span>Cliente: <code>cliente@demo.com</code> · Advogado: <code>admin@demo.com</code> · senha <code>demo123</code></span>
   </div>
-</div>
+</aside>
 
 <!-- ======================= SITE PÚBLICO ======================= -->
 <div id="siteView">
@@ -69,7 +77,7 @@
       </div>
       <aside class="next" aria-labelledby="nextTitle">
         <p class="eyebrow">Agenda</p>
-        <h3 id="nextTitle">Próximos horários livres</h3>
+        <h2 id="nextTitle">Próximos horários livres</h2>
         <p class="muted" style="font-size:.88rem">Escolha um horário para começar o agendamento.</p>
         <ul id="nextList"><li class="loading-note"><span class="spin"></span> Carregando agenda</li></ul>
         <p class="foot">Outros dias e modalidades na <a href="#agenda">agenda completa</a>.</p>
@@ -173,7 +181,7 @@
               <p class="note" style="margin-top:8px">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
             </div>
           </div>
-          <p class="msg" id="msg1"></p>
+          <p class="msg" role="alert" id="msg1"></p>
           <div class="actions"><span></span><button class="btn" id="to2">Escolher data e horário</button></div>
         </div>
 
@@ -192,7 +200,7 @@
               <div class="slot-grid" id="slotGrid"></div>
             </div>
           </div>
-          <p class="msg" id="msg2"></p>
+          <p class="msg" role="alert" id="msg2"></p>
           <div class="actions"><button class="btn ghost" data-back="1">Voltar</button><button class="btn" id="to3">Continuar</button></div>
         </div>
 
@@ -205,7 +213,7 @@
             <div class="field full"><label for="resumo">Resumo do caso</label><textarea id="resumo" placeholder="Conte em poucas linhas o que aconteceu e o que você precisa. Se já houver processo, informe o número. Não é preciso descrever doenças ou laudos aqui: isso fica para a consulta."></textarea></div>
             <label class="check full"><input type="checkbox" id="lgpd"><span>Li a <a href="#privacidade">Política de Privacidade</a> e concordo com o uso destes dados para o agendamento e a análise preliminar do caso, sob sigilo profissional.</span></label>
           </div>
-          <p class="msg" id="msg3"></p>
+          <p class="msg" role="alert" id="msg3"></p>
           <div class="actions"><button class="btn ghost" data-back="2">Voltar</button><button class="btn" id="to4">Reservar horário</button></div>
         </div>
 
@@ -216,7 +224,7 @@
             <dl class="summary" id="sum4"></dl>
             <div id="payBox"></div>
           </div>
-          <p class="msg" id="msg4"></p>
+          <p class="msg" role="alert" id="msg4"></p>
           <div class="actions"><button class="btn ghost" id="payLater">Concluir depois</button><button class="btn" id="to5">Concluir</button></div>
         </div>
 
@@ -266,7 +274,7 @@
         <div class="field"><label for="waNome">Seu primeiro nome (opcional)</label><input id="waNome" maxlength="40" autocomplete="given-name"></div>
         <div class="field"><label for="waPreview">Mensagem</label><textarea id="waPreview" rows="4" readonly></textarea></div>
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span id="waGo"></span><button type="button" class="btn ghost" id="waCopy">Copiar mensagem</button></div>
-        <p class="msg" id="waMsg" style="margin:0"></p>
+        <p class="msg" role="alert" id="waMsg" style="margin:0"></p>
       </form>
     </div>
   </section>
@@ -342,44 +350,44 @@
 </div>
 
 <!-- ======================= POLÍTICA DE PRIVACIDADE ======================= -->
-<div id="privacyView" class="view-app" hidden>
+<main id="privacyView" class="view-app" hidden>
   <div class="wrap prose">
     <p class="eyebrow"><b>§</b>LGPD</p>
-    <h2>Política de Privacidade</h2>
+    <h1>Política de Privacidade</h1>
     <p class="muted">Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais).<span id="privUpd" hidden> Última atualização: <span id="privDate"></span>.</span></p>
-    <h3>Quem trata os dados</h3>
+    <h2>Quem trata os dados</h2>
     <p>Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135, Rua Evandro do Vale Moreira, 69, sala 102, Cantagalo/RJ. Contato para assuntos de dados pessoais: wcbarrada.adv@gmail.com.</p>
-    <h3>Quais dados são coletados</h3>
+    <h2>Quais dados são coletados</h2>
     <ul>
       <li><b>Cadastro na Área do cliente:</b> nome, CPF, telefone, e-mail e senha (guardada de forma cifrada pelo provedor de autenticação).</li>
       <li><b>Agendamento:</b> modalidade, data e horário, assunto, parte contrária informada, resumo do caso e comprovante enviado.</li>
       <li><b>Seção de WhatsApp:</b> nada é gravado. A mensagem é montada no seu navegador e enviada por você, pelo aplicativo.</li>
     </ul>
-    <h3>Para que são usados</h3>
+    <h2>Para que são usados</h2>
     <p>Para identificar você, organizar a agenda, confirmar a consulta e preparar a análise preliminar do caso. Os dados não são vendidos, cedidos para publicidade ou usados para envio de mensagens não solicitadas.</p>
-    <h3>Base legal</h3>
+    <h2>Base legal</h2>
     <p>Execução de procedimentos preliminares relacionados a contrato, a pedido do titular (art. 7º, V), e exercício regular de direitos em processo judicial ou administrativo (art. 7º, VI, e art. 11, II, "d"). Dados de saúde só são tratados quando indispensáveis à causa e, preferencialmente, apresentados na própria consulta.</p>
-    <h3>Com quem são compartilhados</h3>
+    <h2>Com quem são compartilhados</h2>
     <p>Com o provedor de hospedagem do banco de dados e de autenticação usado pelo site, apenas para armazenamento, e com órgãos públicos e o Poder Judiciário quando necessário à atuação contratada.</p>
-    <h3>Por quanto tempo</h3>
+    <h2>Por quanto tempo</h2>
     <p>Pelo tempo necessário ao atendimento e, depois, pelo prazo exigido para a defesa de direitos e o cumprimento de obrigações legais e éticas. <span class="ph">[VERIFICAR: definir prazo de retenção de comprovantes e cadastros sem contratação]</span></p>
-    <h3>Seus direitos</h3>
+    <h2>Seus direitos</h2>
     <p>Confirmar o tratamento, acessar, corrigir, pedir anonimização ou eliminação de dados desnecessários, pedir portabilidade, obter informação sobre compartilhamento e revogar o consentimento, nos termos do art. 18 da LGPD. Os pedidos podem ser feitos pelo e-mail acima. Você também pode corrigir seus dados diretamente na Área do cliente.</p>
-    <h3>Cookies</h3>
+    <h2>Cookies</h2>
     <p>O site não usa cookies de publicidade nem ferramentas de rastreamento. O navegador guarda apenas a sessão de login da Área do cliente.</p>
     <p style="margin-top:28px"><a class="btn ghost" href="#inicio">Voltar ao site</a></p>
   </div>
-</div>
+</main>
 
 <!-- ======================= ÁREA DO CLIENTE ======================= -->
-<div id="clientView" class="view-app" hidden>
+<main id="clientView" class="view-app" hidden>
   <div class="wrap" id="clientRoot"></div>
-</div>
+</main>
 
 <!-- ======================= ÁREA DO ADVOGADO ======================= -->
-<div id="adminView" class="view-app" hidden>
+<main id="adminView" class="view-app" hidden>
   <div class="wrap" id="adminRoot"></div>
-</div>
+</main>
 
 <footer>
   <div class="wrap">
@@ -390,12 +398,12 @@
         <p>Campos dos Goytacazes · Cordeiro · Cantagalo · online</p>
       </div>
       <div>
-        <h4>Escritórios</h4>
+        <h2>Escritórios</h2>
         <address>Rua Evandro do Vale Moreira, 69, sala 102<br>Cantagalo · RJ</address>
         <address style="margin-top:12px">Av. Bicok, 41<br>Campos dos Goytacazes · RJ</address>
       </div>
       <div>
-        <h4>Contato</h4>
+        <h2>Contato</h2>
         <p>E-mail: <span style="user-select:all">wcbarrada.adv@gmail.com</span></p>
         <p style="margin-top:6px">WhatsApp: <span id="footTel"></span></p>
         <p style="margin-top:6px">Instagram: <a href="https://www.instagram.com/wbarrada.adv/" target="_blank" rel="noopener">@wbarrada.adv</a></p>
@@ -409,7 +417,7 @@
     </div>
   </div>
 </footer>
-<a class="wa-float" id="waFloat" href="#whatsapp" aria-label="Falar pelo WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a>
+<aside aria-label="Atalho para o WhatsApp"><a class="wa-float" id="waFloat" href="#whatsapp" aria-label="Falar pelo WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.5-.3Z"/></svg><span>WhatsApp</span></a></aside>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>

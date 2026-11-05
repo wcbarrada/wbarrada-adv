@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wcbarrada.github.io/wbarrada-adv/sitemap.xml

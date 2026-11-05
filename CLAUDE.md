@@ -76,6 +76,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4.
 - Hospedagem atual: GitHub Pages (`https://wcbarrada.github.io/wbarrada-adv/`) via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.
+- Itens Should de acessibilidade e SEO corrigidos em 05/11/2026, exceto `telephone` e `postalCode` no JSON-LD (dados pendentes). Com `supabaseUrl` vazio, o build adiciona `noindex`. Ao adotar domínio próprio, trocar `SITE_URL` em `build.py`.
 
 ## Decisões pendentes do usuário (Fase 2)
 | # | Decisão | Recomendação |
