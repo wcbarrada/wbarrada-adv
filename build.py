@@ -42,9 +42,7 @@ DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not
 NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
 # Pacote de hospedagem usa fontes próprias; a prévia em arquivo único segue com o Google Fonts
 wr(d+'/styles.css', rd(os.path.join(SRC,'fonts.css')) + css)
-shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')
-PRELOAD = '\n'.join(f'<link rel="preload" href="fonts/{f}.woff2" as="font" type="font/woff2" crossorigin>' for f in ['bodoni-moda-normal','bodoni-moda-italic','public-sans-normal','ibm-plex-mono-400'])
-wr(d+'/app.js', app)
+shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')wr(d+'/app.js', app)
 shutil.copy(os.path.join(SRC,'config.js'), d+'/config.js')
 shutil.copy('supabase/schema.sql', d+'/supabase/schema.sql')
 shutil.copy(os.path.join(SRC,'LEIA-ME.md'), d+'/LEIA-ME.md')
@@ -77,7 +75,6 @@ idx = f'''<!doctype html>
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
-{PRELOAD}
 <link rel="stylesheet" href="styles.css">
 <style>body{{margin:0}}[hidden]{{display:none!important}}img{{max-width:100%}}</style>
 </head>
