@@ -59,7 +59,7 @@ BASE_URL=http://localhost:4173/ AXE_PATH=node_modules/axe-core/axe.min.js python
 psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supabase/tests/rls.sql
 ```
 - Lighthouse no Windows: usar `--chrome-flags="--headless=new --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling --disable-features=CalculateNativeWinOcclusion"`. Sem elas, o Speed Index variou de 3 s a 16 s na mesma versão do site.
-- Contas do modo demonstração: `cliente@demo.com` e `admin@demo.com`, ambas com senha `demo123`. Os dados ficam no `localStorage`.
+- Contas do modo demonstração: `cliente@demo.com` e `admin@demo.com`, ambas com o código `123456`. Os dados ficam no `localStorage`.
 - `mock-supabase.sql` cria os papéis `anon` e `authenticated`. Se eles já existirem, remova a primeira linha.
 
 ## Arquitetura
@@ -84,7 +84,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 | # | Tema | Decisão |
 |---|---|---|
 | D1 | Pagamento antecipado da consulta | Obrigatório só na agenda online; o WhatsApp fica como caminho sem pagamento prévio |
-| D2 | Acesso à Área do cliente | Código enviado por e-mail, sem senha (exige SMTP próprio). **Ainda não implementado:** o site usa e-mail e senha |
+| D2 | Acesso à Área do cliente | Código enviado por e-mail, sem senha (exige SMTP próprio). Implementado para clientes e advogado; não testado no Supabase real |
 | D3 | Confirmação de pagamento | Manual no MVP; gateway com webhook depois |
 | D4 | Plano do Supabase | Free nos testes; Pro (US$ 25/mês em 05/11/2026) ao abrir para clientes |
 | D5 | Domínio | `wbarrada.adv.br`, ainda não registrado; preço e documentos exigidos pelo registro.br [VERIFICAR] |
@@ -128,7 +128,6 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Logo em SVG.
 - Trilha de auditoria.
 - Captcha.
-- Senha mínima de 8 caracteres.
 
 ## Pendências de conteúdo
 Foto profissional (`config.js > foto`), número de WhatsApp (painel > Configurações), valores das modalidades, chave PIX, link de cartão, data da política e prazo de retenção de dados.

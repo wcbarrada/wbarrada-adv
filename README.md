@@ -7,7 +7,7 @@ Site institucional com agenda online, Área do cliente e Área do advogado (v3).
 python3 build.py                     # gera dist/
 npx serve -l 4173 dist/barrada-site  # abre em http://localhost:4173 (modo demonstração)
 ```
-- Contas de teste: `cliente@demo.com` e `admin@demo.com`, ambas com senha `demo123`.
+- Contas de teste: `cliente@demo.com` e `admin@demo.com`, ambas com o código `123456`.
 - O painel do advogado fica em `#admin` e a área do cliente em `#cliente`.
 
 ## Produção

@@ -59,6 +59,7 @@ const emailOK = e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 const httpsOK = u => /^https:\/\/[^\s"'<>]+$/i.test(String(u||""));
 const safeUrl = u => httpsOK(u) ? u : null;
 const MAX_ATIVAS = 2;
+const DEMO_CODE = "123456";
 const RECEIPT_MAX = 5*1024*1024, RECEIPT_TYPES = ["image/jpeg","image/png","application/pdf"];
 
 /* PIX (BR Code estático, padrão EMV do Banco Central) */
@@ -115,7 +116,7 @@ document.addEventListener("change", async e=>{
   catch(err){ if(msg) msg.textContent=err.message; }
 });
 
-const App = { pub:null, busy:[], user:null, route:"", passwordRecovery:false };
+const App = { pub:null, busy:[], user:null, route:"" };
 
 /* =====================================================================
    Camada de dados · modo demonstração
@@ -141,10 +142,10 @@ function DemoAPI(){
     [1,2,3,4].forEach(w=>r("online",w,"18:30","20:30")); r("online",6,"14:00","16:00");
     ["2026-10-12","2026-11-02","2026-11-15","2026-11-20","2026-12-25","2027-01-01"].forEach((x,i)=>d.bloqueios.push({id:i+1,data:x,modalidade_id:null,motivo:"Feriado nacional"}));
     d.users=[
-      {id:"u-admin",email:"admin@demo.com",senha:"demo123",nome:"Wanderson Corrêa Barrada",cpf:"",telefone:"",admin:true},
-      {id:"u-cli",email:"cliente@demo.com",senha:"demo123",nome:"Cliente de Exemplo",cpf:"529.982.247-25",telefone:"(22) 99999-0000"},
-      {id:"u-ana",email:"ana@exemplo.com",senha:"x",nome:"Ana Exemplo",cpf:"111.444.777-35",telefone:"(22) 98888-1111"},
-      {id:"u-car",email:"carlos@exemplo.com",senha:"x",nome:"Carlos Exemplo",cpf:"123.456.789-09",telefone:"(21) 97777-2222"}];
+      {id:"u-admin",email:"admin@demo.com",nome:"Wanderson Corrêa Barrada",cpf:"",telefone:"",admin:true},
+      {id:"u-cli",email:"cliente@demo.com",nome:"Cliente de Exemplo",cpf:"529.982.247-25",telefone:"(22) 99999-0000"},
+      {id:"u-ana",email:"ana@exemplo.com",nome:"Ana Exemplo",cpf:"111.444.777-35",telefone:"(22) 98888-1111"},
+      {id:"u-car",email:"carlos@exemplo.com",nome:"Carlos Exemplo",cpf:"123.456.789-09",telefone:"(21) 97777-2222"}];
     const t=todaySP();
     const firstSlot=(mod,from)=>{ for(let i=from;i<from+30;i++){ const ds=addDays(t,i); const rr=d.disponibilidade.find(x=>x.modalidade_id===mod&&x.dia_semana===dowOf(ds)); if(rr && !d.bloqueios.some(b=>b.data===ds)) return toISO(ds,rr.inicio); } };
     const mk=(user,mod,iso,st,ex={})=>d.agendamentos.push(Object.assign({id:uid(),protocolo:"WB-EX-"+Math.random().toString(36).slice(2,7).toUpperCase(),cliente_id:user,modalidade_id:mod,inicio:iso,fim:new Date(Date.parse(iso)+50*60e3).toISOString(),assunto:"Servidor público (progressão, gratificações, férias)",parte_contraria:"",resumo:"Registro de exemplo do modo demonstração.",valor:d.modalidades.find(m=>m.id===mod).valor,forma_pagamento:"pix",status:st,comprovante_path:null,pago_informado_em:null,link_reuniao:null,obs_admin:null,created_at:new Date().toISOString()},ex));
@@ -166,9 +167,8 @@ function DemoAPI(){
     async getPublicData(){ return clone({config:db.config, modalidades:db.modalidades.slice().sort((a,b)=>a.ordem-b.ordem), disponibilidade:db.disponibilidade, bloqueios:db.bloqueios, extras:db.extras}); },
     async getBusy(de,ate){ expireOld(); const a=Date.parse(de), b=Date.parse(ate); return db.agendamentos.filter(x=>["aguardando_pagamento","confirmado"].includes(x.status)&&Date.parse(x.inicio)<b&&Date.parse(x.fim)>a).map(x=>({inicio:x.inicio,fim:x.fim})); },
     async getUser(){ return pubUser(user()); },
-    async signIn(email,senha){ const u=db.users.find(x=>x.email.toLowerCase()===email.toLowerCase().trim()); if(!u||u.senha!==senha) throw new Error("E-mail ou senha incorretos."); me=u.id; save(); return wait(pubUser(u)); },
-    async signUp(o){ if(db.users.some(x=>x.email.toLowerCase()===o.email.toLowerCase())) throw new Error("Este e-mail já tem cadastro. Use a opção Entrar."); const u={id:uid(),email:o.email.trim(),senha:o.senha,nome:o.nome,cpf:o.cpf,telefone:o.telefone}; db.users.push(u); me=u.id; save(); return wait({user:pubUser(u),needsConfirm:false}); },
-    async resetPassword(){ throw new Error("No modo demonstração não há envio de e-mail. Use as contas de teste."); },
+    async sendCode({email,signup}){ const e=email.trim().toLowerCase(); if(!db.users.some(x=>x.email.toLowerCase()===e)){ if(!signup) throw new Error("Não encontramos cadastro com este e-mail. Use a opção Criar conta."); db.users.push(Object.assign({id:uid(),email:email.trim()},signup)); save(); } return wait(); },
+    async verifyCode(email,code){ if(code!==DEMO_CODE) throw new Error("Código incorreto ou expirado. Confira ou peça um novo."); const u=db.users.find(x=>x.email.toLowerCase()===email.trim().toLowerCase()); me=u.id; save(); return wait(pubUser(u)); },
     async signOut(){ me=null; save(); },
     async updateProfile(p){ const u=user(); Object.assign(u,{nome:p.nome,telefone:p.telefone,cpf:p.cpf??u.cpf}); save(); return wait(pubUser(u)); },
     async createBooking(o){
@@ -211,15 +211,13 @@ function DemoAPI(){
 function SupabaseAPI(){
   const sb = window.supabase.createClient(SITE.supabaseUrl, SITE.supabaseAnonKey, { auth:{ flowType:"pkce", persistSession:true, detectSessionInUrl:true } });
   const chk = ({data,error}) => { if(error) throw new Error(friendly(error.message)); return data; };
-  const friendly = m => /Invalid login credentials/i.test(m) ? "E-mail ou senha incorretos."
-    : /Email not confirmed/i.test(m) ? "Confirme seu e-mail pelo link enviado antes de entrar."
-    : /already registered/i.test(m) ? "Este e-mail já tem cadastro. Use a opção Entrar."
-    : /Password should be/i.test(m) ? "A senha precisa ter pelo menos 6 caracteres."
+  const friendly = m => /Token has expired|otp_expired|invalid.*token/i.test(m) ? "Código incorreto ou expirado. Confira ou peça um novo."
+    : /Signups not allowed/i.test(m) ? "Não encontramos cadastro com este e-mail. Use a opção Criar conta."
+    : /only request this after|rate limit/i.test(m) ? "Aguarde um minuto antes de pedir outro código."
     : m;
   let cachedUser; const uidNow = async()=> (await sb.auth.getSession()).data.session?.user?.id;
   sb.auth.onAuthStateChange((ev)=>{ cachedUser=undefined;
-    if(ev==="PASSWORD_RECOVERY"){ App.passwordRecovery=true; setTimeout(()=>{ if(location.hash!=="#cliente") location.hash="cliente"; else Client.render(); },0); }
-    else if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(()=>{ if(App.pub) onAuthChanged(true); },0); } });
+    if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(()=>{ if(App.pub) onAuthChanged(true); },0); } });
   return {
     mode:"supabase", sb,
     async getPublicData(){
@@ -241,13 +239,8 @@ function SupabaseAPI(){
       cachedUser={id:s.user.id,email:s.user.email,nome:p.nome||"",cpf:p.cpf||"",telefone:p.telefone||"",isAdmin:!!adm};
       return cachedUser;
     },
-    async signIn(email,senha){ chk(await sb.auth.signInWithPassword({email:email.trim(),password:senha})); cachedUser=undefined; return this.getUser(); },
-    async signUp(o){
-      const d=chk(await sb.auth.signUp({email:o.email.trim(),password:o.senha,options:{data:{nome:o.nome,cpf:o.cpf,telefone:o.telefone},emailRedirectTo:location.origin+location.pathname+"#cliente"}}));
-      cachedUser=undefined; return { user: d.session ? await this.getUser() : null, needsConfirm: !d.session };
-    },
-    async resetPassword(email){ chk(await sb.auth.resetPasswordForEmail(email.trim(),{redirectTo:location.origin+location.pathname+"#cliente"})); },
-    async setNewPassword(p){ chk(await sb.auth.updateUser({password:p})); },
+    async sendCode({email,signup}){ chk(await sb.auth.signInWithOtp({email:email.trim(),options:{shouldCreateUser:!!signup,data:signup||undefined,emailRedirectTo:location.origin+location.pathname+"#cliente"}})); },
+    async verifyCode(email,code){ chk(await sb.auth.verifyOtp({email:email.trim(),token:code,type:"email"})); cachedUser=undefined; return this.getUser(); },
     async signOut(){ await sb.auth.signOut(); cachedUser=null; },
     async updateProfile(p){ const id=await uidNow(); chk(await sb.from("profiles").update({nome:p.nome,telefone:p.telefone,cpf:p.cpf}).eq("id",id)); cachedUser=undefined; return this.getUser(); },
     async createBooking(o){ return chk(await sb.rpc("criar_agendamento",{p_modalidade:o.modalidade_id,p_inicio:o.inicio,p_assunto:o.assunto,p_parte:o.parte||"",p_resumo:o.resumo,p_forma:o.forma||"pix"})); },
@@ -446,11 +439,20 @@ function renderSlots(){
 $("#to3").onclick=()=>{ if(!W.date||!W.time) return $("#msg2").textContent="Escolha um dia e um horário."; goStep(3); };
 
 /* ----- formulário de acesso reutilizável ----- */
+const AuthFlow = {}; // prefixo do formulário -> dados do código já enviado
 function authFormHTML(prefix, tab, opts={}){
-  const signup = tab==="signup", reset = tab==="reset";
+  const signup = tab==="signup", sent = AuthFlow[prefix];
+  if(sent) return `
+  <form data-authform="${prefix}" data-mode="code" novalidate>
+    <p class="note">Enviamos um código para <b>${esc(sent.email)}</b>. Se não chegar em instantes, confira a caixa de spam.${API.mode==="demo"?` No modo demonstração, use <code>${DEMO_CODE}</code>.`:""}</p>
+    <div class="field"><label for="${prefix}-codigo">Código recebido por e-mail</label><input id="${prefix}-codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="10"></div>
+    ${opts.inline?"":`<button class="btn" type="submit">Entrar</button>`}
+    <p class="msg" role="alert" data-authmsg="${prefix}" style="margin:0"></p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 18px"><button type="button" class="linkbtn" data-authresend="${prefix}">Reenviar código</button><button type="button" class="linkbtn" data-authback="${prefix}">Usar outro e-mail</button></div>
+  </form>`;
   return `
   ${opts.noTabs?"":`<div class="tabs" role="tablist" style="margin:0">
-    <button role="tab" aria-selected="${tab==="login"}" data-authtab="login" data-pfx="${prefix}">Já tenho cadastro</button>
+    <button role="tab" aria-selected="${!signup}" data-authtab="login" data-pfx="${prefix}">Já tenho cadastro</button>
     <button role="tab" aria-selected="${signup}" data-authtab="signup" data-pfx="${prefix}">Criar conta</button>
   </div>`}
   <form data-authform="${prefix}" data-mode="${tab}" novalidate>
@@ -461,12 +463,12 @@ function authFormHTML(prefix, tab, opts={}){
       <div class="field"><label for="${prefix}-tel">WhatsApp</label><input id="${prefix}-tel" inputmode="tel" placeholder="(22) 90000-0000" maxlength="15" data-mask="tel"></div>
     </div>`:""}
     <div class="field"><label for="${prefix}-email">E-mail</label><input id="${prefix}-email" type="email" autocomplete="email"></div>
-    ${reset?"":`<div class="field"><label for="${prefix}-senha">Senha${signup?" (mínimo 6 caracteres)":""}</label><input id="${prefix}-senha" type="password" autocomplete="${signup?"new-password":"current-password"}"></div>`}
-    ${opts.inline?"":`<button class="btn" type="submit">${signup?"Criar conta":reset?"Enviar link de redefinição":"Entrar"}</button>`}
+    <p class="note">Enviaremos um código de acesso para este e-mail. Não é preciso criar senha.</p>
+    ${opts.inline?"":`<button class="btn" type="submit">Receber código</button>`}
     <p class="msg" role="alert" data-authmsg="${prefix}" style="margin:0"></p>
-    ${signup||opts.noReset?"":reset?`<button type="button" class="linkbtn" data-authtab="login" data-pfx="${prefix}">Voltar para o login</button>`:`<button type="button" class="linkbtn" data-authtab="reset" data-pfx="${prefix}">Esqueci minha senha</button>`}
   </form>`;
 }
+function rerenderAuth(p){ return p==="wz" ? renderAuthSlot() : p==="cl" ? Client.render() : Admin.render(); }
 document.addEventListener("input", e=>{
   const m=e.target.dataset && e.target.dataset.mask;
   if(m==="cpf") e.target.value=maskCPF(e.target.value);
@@ -478,28 +480,42 @@ document.addEventListener("click", e=>{
   if(p==="wz"){ W.authTab=tab; renderAuthSlot(); }
   if(p==="cl"){ Client.authTab=tab; Client.render(); }
 });
+document.addEventListener("click", async e=>{
+  const back=e.target.closest("[data-authback]");
+  if(back){ const p=back.dataset.authback; delete AuthFlow[p]; await rerenderAuth(p); $(`#${p}-email`)?.focus(); return; }
+  const re=e.target.closest("[data-authresend]"); if(!re) return;
+  const p=re.dataset.authresend, msg=$(`[data-authmsg="${p}"]`); msg.textContent="";
+  try{ await busy(re,()=>API.sendCode(AuthFlow[p])); msg.innerHTML=`<span class="ok-msg">Novo código enviado.</span>`; }catch(err){ msg.textContent=err.message; }
+});
 async function doAuth(prefix, mode){
   const v=id=>($(`#${prefix}-${id}`)?.value||"").trim();
-  const email=v("email"), senha=$(`#${prefix}-senha`)?.value||"";
+  if(mode==="code"){
+    const code=v("codigo").replace(/\s/g,"");
+    if(!/^\d{6,10}$/.test(code)) throw new Error("Informe o código recebido por e-mail.");
+    const user=await API.verifyCode(AuthFlow[prefix].email,code);
+    delete AuthFlow[prefix]; return {user};
+  }
+  const email=v("email");
   if(!emailOK(email)) throw new Error("Informe um e-mail válido.");
-  if(mode==="reset"){ await API.resetPassword(email); return {reset:true}; }
-  if(senha.length<6) throw new Error("A senha precisa ter pelo menos 6 caracteres.");
-  if(mode==="login"){ return {user: await API.signIn(email,senha)}; }
+  if(mode==="login"){ await API.sendCode({email}); AuthFlow[prefix]={email}; return {codeSent:true}; }
   const nome=v("nome"), cpf=v("cpf"), tel=v("tel");
   if(nome.split(/\s+/).length<2) throw new Error("Informe nome e sobrenome.");
   if(!cpfOK(cpf)) throw new Error("CPF inválido. Confira os 11 dígitos.");
   if(tel.replace(/\D/g,"").length<10) throw new Error("Informe o WhatsApp com DDD.");
-  return await API.signUp({nome,cpf,telefone:tel,email,senha});
+  const signup={nome,cpf,telefone:tel};
+  await API.sendCode({email,signup}); AuthFlow[prefix]={email,signup};
+  return {codeSent:true};
 }
 document.addEventListener("submit", async e=>{
   const f=e.target.closest("[data-authform]"); if(!f) return; e.preventDefault();
   const p=f.dataset.authform, msg=$(`[data-authmsg="${p}"]`); msg.textContent="";
+  // Na agenda, o código confirma o acesso e já conclui a reserva
+  if(p==="wz" && f.dataset.mode==="code"){ $("#to4").click(); return; }
   const btn=f.querySelector("button[type=submit]");
   try{
     const r=await busy(btn, ()=>doAuth(p, f.dataset.mode));
-    if(r.reset){ msg.innerHTML=`<span class="ok-msg">Se houver cadastro com este e-mail, o link de redefinição chegará em instantes.</span>`; return; }
-    if(r.needsConfirm){ msg.innerHTML=`<span class="ok-msg">Conta criada. Confirme o e-mail pelo link enviado e depois entre com sua senha.</span>`; return; }
-    App.user=r.user||await API.getUser(); onAuthChanged();
+    if(r.codeSent){ await rerenderAuth(p); $(`#${p}-codigo`)?.focus(); return; }
+    App.user=r.user; onAuthChanged();
   }catch(err){ msg.textContent=err.message; }
 });
 
@@ -523,9 +539,8 @@ $("#to4").onclick=async e=>{
       if(!App.user){
         const form=$("[data-authform=wz]"); const am=$("[data-authmsg=wz]"); am.textContent="";
         let r; try{ r=await doAuth("wz", form.dataset.mode); }catch(err){ am.textContent=err.message; msg.textContent="Confira os dados de acesso."; return; }
-        if(r.reset){ am.innerHTML=`<span class="ok-msg">Link de redefinição enviado.</span>`; return; }
-        if(r.needsConfirm){ msg.innerHTML=`Conta criada. Confirme o e-mail pelo link enviado, volte a esta página e entre com sua senha. <b>O horário ainda não está reservado.</b>`; return; }
-        App.user=r.user||await API.getUser(); onAuthChanged(true);
+        if(r.codeSent){ await renderAuthSlot(); $("#wz-codigo")?.focus(); msg.innerHTML=`Digite o código recebido por e-mail e confirme novamente. <b>O horário ainda não está reservado.</b>`; return; }
+        App.user=r.user; onAuthChanged(true);
       }
       W.booking = await API.createBooking({ modalidade_id:W.mod, inicio:toISO(W.date,W.time), assunto:W.area, parte:$("#parte").value.trim(), resumo, forma:"pix" });
       await refreshPublic(); renderNext();
@@ -579,7 +594,6 @@ const Client = {
   tab:"consultas", authTab:"login", confirmCancel:null, openPay:null,
   async render(){
     const root=$("#clientRoot"); App.user=await API.getUser();
-    if(App.passwordRecovery && API.mode==="supabase"){ return this.renderRecovery(root); }
     if(!App.user){
       root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Entre para acompanhar suas consultas</h1><p class="who">Veja o status, envie comprovantes, acesse o link da videochamada e cancele quando precisar.</p></div></div>
       <div class="auth-card">${authFormHTML("cl", this.authTab)}</div>`;
@@ -642,11 +656,6 @@ const Client = {
       if(nome.split(/\s+/).length<2) return $("#pfMsg").textContent="Informe nome e sobrenome.";
       if(cpf && !cpfOK(cpf)) return $("#pfMsg").textContent="CPF inválido.";
       try{ App.user=await busy(e.submitter,()=>API.updateProfile({nome,cpf,telefone:tel})); toast("Dados salvos."); $("#pfMsg").textContent=""; }catch(err){ $("#pfMsg").textContent=err.message; } };
-  },
-  renderRecovery(root){
-    root.innerHTML=`<div class="auth-card"><h2>Defina uma nova senha</h2><form id="rcForm" novalidate><div class="field"><label for="rc-p">Nova senha (mínimo 6 caracteres)</label><input id="rc-p" type="password" autocomplete="new-password"></div><button class="btn" type="submit">Salvar senha</button><p class="msg" role="alert" id="rcMsg" style="margin:0"></p></form></div>`;
-    $("#rcForm").onsubmit=async e=>{ e.preventDefault(); const p=$("#rc-p").value; if(p.length<6) return $("#rcMsg").textContent="A senha precisa ter pelo menos 6 caracteres.";
-      try{ await busy(e.submitter,()=>API.setNewPassword(p)); App.passwordRecovery=false; toast("Senha atualizada."); this.render(); }catch(err){ $("#rcMsg").textContent=err.message; } };
   }
 };
 
@@ -659,7 +668,7 @@ const Admin = {
     const root=$("#adminRoot"); App.user=await API.getUser();
     if(!App.user){
       root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Acesso restrito</h1><p class="who">Entre com a conta de administrador do escritório.</p></div></div>
-      <div class="auth-card">${authFormHTML("ad","login",{noTabs:true,noReset:true})}</div>`;
+      <div class="auth-card">${authFormHTML("ad","login",{noTabs:true})}</div>`;
       return;
     }
     if(!App.user.isAdmin){
@@ -832,7 +841,7 @@ const Admin = {
       if(o.reserva_expira_horas<1) return $("#cfMsg").textContent="A reserva precisa valer por pelo menos 1 hora.";
       if(o.link_cartao && !httpsOK(o.link_cartao)) return $("#cfMsg").textContent="O link de pagamento deve começar com https://";
       try{ await busy(e.submitter,()=>API.saveConfig(o)); toast("Configurações salvas."); $("#cfMsg").textContent=""; await refreshPublic(); renderMods(); renderNext(); }catch(err){ $("#cfMsg").textContent=err.message; } };
-    const rd=$("#resetDemo"); if(rd) rd.onclick=async()=>{ await API.resetDemo(); await API.signIn("admin@demo.com","demo123"); await refreshPublic(); renderMods(); renderNext(); toast("Dados de exemplo restaurados."); this.render(); };
+    const rd=$("#resetDemo"); if(rd) rd.onclick=async()=>{ await API.resetDemo(); await API.sendCode({email:"admin@demo.com"}); await API.verifyCode("admin@demo.com",DEMO_CODE); await refreshPublic(); renderMods(); renderNext(); toast("Dados de exemplo restaurados."); this.render(); };
   }
 };
 

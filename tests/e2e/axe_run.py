@@ -11,7 +11,7 @@ async def axe(pg,name):
     results[name]=[{"id":v["id"],"impact":v["impact"],"tags":[t for t in v["tags"] if t.startswith("wcag")],"help":v["help"],"n":len(v["nodes"]),"targets":[n["target"] for n in v["nodes"]][:6]} for v in r["violations"]]
     results[name+"__incomplete"]=[{"id":v["id"],"n":len(v["nodes"])} for v in r["incomplete"]]
 async def login(pg,pfx,email):
-    await pg.fill(f"#{pfx}-email",email); await pg.fill(f"#{pfx}-senha","demo123"); await pg.click(f"[data-authform={pfx}] button[type=submit]"); await pg.wait_for_timeout(700)
+    await pg.fill(f"#{pfx}-email",email); await pg.click(f"[data-authform={pfx}] button[type=submit]"); await pg.wait_for_timeout(200); await axe(pg,f"{pg.viewport_size['width']}:codigo-{pfx}"); await pg.fill(f"#{pfx}-codigo","123456"); await pg.click(f"[data-authform={pfx}] button[type=submit]"); await pg.wait_for_timeout(700)
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch()
@@ -24,7 +24,7 @@ async def main():
             await pg.select_option("#area",index=1); await pg.click("#to2"); await pg.wait_for_timeout(300); await axe(pg,f"{label}:agenda-etapa2")
             await pg.click("#to3"); await pg.wait_for_timeout(300); await axe(pg,f"{label}:agenda-etapa3")
             await pg.fill("#resumo","Benefício cessado em agosto; preciso saber se cabe recurso."); await pg.check("#lgpd")
-            await pg.fill("#wz-email","cliente@demo.com"); await pg.fill("#wz-senha","demo123"); await pg.click("#to4"); await pg.wait_for_timeout(800); await axe(pg,f"{label}:agenda-etapa4")
+            await pg.fill("#wz-email","cliente@demo.com"); await pg.click("#to4"); await pg.wait_for_timeout(300); await pg.fill("#wz-codigo","123456"); await pg.click("#to4"); await pg.wait_for_timeout(800); await axe(pg,f"{label}:agenda-etapa4")
             await pg.click("#to5"); await pg.wait_for_timeout(300); await axe(pg,f"{label}:agenda-etapa5")
             await pg.goto(BASE+"#cliente"); await pg.wait_for_timeout(700); await axe(pg,f"{label}:cliente")
             await pg.click("#clOut"); await pg.wait_for_timeout(400); await axe(pg,f"{label}:cliente-login")

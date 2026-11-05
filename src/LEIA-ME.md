@@ -31,9 +31,10 @@ Menu **Authentication**:
 1. **URL Configuration**
    - Site URL: `https://SEU-DOMINIO`
    - Redirect URLs: `https://SEU-DOMINIO/**`
-2. **Providers > Email**: mantenha a confirmação de e-mail ligada.
-3. **SMTP Settings**: configure um e-mail próprio para envio (confirmação de conta e redefinição de senha). O envio padrão do Supabase tem limite baixo de mensagens por hora. [VERIFICAR limite vigente no painel]
-4. **Email Templates**: traduza os textos de confirmação e redefinição de senha para português.
+2. **Providers > Email**: mantenha o provedor ligado. O acesso de clientes e do advogado é por código enviado ao e-mail, sem senha.
+3. **SMTP Settings**: configure um e-mail próprio para envio. **Sem isso o login não funciona na prática**: o envio padrão do Supabase tem limite de poucos e-mails por hora. Depois, em **Rate Limits**, confira o limite de e-mails, que começa baixo. [VERIFICAR valores vigentes no painel]
+4. **Email Templates**: nos modelos **Magic Link** e **Confirm signup**, troque o link pelo código, escrevendo `{{ .Token }}` no corpo, e traduza o texto para português. Sem isso, o cliente recebe um link em vez do código.
+5. **Email OTP Expiration**: use um prazo curto, como 10 minutos. [VERIFICAR nome e local da opção no painel]
 
 ## 3. Publicar o site
 
@@ -41,7 +42,7 @@ Envie a pasta inteira para uma hospedagem com HTTPS. Exemplos: Netlify (arrastar
 
 ## 4. Tornar sua conta administradora
 
-1. No site publicado, acesse **Área do cliente > Criar conta** com o seu e-mail e confirme pelo link recebido.
+1. No site publicado, acesse **Área do cliente > Criar conta** com o seu e-mail e digite o código recebido.
 2. No Supabase, **SQL Editor**, execute (troque o e-mail se for outro):
 
 ```sql

@@ -18,7 +18,8 @@ async def main():
         print("step2 day:", await pg.text_content("#dayLbl"), "| sel slot:", await pg.locator("#slotGrid button.sel").count())
         await pg.click("#to3"); await pg.wait_for_timeout(300)
         await pg.fill("#resumo","Preciso revisar os cálculos da RPV expedida no processo."); await pg.check("#lgpd")
-        await pg.fill("#wz-email","cliente@demo.com"); await pg.fill("#wz-senha","demo123")
+        await pg.fill("#wz-email","cliente@demo.com")
+        await pg.click("#to4"); await pg.wait_for_timeout(300); await pg.fill("#wz-codigo","123456")
         await pg.click("#to4"); await pg.wait_for_timeout(700)
         print("msg3:", await pg.text_content("#msg3"))
         print("step4 visible:", await pg.is_visible("[data-step='4']"), "| hint:", await pg.text_content("#hint4"))
@@ -37,7 +38,7 @@ async def main():
         await pg.click("#clOut"); await pg.wait_for_timeout(300)
         # admin
         await pg.goto(URL+"#admin"); await pg.wait_for_timeout(500)
-        await pg.fill("#ad-email","admin@demo.com"); await pg.fill("#ad-senha","demo123"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(700)
+        await pg.fill("#ad-email","admin@demo.com"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(200); await pg.fill("#ad-codigo","123456"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(700)
         print("admin stats:", await pg.locator(".stats div").all_text_contents())
         rows=await pg.locator("tr.row").count(); print("rows:",rows)
         # open pending row (Ana)
@@ -73,7 +74,7 @@ async def main():
         for h in ["", "#cliente", "#admin"]:
             await m.goto(URL+h); await m.wait_for_timeout(500)
             sw=await m.evaluate("document.documentElement.scrollWidth"); print("mobile",h or "site","scrollWidth",sw)
-        await m.fill("#ad-email","admin@demo.com"); await m.fill("#ad-senha","demo123"); await m.click("[data-authform=ad] button[type=submit]"); await m.wait_for_timeout(600)
+        await m.fill("#ad-email","admin@demo.com"); await m.click("[data-authform=ad] button[type=submit]"); await m.wait_for_timeout(200); await m.fill("#ad-codigo","123456"); await m.click("[data-authform=ad] button[type=submit]"); await m.wait_for_timeout(600)
         for t in ["agendamentos","agenda","valores","config"]:
             await m.click(f"[data-atab={t}]"); await m.wait_for_timeout(400)
             print("mobile admin",t, await m.evaluate("document.documentElement.scrollWidth"))

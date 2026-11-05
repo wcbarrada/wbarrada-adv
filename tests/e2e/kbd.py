@@ -43,7 +43,7 @@ async def main():
         out["msg de erro com role/aria-live"]=await pg.evaluate("[...document.querySelectorAll('.msg')].map(m=>m.id+':'+(m.getAttribute('role')||m.getAttribute('aria-live')||'nenhum'))")
         # admin rows keyboard
         await pg.goto(BASE+"#admin"); await pg.wait_for_timeout(400)
-        await pg.fill("#ad-email","admin@demo.com"); await pg.fill("#ad-senha","demo123"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(700)
+        await pg.fill("#ad-email","admin@demo.com"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(200); await pg.fill("#ad-codigo","123456"); await pg.click("[data-authform=ad] button[type=submit]"); await pg.wait_for_timeout(700)
         out["botões das linhas da tabela"]=await pg.evaluate("[...document.querySelectorAll('tr.row')].map(r=>r.querySelectorAll('button[aria-expanded]').length)")
         out["alvos<24px admin"]=await pg.evaluate(JS_TARGETS)
         await pg.click("[data-atab=agenda]"); await pg.wait_for_timeout(400)
