@@ -80,14 +80,14 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Itens Should de acessibilidade e SEO corrigidos em 05/11/2026, exceto `telephone` e `postalCode` no JSON-LD (dados pendentes). Com `supabaseUrl` vazio, o build adiciona `noindex`. Ao adotar domínio próprio, trocar `SITE_URL` em `build.py`.
 - O pacote de hospedagem usa fontes próprias (`src/fonts.css`, `src/assets/fonts/`), sem Google Fonts e sem `preload`, que atrasou o FCP nos testes com rede lenta simulada. O CSS é embutido no `index.html` e os scripts usam `defer`, para reduzir o FCP. `dist/artifact.html` ainda carrega do Google.
 
-## Decisões pendentes do usuário (Fase 2)
-| # | Decisão | Recomendação |
+## Decisões do usuário (Fase 2, tomadas em 05/11/2026)
+| # | Tema | Decisão |
 |---|---|---|
 | D1 | Pagamento antecipado da consulta | Obrigatório só na agenda online; o WhatsApp fica como caminho sem pagamento prévio |
-| D2 | Acesso à Área do cliente | Código enviado por e-mail, sem senha (exige SMTP próprio) |
-| D3 | Confirmação de pagamento | Manual no MVP; gateway (Asaas ou Mercado Pago) com webhook depois |
-| D4 | Plano do Supabase | Pro em produção (o Free pausa após 7 dias de baixa atividade); preço [VERIFICAR] |
-| D5 | Domínio | `.adv.br`, com requisitos do registro.br [VERIFICAR] |
+| D2 | Acesso à Área do cliente | Código enviado por e-mail, sem senha (exige SMTP próprio). **Ainda não implementado:** o site usa e-mail e senha |
+| D3 | Confirmação de pagamento | Manual no MVP; gateway com webhook depois |
+| D4 | Plano do Supabase | Free nos testes; Pro (US$ 25/mês em 05/11/2026) ao abrir para clientes |
+| D5 | Domínio | `wbarrada.adv.br`, ainda não registrado; preço e documentos exigidos pelo registro.br [VERIFICAR] |
 
 ## Backlog da Fase 3 (originado da Fase 4)
 **Must**
