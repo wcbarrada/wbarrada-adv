@@ -33,7 +33,9 @@ Menu **Authentication**:
    - Redirect URLs: `https://SEU-DOMINIO/**`
 2. **Providers > Email**: mantenha o provedor ligado. O acesso de clientes e do advogado é por código enviado ao e-mail, sem senha.
 3. **SMTP Settings**: configure um e-mail próprio para envio. **Sem isso o login não funciona na prática**: o envio padrão do Supabase tem limite de poucos e-mails por hora. Depois, em **Rate Limits**, confira o limite de e-mails, que começa baixo. [VERIFICAR valores vigentes no painel]
-4. **Email Templates**: nos modelos **Magic Link** e **Confirm signup**, troque o link pelo código, escrevendo `{{ .Token }}` no corpo, e traduza o texto para português. Sem isso, o cliente recebe um link em vez do código.
+   - Provisório com Gmail: servidor `smtp.gmail.com`, porta `587`, usuário e remetente iguais ao seu Gmail e uma senha de app do Google. A senha de app exige verificação em duas etapas e dá acesso à caixa de e-mail.
+   - Definitivo: serviço de e-mail transacional com remetente do seu domínio. Ao trocar, revogue a senha de app.
+4. **Email Templates**, depois do SMTP (em projetos Free novos, os modelos só podem ser editados com SMTP próprio): nos modelos **Magic Link** e **Confirm signup**, use o assunto "Seu código de acesso" e cole o conteúdo de `supabase/email-templates/codigo-de-acesso.html`. Sem isso, o cliente recebe um link em vez do código.
 5. **Email OTP Expiration**: use um prazo curto, como 10 minutos. [VERIFICAR nome e local da opção no painel]
 
 ## 3. Publicar o site
