@@ -58,6 +58,7 @@ BASE_URL=http://localhost:4173/ AXE_PATH=node_modules/axe-core/axe.min.js python
 # RLS: num Postgres de teste (não no projeto real)
 psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supabase/tests/rls.sql
 ```
+- Lighthouse no Windows: usar `--chrome-flags="--headless=new --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling --disable-features=CalculateNativeWinOcclusion"`. Sem elas, o Speed Index variou de 3 s a 16 s na mesma versão do site.
 - Contas do modo demonstração: `cliente@demo.com` e `admin@demo.com`, ambas com senha `demo123`. Os dados ficam no `localStorage`.
 - `mock-supabase.sql` cria os papéis `anon` e `authenticated`. Se eles já existirem, remova a primeira linha.
 
