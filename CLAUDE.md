@@ -130,7 +130,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Captcha.
 
 ## Pendências de conteúdo
-Foto profissional (`config.js > foto`), valores das modalidades, chave PIX, link de cartão, e data da política.
+Foto definitiva (a atual, `src/assets/foto.jpg`, é provisória, recortada de um story com fundo trocado), link de cartão (InfinitePay) e data da política. Valores, WhatsApp e chave PIX já estão no banco real.
 
 ## Prazos de guarda (aprovados pelo usuário em 06/11/2026)
 Comprovantes e dados de consultas pagas: 5 anos após a consulta. Cadastro sem consulta realizada: 6 meses após o último uso. Reservas não pagas ou expiradas, com o resumo: 6 meses. **A rotina de exclusão ainda precisa ser criada antes da abertura ao público.**

@@ -37,6 +37,7 @@ d='dist/barrada-site'; shutil.rmtree(d, ignore_errors=True); os.makedirs(d+'/sup
 shutil.copy(LOGO, d+'/logo.png')
 shutil.copy(os.path.join(SRC,'assets','og-image.png'), d+'/og-image.png')
 shutil.copy(os.path.join(SRC,'assets','icon.png'), d+'/icon.png')
+shutil.copy(os.path.join(SRC,'assets','foto.jpg'), d+'/foto.jpg')
 # Em modo demonstração (config.js sem Supabase), o site não deve ser indexado
 DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not None
 NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
