@@ -41,9 +41,10 @@ shutil.copy(LOGO, d+'/logo.png')
 shutil.copy(os.path.join(SRC,'assets','og-image.png'), d+'/og-image.png')
 shutil.copy(os.path.join(SRC,'assets','icon.png'), d+'/icon.png')
 shutil.copy(os.path.join(SRC,'assets','foto.jpg'), d+'/foto.jpg')
-# Em modo demonstração (config.js sem Supabase), o site não deve ser indexado
+# A agenda em modo demonstração (config.js sem Supabase) não deve ser indexada.
+# Com a agenda suspensa, o site é só institucional e pode aparecer nas buscas.
 DEMO = re.search(r'supabaseUrl:\s*""', rd(os.path.join(SRC,'config.js'))) is not None
-NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO else ''
+NOINDEX = '<meta name="robots" content="noindex">\n' if DEMO and AGENDA else ''
 # Pacote de hospedagem: fontes próprias e CSS embutido (FCP); a prévia em arquivo único segue com o Google Fonts
 HOST_CSS = rd(os.path.join(SRC,'fonts.css')) + css
 shutil.copytree(os.path.join(SRC,'assets','fonts'), d+'/fonts')
@@ -94,7 +95,7 @@ idx = f'''<!doctype html>
 '''
 wr(d+'/index.html', idx)
 wr(d+'/_headers', HEADERS)
-wr(d+'/robots.txt', f'User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n')
+wr(d+'/robots.txt', f'User-agent: *\nAllow: /\nDisallow: /supabase/\nDisallow: /LEIA-ME.md\nSitemap: {SITE_URL}sitemap.xml\n')
 wr(d+'/sitemap.xml', f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{SITE_URL}</loc></url></urlset>\n')
 wr(d+'/404.html', f'''<!doctype html>
 <html lang="pt-BR">
