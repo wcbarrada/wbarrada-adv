@@ -74,6 +74,8 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Hospedagem prevista: Cloudflare Pages (estático, com `_headers` para CSP). Banco: Supabase (Postgres, Auth e Storage).
 
 ## Estado atual
+- **Agendamento online suspenso a pedido do usuário em 06/11/2026** (`agendaAtiva: false` em `src/config.js`). O código e o banco foram mantidos. `build.py` oculta os elementos marcados com `data-agenda="on"` e mostra os marcados com `data-agenda="off"`; `#agenda` redireciona para `#whatsapp`. Para reativar: `agendaAtiva: true`, rodar o build e revisar o local nas modalidades. Os testes `e2e.py`, `axe_run.py` e `d2.py` exercitam a agenda: rodar contra um build com `agendaAtiva: true`.
+- Endereços de rua retirados das páginas e do JSON-LD em 06/11/2026: o atendimento presencial não será no endereço usado nas petições. Endereço definitivo pendente (provavelmente sede da OAB). A descrição das modalidades no banco real ainda traz os endereços antigos e só aparece com a agenda ativa.
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4.
 - Hospedagem atual: GitHub Pages com o domínio `https://wbarrada.adv.br/` (DNS no registro.br, modo avançado) via `.github/workflows/pages.yml` (CSP por `<meta>`). `_headers` continua sendo gerado para o Cloudflare Pages.

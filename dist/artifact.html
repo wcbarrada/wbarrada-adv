@@ -395,8 +395,9 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .ccard b{font-weight:600;overflow-wrap:anywhere}
 .ccard a,.ccard .linkbtn{font-size:.88rem;justify-self:start;min-height:24px;display:inline-flex;align-items:center}
 .ccard .sel{user-select:all}
+.ccard.wide{grid-column:span 2}
 @media (max-width:860px){.contact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:520px){.contact-grid{grid-template-columns:1fr}}
+@media (max-width:520px){.contact-grid{grid-template-columns:1fr}.ccard.wide{grid-column:auto}}
 .prose{max-width:760px;display:grid;gap:12px}
 .prose h1{font-size:clamp(2rem,4vw,2.9rem)}
 .prose h2{font-size:1.25rem;margin-top:16px}
@@ -409,7 +410,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
-</style>
+[hidden]{display:none!important}</style>
 <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 <header class="top">
   <div class="wrap">
@@ -421,8 +422,9 @@ footer{padding-bottom:88px}
       <a href="#como-funciona">Como funciona</a>
       <a href="#orientacoes">Orientações</a>
       <a href="#contato">Contato</a>
-      <a href="#cliente" class="link-area">Área do cliente</a>
-      <a class="btn" href="#agenda">Agendar consulta</a>
+      <a href="#cliente" class="link-area" hidden>Área do cliente</a>
+      <a class="btn" href="#agenda" hidden>Agendar consulta</a>
+      <a class="btn" href="#whatsapp">Falar pelo WhatsApp</a>
     </nav>
   </div>
 </header>
@@ -444,8 +446,10 @@ footer{padding-bottom:88px}
         <h1>Quando a outra parte é o INSS ou o poder público, cada <em>prazo</em> e cada <em>cálculo</em> importam.</h1>
         <p class="lead">Orientação jurídica para aposentados, segurados do INSS, servidores públicos e contribuintes, com explicação clara de cada etapa. Atendimento presencial em Campos dos Goytacazes, Cordeiro e Cantagalo, ou por videochamada.</p>
         <div class="ctas">
-          <a class="btn" href="#agenda">Agendar consulta</a>
-          <a class="btn ghost" href="#whatsapp">Falar pelo WhatsApp</a>
+          <a class="btn" href="#agenda" hidden>Agendar consulta</a>
+          <a class="btn" href="#whatsapp">Falar pelo WhatsApp</a>
+          <a class="btn ghost" href="#whatsapp" hidden>Falar pelo WhatsApp</a>
+          <a class="btn ghost" href="#como-funciona">Como funciona</a>
         </div>
         <div class="cred">
           <span>OAB/RJ <b>164.135</b></span>
@@ -453,12 +457,18 @@ footer{padding-bottom:88px}
           <span>Presencial e <b>online</b></span>
         </div>
       </div>
-      <aside class="next" aria-labelledby="nextTitle">
+      <aside class="next" aria-labelledby="nextTitle" hidden>
         <p class="eyebrow">Agenda</p>
         <h2 id="nextTitle">Próximos horários livres</h2>
         <p class="muted" style="font-size:.88rem">Escolha um horário para começar o agendamento.</p>
         <ul id="nextList"><li class="loading-note"><span class="spin"></span> Carregando agenda</li></ul>
         <p class="foot">Outros dias e modalidades na <a href="#agenda">agenda completa</a>.</p>
+      </aside>
+      <aside class="next" aria-labelledby="atTitle">
+        <p class="eyebrow">Atendimento</p>
+        <h2 id="atTitle">Consulta com hora marcada</h2>
+        <p class="muted" style="font-size:.88rem">Presencial ou por videochamada. Dia, horário e local são combinados pelo WhatsApp.</p>
+        <p class="foot">A mensagem fica pronta na <a href="#whatsapp">seção de WhatsApp</a>.</p>
       </aside>
     </div>
   </section>
@@ -513,19 +523,22 @@ footer{padding-bottom:88px}
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Como funciona</p>
         <h2>Do primeiro contato à orientação</h2>
-        <p>Você pode agendar sozinho pelo site ou começar a conversa pelo WhatsApp.</p>
+        <p hidden>Você pode agendar sozinho pelo site ou começar a conversa pelo WhatsApp.</p>
+        <p>O primeiro contato é pelo WhatsApp. A consulta é combinada diretamente com o escritório.</p>
       </div>
       <ol class="how">
-        <li><b>Agendamento</b><span>Escolha a modalidade, o dia e o horário. A reserva fica registrada na Área do cliente.</span></li>
-        <li><b>Confirmação</b><span>O escritório confirma a consulta e, se for online, envia o link da videochamada.</span></li>
+        <li hidden><b>Agendamento</b><span>Escolha a modalidade, o dia e o horário. A reserva fica registrada na Área do cliente.</span></li>
+        <li><b>Contato</b><span>Envie uma mensagem pelo WhatsApp com o assunto e a sua preferência de atendimento.</span></li>
+        <li hidden><b>Confirmação</b><span>O escritório confirma a consulta e, se for online, envia o link da videochamada.</span></li>
+        <li><b>Confirmação</b><span>O escritório combina o dia, o horário e o local ou, se for online, envia o link da videochamada.</span></li>
         <li><b>Consulta</b><span>Análise do seu relato e dos documentos, presencialmente ou por vídeo.</span></li>
         <li><b>Orientação</b><span>Você sai sabendo os caminhos possíveis, na via administrativa ou judicial, e os próximos passos.</span></li>
       </ol>
-      <p class="note" style="margin-top:22px">A lista de documentos é enviada depois do agendamento, conforme o assunto da consulta.</p>
+      <p class="note" style="margin-top:22px">A lista de documentos é enviada depois <span hidden>do agendamento</span><span>do primeiro contato</span>, conforme o assunto da consulta.</p>
     </div>
   </section>
 
-  <section id="agenda">
+  <section id="agenda" hidden>
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Agendamento</p>
@@ -626,7 +639,8 @@ footer{padding-bottom:88px}
     <div class="wrap wa-grid">
       <div class="sec-head" style="margin:0">
         <p class="eyebrow"><b>§</b>WhatsApp</p>
-        <h2>Prefere conversar antes?</h2>
+        <h2 hidden>Prefere conversar antes?</h2>
+        <h2>Fale com o escritório</h2>
         <p>Responda três perguntas e a mensagem chega pronta no WhatsApp do escritório. Nada é gravado neste site.</p>
         <p class="note warn">Não informe CPF, senha do Meu INSS ou dados de saúde nesta mensagem.</p>
         <p class="note" style="margin-top:10px">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
@@ -701,9 +715,9 @@ footer{padding-bottom:88px}
         <details><summary>Que documentos devo separar?</summary><ul><li>Documento de identidade e CPF.</li><li>INSS: extrato do CNIS, carta de concessão ou de indeferimento, laudos e exames.</li><li>Servidor público: contracheques, ficha funcional, portarias e decisões administrativas.</li><li>Tributário: notificações, CDA, certidões de protesto e comprovantes de pagamento.</li><li>Processo em andamento: o número do processo.</li></ul></details>
         <details><summary>A consulta online tem o mesmo conteúdo da presencial?</summary><p>Sim. A análise e a orientação são as mesmas. Os documentos podem ser enviados antes da videochamada.</p></details>
         <details><summary>Atende em Cordeiro?</summary><p>Sim, com hora marcada. Informe a preferência pelo WhatsApp. Também há atendimento presencial em Campos dos Goytacazes e em Cantagalo, e por videochamada para qualquer cidade.</p></details>
-        <details><summary>Posso cancelar ou remarcar?</summary><p id="faqPolicy"></p></details>
-        <details><summary>O que o site faz com os meus dados?</summary><p>O agendamento guarda apenas os dados necessários para identificar você e preparar a consulta, sob sigilo profissional. A mensagem montada na seção de WhatsApp não é gravada. Os detalhes estão na <a href="#privacidade">Política de Privacidade</a>.</p></details>
-        <details><summary>Já tenho advogado no processo. Posso agendar?</summary><p>Pode, para uma segunda opinião. A atuação em processo com advogado constituído segue as regras do Código de Ética da OAB sobre substabelecimento e revogação do mandato, explicadas na consulta.</p></details>
+        <details hidden><summary>Posso cancelar ou remarcar?</summary><p id="faqPolicy"></p></details>
+        <details><summary>O que o site faz com os meus dados?</summary><p><span hidden>O agendamento guarda apenas os dados necessários para identificar você e preparar a consulta, sob sigilo profissional. </span>A mensagem montada na seção de WhatsApp não é gravada. Os detalhes estão na <a href="#privacidade">Política de Privacidade</a>.</p></details>
+        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Pode, para uma segunda opinião. A atuação em processo com advogado constituído segue as regras do Código de Ética da OAB sobre substabelecimento e revogação do mandato, explicadas na consulta.</p></details>
       </div>
     </div>
   </section>
@@ -712,15 +726,14 @@ footer{padding-bottom:88px}
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Contato</p>
-        <h2>Onde encontrar o escritório</h2>
+        <h2>Como falar com o escritório</h2>
       </div>
       <div class="contact-grid">
-        <div class="ccard"><span class="lbl">WhatsApp</span><b id="ctTel"></b><span id="ctTelGo"></span></div>
+        <div class="ccard wide"><span class="lbl">WhatsApp</span><b id="ctTel"></b><span id="ctTelGo"></span></div>
         <div class="ccard"><span class="lbl">E-mail</span><b class="sel">wcbarrada.adv@gmail.com</b><button class="linkbtn" data-copytext="wcbarrada.adv@gmail.com">Copiar e-mail</button></div>
         <div class="ccard"><span class="lbl">Instagram</span><b>@wbarrada.adv</b><a href="https://www.instagram.com/wbarrada.adv/" target="_blank" rel="noopener">Abrir perfil</a></div>
-        <div class="ccard"><span class="lbl">Cantagalo</span><b>Rua Evandro do Vale Moreira, 69, sala 102</b><span class="muted">Parque das Árvores · Cantagalo/RJ</span><a href="https://www.google.com/maps/search/?api=1&query=Rua+Evandro+do+Vale+Moreira+69+Cantagalo+RJ" target="_blank" rel="noopener">Como chegar</a></div>
-        <div class="ccard"><span class="lbl">Campos dos Goytacazes</span><b>Av. Bicok, 41</b><span class="muted">Campos dos Goytacazes/RJ</span><a href="https://www.google.com/maps/search/?api=1&query=Av.+Bicok+41+Campos+dos+Goytacazes+RJ" target="_blank" rel="noopener">Como chegar</a></div>
-        <div class="ccard"><span class="lbl">Cordeiro e online</span><b>Com hora marcada</b><span class="muted">Videochamada para qualquer cidade</span><a href="#agenda">Agendar</a></div>
+        <div class="ccard"><span class="lbl">Atendimento presencial</span><b>Campos dos Goytacazes, Cordeiro e Cantagalo</b><span class="muted">Com hora marcada. O local é informado ao combinar a consulta.</span></div>
+        <div class="ccard"><span class="lbl">Atendimento online</span><b>Videochamada</b><span class="muted">Para qualquer cidade</span><a href="#agenda" hidden>Agendar</a><a href="#whatsapp">Combinar pelo WhatsApp</a></div>
       </div>
     </div>
   </section>
@@ -734,30 +747,32 @@ footer{padding-bottom:88px}
     <h1>Política de Privacidade</h1>
     <p class="muted">Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais).<span id="privUpd" hidden> Última atualização: <span id="privDate"></span>.</span></p>
     <h2>Quem trata os dados</h2>
-    <p>Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135, Rua Evandro do Vale Moreira, 69, sala 102, Cantagalo/RJ. Contato para assuntos de dados pessoais: wcbarrada.adv@gmail.com.</p>
+    <p>Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135. Contato para assuntos de dados pessoais: wcbarrada.adv@gmail.com.</p>
     <h2>Quais dados são coletados</h2>
     <ul>
-      <li><b>Cadastro na Área do cliente:</b> nome, CPF, telefone e e-mail. O acesso é feito por código enviado ao e-mail, sem senha.</li>
-      <li><b>Agendamento:</b> modalidade, data e horário, assunto, parte contrária informada, resumo do caso e comprovante enviado.</li>
+      <li hidden><b>Cadastro na Área do cliente:</b> nome, CPF, telefone e e-mail. O acesso é feito por código enviado ao e-mail, sem senha.</li>
+      <li hidden><b>Agendamento:</b> modalidade, data e horário, assunto, parte contrária informada, resumo do caso e comprovante enviado.</li>
       <li><b>Seção de WhatsApp:</b> nada é gravado. A mensagem é montada no seu navegador e enviada por você, pelo aplicativo.</li>
+      <li><b>Contato direto:</b> o que você enviar por WhatsApp ou e-mail é usado para responder e preparar a consulta, sob sigilo profissional.</li>
     </ul>
     <h2>Para que são usados</h2>
-    <p>Para identificar você, organizar a agenda, confirmar a consulta e preparar a análise preliminar do caso. Os dados não são vendidos, cedidos para publicidade ou usados para envio de mensagens não solicitadas.</p>
+    <p>Para identificar você, <span hidden>organizar a agenda, </span>confirmar a consulta e preparar a análise preliminar do caso. Os dados não são vendidos, cedidos para publicidade ou usados para envio de mensagens não solicitadas.</p>
     <h2>Base legal</h2>
     <p>Execução de procedimentos preliminares relacionados a contrato, a pedido do titular (art. 7º, V), e exercício regular de direitos em processo judicial ou administrativo (art. 7º, VI, e art. 11, II, "d"). Dados de saúde só são tratados quando indispensáveis à causa e, preferencialmente, apresentados na própria consulta.</p>
     <h2>Com quem são compartilhados</h2>
-    <p>Com o provedor de hospedagem do banco de dados e de autenticação usado pelo site, apenas para armazenamento, e com órgãos públicos e o Poder Judiciário quando necessário à atuação contratada.</p>
+    <p><span hidden>Com o provedor de hospedagem do banco de dados e de autenticação usado pelo site, apenas para armazenamento, e com órgãos</span><span>Com órgãos</span> públicos e o Poder Judiciário quando necessário à atuação contratada.</p>
     <h2>Por quanto tempo</h2>
     <ul>
-      <li><b>Comprovantes e dados de consultas pagas:</b> 5 anos após a consulta.</li>
-      <li><b>Cadastro sem consulta realizada:</b> 6 meses após o último uso.</li>
-      <li><b>Reservas não pagas ou expiradas, com o resumo do caso:</b> 6 meses.</li>
+      <li hidden><b>Comprovantes e dados de consultas pagas:</b> 5 anos após a consulta.</li>
+      <li hidden><b>Cadastro sem consulta realizada:</b> 6 meses após o último uso.</li>
+      <li hidden><b>Reservas não pagas ou expiradas, com o resumo do caso:</b> 6 meses.</li>
+      <li><b>Mensagens de contato:</b> pelo tempo necessário ao atendimento.</li>
       <li><b>Casos contratados:</b> pelo prazo exigido para a defesa de direitos e o cumprimento de obrigações legais e éticas.</li>
     </ul>
     <h2>Seus direitos</h2>
-    <p>Confirmar o tratamento, acessar, corrigir, pedir anonimização ou eliminação de dados desnecessários, pedir portabilidade, obter informação sobre compartilhamento e revogar o consentimento, nos termos do art. 18 da LGPD. Os pedidos podem ser feitos pelo e-mail acima. Você também pode corrigir seus dados diretamente na Área do cliente.</p>
+    <p>Confirmar o tratamento, acessar, corrigir, pedir anonimização ou eliminação de dados desnecessários, pedir portabilidade, obter informação sobre compartilhamento e revogar o consentimento, nos termos do art. 18 da LGPD. Os pedidos podem ser feitos pelo e-mail acima.<span hidden> Você também pode corrigir seus dados diretamente na Área do cliente.</span></p>
     <h2>Cookies</h2>
-    <p>O site não usa cookies de publicidade nem ferramentas de rastreamento. O navegador guarda apenas a sessão de login da Área do cliente.</p>
+    <p>O site não usa cookies de publicidade nem ferramentas de rastreamento.<span hidden> O navegador guarda apenas a sessão de login da Área do cliente.</span></p>
     <p style="margin-top:28px"><a class="btn ghost" href="#inicio">Voltar ao site</a></p>
   </div>
 </main>
@@ -781,16 +796,16 @@ footer{padding-bottom:88px}
         <p>Campos dos Goytacazes · Cordeiro · Cantagalo · online</p>
       </div>
       <div>
-        <h2>Escritórios</h2>
-        <address>Rua Evandro do Vale Moreira, 69, sala 102<br>Cantagalo · RJ</address>
-        <address style="margin-top:12px">Av. Bicok, 41<br>Campos dos Goytacazes · RJ</address>
+        <h2>Atendimento</h2>
+        <p>Presencial, com hora marcada: Campos dos Goytacazes, Cordeiro e Cantagalo.</p>
+        <p style="margin-top:6px">Por videochamada: qualquer cidade.</p>
       </div>
       <div>
         <h2>Contato</h2>
         <p>E-mail: <span style="user-select:all">wcbarrada.adv@gmail.com</span></p>
         <p style="margin-top:6px">WhatsApp: <span id="footTel"></span></p>
         <p style="margin-top:6px">Instagram: <a href="https://www.instagram.com/wbarrada.adv/" target="_blank" rel="noopener">@wbarrada.adv</a></p>
-        <p style="margin-top:14px"><a href="#cliente">Área do cliente</a> · <a href="#admin">Área do advogado</a> · <a href="#privacidade">Privacidade</a></p>
+        <p style="margin-top:14px"><span hidden><a href="#cliente">Área do cliente</a> · <a href="#admin">Área do advogado</a> · </span><a href="#privacidade">Privacidade</a></p>
       </div>
     </div>
     <div class="legal">
@@ -817,6 +832,8 @@ const SITE = window.SITE_CONFIG || {};
 
 /* ---------------- utilitários ---------------- */
 const $ = (s, r=document) => r.querySelector(s);
+// O build.py oculta a seção #agenda quando config.js traz agendaAtiva:false
+const AGENDA = !$("#agenda").hidden;
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const pad = n => String(n).padStart(2,"0");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -939,8 +956,8 @@ function DemoAPI(){
         whatsapp:"5522998285300", pix_chave:"", pix_nome:"WANDERSON C BARRADA", pix_cidade:"CANTAGALO", link_cartao:"",
         politica:"Remarcação ou cancelamento sem custo com até 24 horas de antecedência. Ausência sem aviso prévio não gera reembolso." },
       modalidades:[
-        {id:"campos",nome:"Presencial · Campos",descricao:"Av. Bicok, 41, Campos dos Goytacazes",tipo:"presencial",valor:300,ativo:true,ordem:1},
-        {id:"cantagalo",nome:"Presencial · Cantagalo",descricao:"Rua Evandro do Vale Moreira, 69, sala 102",tipo:"presencial",valor:300,ativo:true,ordem:2},
+        {id:"campos",nome:"Presencial · Campos",descricao:"Local informado na confirmação",tipo:"presencial",valor:300,ativo:true,ordem:1},
+        {id:"cantagalo",nome:"Presencial · Cantagalo",descricao:"Local informado na confirmação",tipo:"presencial",valor:300,ativo:true,ordem:2},
         {id:"online",nome:"Online · videochamada",descricao:"Link da videochamada enviado após a confirmação",tipo:"online",valor:300,ativo:true,ordem:3}],
       disponibilidade:[], bloqueios:[], extras:[], users:[], agendamentos:[]
     };
@@ -1413,7 +1430,7 @@ const Client = {
       return;
     }
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h1><p class="who">${esc(App.user.email)}</p></div>
-      <div class="btns"><a class="btn sm" href="#agenda">Nova consulta</a>${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
+      <div class="btns">${AGENDA?`<a class="btn sm" href="#agenda">Nova consulta</a>`:""}${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
       <div class="subtabs" role="tablist"><button role="tab" data-ctab="consultas" aria-selected="${this.tab==="consultas"}">Minhas consultas</button><button role="tab" data-ctab="dados" aria-selected="${this.tab==="dados"}">Meus dados</button></div>
       <div id="clBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#clOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
@@ -1444,7 +1461,7 @@ const Client = {
     };
     $("#clBody").innerHTML = `
       <h2 style="margin-bottom:14px">Próximas consultas</h2>
-      ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span><a class="btn sm" href="#agenda">Agendar consulta</a></div>`}
+      ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span>${AGENDA?`<a class="btn sm" href="#agenda">Agendar consulta</a>`:`<a class="btn sm" href="#whatsapp">Falar pelo WhatsApp</a>`}</div>`}
       ${past.length?`<h2 style="margin:36px 0 14px">Histórico</h2><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
     hydratePay($("#clBody"));
     $$("[data-act]", $("#clBody")).forEach(b=>b.onclick=async()=>{
@@ -1491,7 +1508,7 @@ const Admin = {
     }
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
-      <div class="btns"><a class="btn ghost sm" href="#agenda">Ver agenda pública</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
+      <div class="btns"><a class="btn ghost sm" href="${AGENDA?"#agenda":"#inicio"}">${AGENDA?"Ver agenda pública":"Ver o site"}</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
       <div class="subtabs" role="tablist">${T.map(([k,l])=>`<button role="tab" data-atab="${k}" aria-selected="${this.tab===k}">${l}</button>`).join("")}</div>
       <div id="adBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
@@ -1672,6 +1689,7 @@ function focusView(){
   if(t){ t.tabIndex=-1; t.focus(); }
 }
 function route(ev){
+  if(!AGENDA && location.hash==="#agenda") history.replaceState(null,"","#whatsapp");
   const h=location.hash.replace("#","");
   const r = ["cliente","admin","privacidade"].includes(h) ? h : "site";
   App.route=r;
@@ -1690,7 +1708,7 @@ $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menu
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
 
 (async function init(){
-  $("#demoBar").hidden = API.mode!=="demo";
+  $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;
   $("#year").textContent = todaySP().slice(0,4);
   // Sem data informada em config.js, a política não exibe "Última atualização"
   if(SITE.privacidadeAtualizada){ $("#privDate").textContent = SITE.privacidadeAtualizada; $("#privUpd").hidden = false; }
@@ -1698,7 +1716,7 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
   try{
     await refreshPublic();
     App.user = await API.getUser();
-    renderMods(); renderNext(); goStep(1,true);
+    if(AGENDA){ renderMods(); renderNext(); goStep(1,true); }
   }catch(err){
     $("#nextList").innerHTML=`<li class="msg">Não foi possível carregar a agenda: ${esc(err.message)}</li>`;
     $("#modOpts").innerHTML=`<p class="msg" role="alert">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;

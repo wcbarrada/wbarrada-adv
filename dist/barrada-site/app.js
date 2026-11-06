@@ -10,6 +10,8 @@ const SITE = window.SITE_CONFIG || {};
 
 /* ---------------- utilitários ---------------- */
 const $ = (s, r=document) => r.querySelector(s);
+// O build.py oculta a seção #agenda quando config.js traz agendaAtiva:false
+const AGENDA = !$("#agenda").hidden;
 const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const pad = n => String(n).padStart(2,"0");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -132,8 +134,8 @@ function DemoAPI(){
         whatsapp:"5522998285300", pix_chave:"", pix_nome:"WANDERSON C BARRADA", pix_cidade:"CANTAGALO", link_cartao:"",
         politica:"Remarcação ou cancelamento sem custo com até 24 horas de antecedência. Ausência sem aviso prévio não gera reembolso." },
       modalidades:[
-        {id:"campos",nome:"Presencial · Campos",descricao:"Av. Bicok, 41, Campos dos Goytacazes",tipo:"presencial",valor:300,ativo:true,ordem:1},
-        {id:"cantagalo",nome:"Presencial · Cantagalo",descricao:"Rua Evandro do Vale Moreira, 69, sala 102",tipo:"presencial",valor:300,ativo:true,ordem:2},
+        {id:"campos",nome:"Presencial · Campos",descricao:"Local informado na confirmação",tipo:"presencial",valor:300,ativo:true,ordem:1},
+        {id:"cantagalo",nome:"Presencial · Cantagalo",descricao:"Local informado na confirmação",tipo:"presencial",valor:300,ativo:true,ordem:2},
         {id:"online",nome:"Online · videochamada",descricao:"Link da videochamada enviado após a confirmação",tipo:"online",valor:300,ativo:true,ordem:3}],
       disponibilidade:[], bloqueios:[], extras:[], users:[], agendamentos:[]
     };
@@ -606,7 +608,7 @@ const Client = {
       return;
     }
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do cliente</p><h1>Olá, ${esc((App.user.nome||"").split(" ")[0]||"cliente")}</h1><p class="who">${esc(App.user.email)}</p></div>
-      <div class="btns"><a class="btn sm" href="#agenda">Nova consulta</a>${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
+      <div class="btns">${AGENDA?`<a class="btn sm" href="#agenda">Nova consulta</a>`:""}${App.user.isAdmin?`<a class="btn ghost sm" href="#admin">Área do advogado</a>`:""}<button class="btn ghost sm" id="clOut">Sair</button></div></div>
       <div class="subtabs" role="tablist"><button role="tab" data-ctab="consultas" aria-selected="${this.tab==="consultas"}">Minhas consultas</button><button role="tab" data-ctab="dados" aria-selected="${this.tab==="dados"}">Meus dados</button></div>
       <div id="clBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#clOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
@@ -637,7 +639,7 @@ const Client = {
     };
     $("#clBody").innerHTML = `
       <h2 style="margin-bottom:14px">Próximas consultas</h2>
-      ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span><a class="btn sm" href="#agenda">Agendar consulta</a></div>`}
+      ${upcoming.length?`<div class="bk-list">${upcoming.map(card).join("")}</div>`:`<div class="empty"><span>Nenhuma consulta agendada.</span>${AGENDA?`<a class="btn sm" href="#agenda">Agendar consulta</a>`:`<a class="btn sm" href="#whatsapp">Falar pelo WhatsApp</a>`}</div>`}
       ${past.length?`<h2 style="margin:36px 0 14px">Histórico</h2><div class="bk-list">${past.map(card).join("")}</div>`:""}`;
     hydratePay($("#clBody"));
     $$("[data-act]", $("#clBody")).forEach(b=>b.onclick=async()=>{
@@ -684,7 +686,7 @@ const Admin = {
     }
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
-      <div class="btns"><a class="btn ghost sm" href="#agenda">Ver agenda pública</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
+      <div class="btns"><a class="btn ghost sm" href="${AGENDA?"#agenda":"#inicio"}">${AGENDA?"Ver agenda pública":"Ver o site"}</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
       <div class="subtabs" role="tablist">${T.map(([k,l])=>`<button role="tab" data-atab="${k}" aria-selected="${this.tab===k}">${l}</button>`).join("")}</div>
       <div id="adBody"><p class="loading-note"><span class="spin"></span> Carregando</p></div>`;
     $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
@@ -865,6 +867,7 @@ function focusView(){
   if(t){ t.tabIndex=-1; t.focus(); }
 }
 function route(ev){
+  if(!AGENDA && location.hash==="#agenda") history.replaceState(null,"","#whatsapp");
   const h=location.hash.replace("#","");
   const r = ["cliente","admin","privacidade"].includes(h) ? h : "site";
   App.route=r;
@@ -883,7 +886,7 @@ $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menu
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
 
 (async function init(){
-  $("#demoBar").hidden = API.mode!=="demo";
+  $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;
   $("#year").textContent = todaySP().slice(0,4);
   // Sem data informada em config.js, a política não exibe "Última atualização"
   if(SITE.privacidadeAtualizada){ $("#privDate").textContent = SITE.privacidadeAtualizada; $("#privUpd").hidden = false; }
@@ -891,7 +894,7 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
   try{
     await refreshPublic();
     App.user = await API.getUser();
-    renderMods(); renderNext(); goStep(1,true);
+    if(AGENDA){ renderMods(); renderNext(); goStep(1,true); }
   }catch(err){
     $("#nextList").innerHTML=`<li class="msg">Não foi possível carregar a agenda: ${esc(err.message)}</li>`;
     $("#modOpts").innerHTML=`<p class="msg" role="alert">Não foi possível carregar a agenda. Tente novamente em instantes.</p>`;

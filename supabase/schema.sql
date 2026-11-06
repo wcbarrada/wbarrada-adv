@@ -71,8 +71,8 @@ create table if not exists public.modalidades (
   ordem      int not null default 0
 );
 insert into public.modalidades (id, nome, descricao, tipo, ordem) values
-  ('campos',    'Presencial · Campos',    'Av. Bicok, 41, Campos dos Goytacazes',          'presencial', 1),
-  ('cantagalo', 'Presencial · Cantagalo', 'Rua Evandro do Vale Moreira, 69, sala 102',     'presencial', 2),
+  ('campos',    'Presencial · Campos',    'Local informado na confirmação',                'presencial', 1),
+  ('cantagalo', 'Presencial · Cantagalo', 'Local informado na confirmação',                'presencial', 2),
   ('online',    'Online · videochamada',  'Link da videochamada enviado após a confirmação',  'online',  3)
 on conflict do nothing;
 -- Prov. CFOAB 205/2021, art. 3º, I: texto público sem menção a pagamento

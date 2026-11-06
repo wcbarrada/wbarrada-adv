@@ -10,6 +10,9 @@ rd = lambda p: open(p, encoding='utf-8').read()
 wr = lambda p, s: open(p, 'w', encoding='utf-8', newline='\n').write(s)
 css = rd(os.path.join(SRC,'styles.base.css')) + rd(os.path.join(SRC,'styles.app.css'))
 body = rd(os.path.join(SRC,'body.html'))
+# Agenda online: agendaAtiva em config.js. Variantes marcadas com data-agenda="on" ou "off" em body.html
+AGENDA = re.search(r'agendaAtiva:\s*false', rd(os.path.join(SRC,'config.js'))) is None
+body = body.replace('data-agenda="%s"' % ('off' if AGENDA else 'on'), 'hidden').replace(' data-agenda="%s"' % ('on' if AGENDA else 'off'), '')
 app = rd(os.path.join(SRC,'app.js'))
 fonts = '''<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +32,7 @@ HEADERS = f'''/*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
 '''
 # 1) artifact (demo)
-art = f"<title>Barrada Advocacia</title>\n{fonts}\n<style>{css}</style>\n{body.replace('__LOGO__','data:image/png;base64,'+b64)}\n{QR}\n<script>window.SITE_CONFIG={{}};</script>\n<script>{app}</script>\n"
+art = f"<title>Barrada Advocacia</title>\n{fonts}\n<style>{css}[hidden]{{display:none!important}}</style>\n{body.replace('__LOGO__','data:image/png;base64,'+b64)}\n{QR}\n<script>window.SITE_CONFIG={{}};</script>\n<script>{app}</script>\n"
 os.makedirs('dist', exist_ok=True)
 wr('dist/artifact.html', art)
 # 2) hosting package
@@ -50,7 +53,7 @@ shutil.copy('supabase/schema.sql', d+'/supabase/schema.sql')
 shutil.copy(os.path.join(SRC,'LEIA-ME.md'), d+'/LEIA-ME.md')
 # Em modo demonstração, a barra de aviso já vem visível: revelá-la por JS deslocaria a página (CLS)
 HOST_BODY = body.replace('__LOGO__','logo.png')
-if DEMO: HOST_BODY = HOST_BODY.replace('id="demoBar" aria-label="Aviso de demonstração" hidden>','id="demoBar" aria-label="Aviso de demonstração">')
+if DEMO and AGENDA: HOST_BODY = HOST_BODY.replace('id="demoBar" aria-label="Aviso de demonstração" hidden>','id="demoBar" aria-label="Aviso de demonstração">')
 idx = f'''<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -65,7 +68,7 @@ idx = f'''<!doctype html>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Wanderson Corrêa Barrada · Advogado">
-<meta property="og:description" content="Previdenciário e Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ. Agendamento online.">
+<meta property="og:description" content="Previdenciário e Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ.{" Agendamento online." if AGENDA else ""}">
 <meta property="og:url" content="{SITE_URL}">
 <meta property="og:image" content="{SITE_URL}og-image.png">
 <meta property="og:image:width" content="1200">
@@ -73,7 +76,7 @@ idx = f'''<!doctype html>
 <meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"}},{{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}}]}}
+{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"]}}
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
