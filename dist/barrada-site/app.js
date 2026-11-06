@@ -129,12 +129,12 @@ function DemoAPI(){
   function seed(){
     const d={
       config:{ duracao_min:50, intervalo_min:10, antecedencia_horas:12, horizonte_dias:45, reserva_expira_horas:24, cancelamento_horas:24,
-        whatsapp:"", pix_chave:"", pix_nome:"WANDERSON C BARRADA", pix_cidade:"CANTAGALO", link_cartao:"",
+        whatsapp:"5522998285300", pix_chave:"", pix_nome:"WANDERSON C BARRADA", pix_cidade:"CANTAGALO", link_cartao:"",
         politica:"Remarcação ou cancelamento sem custo com até 24 horas de antecedência. Ausência sem aviso prévio não gera reembolso." },
       modalidades:[
         {id:"campos",nome:"Presencial · Campos",descricao:"Av. Bicok, 41, Campos dos Goytacazes",tipo:"presencial",valor:300,ativo:true,ordem:1},
         {id:"cantagalo",nome:"Presencial · Cantagalo",descricao:"Rua Evandro do Vale Moreira, 69, sala 102",tipo:"presencial",valor:300,ativo:true,ordem:2},
-        {id:"online",nome:"Online · videochamada",descricao:"Link da videochamada enviado após a confirmação",tipo:"online",valor:250,ativo:true,ordem:3}],
+        {id:"online",nome:"Online · videochamada",descricao:"Link da videochamada enviado após a confirmação",tipo:"online",valor:300,ativo:true,ordem:3}],
       disponibilidade:[], bloqueios:[], extras:[], users:[], agendamentos:[]
     };
     let n=1; const r=(m,dw,a,b)=>d.disponibilidade.push({id:n++,modalidade_id:m,dia_semana:dw,inicio:a,fim:b});

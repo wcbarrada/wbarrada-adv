@@ -130,4 +130,4 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Captcha.
 
 ## Pendências de conteúdo
-Foto profissional (`config.js > foto`), número de WhatsApp (painel > Configurações), valores das modalidades, chave PIX, link de cartão, data da política e prazo de retenção de dados.
+Foto profissional (`config.js > foto`), valores das modalidades, chave PIX, link de cartão, data da política e prazo de retenção de dados.

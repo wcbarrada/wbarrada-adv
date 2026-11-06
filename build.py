@@ -72,7 +72,7 @@ idx = f'''<!doctype html>
 <meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"}},{{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}}]}}
+{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"],"address":[{{"@type":"PostalAddress","streetAddress":"Rua Evandro do Vale Moreira, 69, sala 102","addressLocality":"Cantagalo","addressRegion":"RJ","addressCountry":"BR"}},{{"@type":"PostalAddress","streetAddress":"Av. Bicok, 41","addressLocality":"Campos dos Goytacazes","addressRegion":"RJ","addressCountry":"BR"}}]}}
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
