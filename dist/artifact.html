@@ -351,7 +351,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .skip{position:absolute;left:-999px;top:8px;z-index:60;background:var(--gold);color:var(--gold-ink);padding:.6em 1em;border-radius:var(--r);font-weight:600}
 .skip:focus{left:16px}
 .band{background:var(--panel);border-block:1px solid var(--line)}
-#sobre.profile{background:transparent;border-block:0;border-bottom:1px solid var(--line)}
+#sobre.profile{background:var(--ink);border-block:0;border-bottom:1px solid var(--line)}
 #sobre .grid{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);align-items:center}
 @media (max-width:860px){#sobre .grid{grid-template-columns:1fr}}
 .portrait{margin:0;display:grid;gap:14px;max-width:380px}
@@ -410,6 +410,32 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
+
+/* Hero: quadro de atendimento */
+.at{margin:14px 0 0;display:grid;gap:12px}
+.at div{display:grid;gap:2px;padding-top:12px;border-top:1px solid var(--line)}
+.at dt{font-weight:600;font-size:.92rem}
+.at dd{margin:0;color:var(--muted);font-size:.88rem}
+
+/* Sobre: como trabalho */
+.princ-t{margin-top:clamp(40px,6vw,64px)}
+.princ{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.princ li{background:var(--ink);padding:20px;display:grid;gap:6px;align-content:start}
+.princ b{font-weight:600}
+.princ span{color:var(--muted);font-size:.92rem}
+@media (max-width:960px){.princ{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.princ{grid-template-columns:1fr}}
+
+/* Contato: aviso contra golpes */
+.aviso{margin-top:18px;padding:14px 18px;border:1px solid var(--line-2);border-left:3px solid var(--gold);border-radius:var(--r);font-size:.92rem;color:var(--muted);max-width:78ch}
+.aviso b{color:var(--fg);font-weight:600}
+
+/* Seções claras, para leitura */
+.paper{--ink:#f7f3ea;--panel:#fcfaf5;--panel-2:#efe9db;--line:#dcd3bf;--line-2:#c2b69c;--field-line:#857a62;
+  --fg:#1f1b14;--muted:#574f40;--gold:#775720;--gold-2:#775720;--gold-ink:#ffffff;
+  color-scheme:light;background:var(--ink);color:var(--fg)}
+.paper .btn:hover{background:#5f4518}
+.paper .btn.ghost:hover{background:rgba(119,87,32,.1)}
 [hidden]{display:none!important}</style>
 <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 <header class="top">
@@ -443,8 +469,8 @@ footer{padding-bottom:88px}
     <div class="wrap grid">
       <div>
         <p class="eyebrow">Advocacia · Campos dos Goytacazes, Cordeiro, Cantagalo e online</p>
-        <h1>Quando a outra parte é o INSS ou o poder público, cada <em>prazo</em> e cada <em>cálculo</em> importam.</h1>
-        <p class="lead">Orientação jurídica para aposentados, segurados do INSS, servidores públicos e contribuintes, com explicação clara de cada etapa. Atendimento presencial em Campos dos Goytacazes, Cordeiro e Cantagalo, ou por videochamada.</p>
+        <h1>Wanderson Corrêa <em>Barrada</em></h1>
+        <p class="lead">Advogado com atuação nas vias administrativa e judicial, com análise individual de cada caso. Atendimento presencial com hora marcada em Campos dos Goytacazes, Cordeiro e Cantagalo, ou por videochamada.</p>
         <div class="ctas">
           <a class="btn" href="#agenda" hidden>Agendar consulta</a>
           <a class="btn" href="#whatsapp">Falar pelo WhatsApp</a>
@@ -467,13 +493,16 @@ footer{padding-bottom:88px}
       <aside class="next" aria-labelledby="atTitle">
         <p class="eyebrow">Atendimento</p>
         <h2 id="atTitle">Consulta com hora marcada</h2>
-        <p class="muted" style="font-size:.88rem">Presencial ou por videochamada. Dia, horário e local são combinados pelo WhatsApp.</p>
-        <p class="foot">A mensagem fica pronta na <a href="#whatsapp">seção de WhatsApp</a>.</p>
+        <dl class="at">
+          <div><dt>Presencial</dt><dd>Dia, horário e local combinados com o escritório</dd></div>
+          <div><dt>Videochamada</dt><dd>Para qualquer cidade</dd></div>
+          <div><dt>Primeiro contato</dt><dd>Pelo <a href="#whatsapp">WhatsApp</a>, com a mensagem pronta</dd></div>
+        </dl>
       </aside>
     </div>
   </section>
 
-  <section id="sobre" class="profile">
+  <section id="sobre" class="profile paper">
     <div class="wrap grid">
       <figure class="portrait" id="portrait">
         <div class="portrait-ph"><span>WB</span><small>Foto profissional</small></div>
@@ -481,9 +510,10 @@ footer{padding-bottom:88px}
       </figure>
       <div class="text">
         <p class="eyebrow"><b>§</b>Sobre</p>
-        <h2>Olá, sou Wanderson Corrêa Barrada.</h2>
-        <p>Sou advogado inscrito na <strong>OAB/RJ sob o nº 164.135</strong> desde 2010. Minha atuação se concentra em causas contra o INSS e contra o poder público: benefícios previdenciários, direitos de servidores, cobranças de tributos municipais e execução de condenações judiciais.</p>
-        <p>Nessas causas, o resultado costuma depender do detalhe: a data de início de um benefício, o prazo para recorrer, o índice de correção de cada período. Por isso, explico o caso em linguagem direta e faço os cálculos do processo desde a primeira análise.</p>
+        <h2>Apresentação</h2>
+        <p>Sou advogado, inscrito na <strong>OAB/RJ sob o nº 164.135</strong> desde 2010, com atuação nas vias administrativa e judicial.</p>
+        <p>Cada atendimento começa pela análise da situação e dos documentos. A partir dela, explico em linguagem direta os caminhos possíveis, os prazos envolvidos e os próximos passos.</p>
+        <p>Quando o assunto exigir atuação especializada em outra área, posso indicar um colega de confiança, com o seu conhecimento e a sua concordância.</p>
         <p class="note">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
         <ul class="facts">
           <li><b>Onde atendo</b><span>Campos dos Goytacazes, Cordeiro, Cantagalo e região, ou por videochamada</span></li>
@@ -492,27 +522,31 @@ footer{padding-bottom:88px}
         </ul>
       </div>
     </div>
+    <div class="wrap">
+      <h3 class="princ-t">Como trabalho</h3>
+      <ul class="princ">
+        <li><b>Análise individual</b><span>A orientação parte da sua situação e dos seus documentos.</span></li>
+        <li><b>Linguagem clara</b><span>Caminhos, prazos e próximos passos explicados de forma direta.</span></li>
+        <li><b>Sigilo profissional</b><span>O que você relata é protegido pelo sigilo profissional.</span></li>
+        <li><b>Sem promessa de resultado</b><span>Você recebe a avaliação do caso, inclusive dos riscos envolvidos.</span></li>
+      </ul>
+    </div>
   </section>
 
-  <section id="areas">
+  <section id="areas" class="paper">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Áreas de atuação</p>
-        <h2>Previdenciário e Direito Público no centro do trabalho.</h2>
-        <p>As demais áreas atendem clientes do escritório e suas famílias.</p>
+        <h2>Assuntos atendidos</h2>
+        <p>Exemplos de assuntos atendidos. Se o seu não estiver na lista, envie uma mensagem para avaliação.</p>
       </div>
       <div class="areas">
-        <article class="area area-wide">
-          <span class="ref">Previdenciário · INSS</span>
-          <h3>Benefícios do INSS</h3>
-          <p>Requerimento, recurso administrativo e ação judicial.</p>
-          <ul class="cols"><li>Aposentadorias</li><li>Benefícios por incapacidade</li><li>BPC/LOAS</li><li>Pensão por morte</li><li>Benefício negado ou cessado</li><li>Revisão de benefício</li><li>Descontos indevidos no benefício</li><li>Salário-maternidade</li></ul>
-        </article>
-        <article class="area"><span class="ref">Fazenda Pública</span><h3>Servidores públicos</h3><p>Direitos funcionais de servidores municipais e estaduais.</p><ul><li>Progressão e promoção funcional</li><li>Gratificações e diferenças remuneratórias</li><li>Terço constitucional de férias</li></ul></article>
-        <article class="area"><span class="ref">Execução contra a Fazenda</span><h3>RPV, precatório e cálculos</h3><p>Liquidação e recálculo de condenações, com o índice de correção de cada período.</p><ul><li>Cumprimento individual de sentença coletiva</li><li>Impugnação de cálculos</li><li>Expedição de RPV e precatório</li></ul></article>
-        <article class="area"><span class="ref">Tributário municipal</span><h3>ISS, taxas e execução fiscal</h3><p>Defesa do contribuinte diante de cobranças municipais.</p><ul><li>Ação anulatória e repetição de indébito</li><li>Exceção de pré-executividade e embargos</li><li>Sustação de protesto de CDA</li></ul></article>
+        <article class="area"><span class="ref">Cível, família e trabalho</span><h3>Família, sucessões e trabalhista</h3><p>Questões familiares, sucessórias e relações de trabalho.</p><ul><li>Inventário e partilha</li><li>Filiação socioafetiva</li><li>Reclamação trabalhista</li></ul></article>
         <article class="area"><span class="ref">Consumidor e saúde</span><h3>Planos de saúde e consumo</h3><p>Demandas com pedido de tutela de urgência quando o tempo pesa.</p><ul><li>Negativa de cobertura e cancelamento de plano</li><li>Revisão de reajuste</li><li>Extravio de bagagem e cobranças indevidas</li></ul></article>
-        <article class="area"><span class="ref">Família, sucessões e trabalho</span><h3>Cível, família e trabalhista</h3><p>Atendimento complementar para clientes e suas famílias.</p><ul><li>Inventário e partilha</li><li>Filiação socioafetiva</li><li>Reclamação trabalhista</li></ul></article>
+        <article class="area"><span class="ref">Execução contra a Fazenda</span><h3>RPV, precatório e cálculos</h3><p>Liquidação e recálculo de condenações, com o índice de correção de cada período.</p><ul><li>Cumprimento individual de sentença coletiva</li><li>Impugnação de cálculos</li><li>Expedição de RPV e precatório</li></ul></article>
+        <article class="area"><span class="ref">Fazenda Pública</span><h3>Servidores públicos</h3><p>Direitos funcionais de servidores municipais e estaduais.</p><ul><li>Progressão e promoção funcional</li><li>Gratificações e diferenças remuneratórias</li><li>Terço constitucional de férias</li></ul></article>
+        <article class="area"><span class="ref">Previdenciário · INSS</span><h3>Benefícios do INSS</h3><p>Requerimento, recurso administrativo e ação judicial.</p><ul><li>Aposentadorias e pensão por morte</li><li>Benefícios por incapacidade e BPC/LOAS</li><li>Benefício negado, cessado ou com desconto indevido</li><li>Revisão de benefício</li><li>Salário-maternidade</li></ul></article>
+        <article class="area"><span class="ref">Tributário municipal</span><h3>ISS, taxas e execução fiscal</h3><p>Defesa do contribuinte diante de cobranças municipais.</p><ul><li>Ação anulatória e repetição de indébito</li><li>Exceção de pré-executividade e embargos</li><li>Sustação de protesto de CDA</li></ul></article>
       </div>
       <p class="note" style="margin-top:18px">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
     </div>
@@ -655,6 +689,9 @@ footer{padding-bottom:88px}
             <option>RPV, precatório ou cálculo de processo</option>
             <option>cobrança de imposto ou taxa municipal</option>
             <option>plano de saúde ou consumidor</option>
+            <option>família, herança ou inventário</option>
+            <option>questão trabalhista</option>
+            <option>processo em andamento</option>
             <option>outro assunto</option>
           </select></div>
         <div class="fgrid">
@@ -671,7 +708,7 @@ footer{padding-bottom:88px}
     </div>
   </section>
 
-  <section id="orientacoes">
+  <section id="orientacoes" class="paper">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Orientações</p>
@@ -699,6 +736,16 @@ footer{padding-bottom:88px}
           <h3>Correção de condenações contra o poder público</h3>
           <p>Desde dezembro de 2021, condenações da Fazenda Pública são corrigidas pela <b>taxa SELIC</b>, uma única vez, até a quitação. Períodos anteriores seguem os índices de cada época.</p>
         </article>
+        <article class="guide">
+          <span class="law">Constituição Federal, art. 7º, XXIX</span>
+          <h3>Direitos do contrato de trabalho</h3>
+          <p>A ação trabalhista pode ser proposta em até <b>2 anos</b> após o fim do contrato e alcança os créditos dos <b>5 anos</b> anteriores à ação.</p>
+        </article>
+        <article class="guide">
+          <span class="law">Código de Processo Civil, art. 611</span>
+          <h3>Abertura de inventário</h3>
+          <p>O inventário deve ser aberto em até <b>2 meses</b> do falecimento. A legislação estadual pode prever multa sobre o imposto de transmissão em caso de atraso.</p>
+        </article>
       </div>
     </div>
   </section>
@@ -708,7 +755,7 @@ footer{padding-bottom:88px}
       <div class="sec-head" style="margin:0">
         <p class="eyebrow"><b>§</b>Dúvidas frequentes</p>
         <h2>Antes da consulta</h2>
-        <p>Se a sua dúvida não estiver aqui, escreva no resumo do caso ou pelo WhatsApp.</p>
+        <p>Se a sua dúvida não estiver aqui, envie uma mensagem pelo WhatsApp.</p>
       </div>
       <div>
         <details><summary>O que acontece na consulta?</summary><p>O caso é analisado com base no seu relato e nos documentos. Você recebe a avaliação jurídica da situação, os caminhos possíveis e, se for o caso, a proposta de contratação para o acompanhamento.</p></details>
@@ -722,7 +769,7 @@ footer{padding-bottom:88px}
     </div>
   </section>
 
-  <section id="contato">
+  <section id="contato" class="paper">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow"><b>§</b>Contato</p>
@@ -735,6 +782,7 @@ footer{padding-bottom:88px}
         <div class="ccard"><span class="lbl">Atendimento presencial</span><b>Campos dos Goytacazes, Cordeiro e Cantagalo</b><span class="muted">Com hora marcada. O local é informado ao combinar a consulta.</span></div>
         <div class="ccard"><span class="lbl">Atendimento online</span><b>Videochamada</b><span class="muted">Para qualquer cidade</span><a href="#agenda" hidden>Agendar</a><a href="#whatsapp">Combinar pelo WhatsApp</a></div>
       </div>
+      <p class="aviso"><b>Atenção a golpes.</b> Não peço depósito, transferência ou senha por mensagem para liberar valores de processos. Em caso de dúvida, confirme pelos contatos desta página.</p>
     </div>
   </section>
 </main>

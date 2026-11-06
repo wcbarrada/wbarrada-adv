@@ -63,12 +63,12 @@ idx = f'''<!doctype html>
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Wanderson Barrada · Advogado em Campos, Cordeiro e Cantagalo</title>
 {NOINDEX}<link rel="canonical" href="{SITE_URL}">
-<meta name="description" content="Advocacia previdenciária e em Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, presencial e por videochamada. OAB/RJ nº 164.135.">
+<meta name="description" content="Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135. Atuação nas vias administrativa e judicial, em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, presencial e por videochamada.">
 <meta name="theme-color" content="#0e0d0b">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Wanderson Corrêa Barrada · Advogado">
-<meta property="og:description" content="Previdenciário e Direito Público em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ.{" Agendamento online." if AGENDA else ""}">
+<meta property="og:description" content="Atuação nas vias administrativa e judicial, em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ.{" Agendamento online." if AGENDA else ""}">
 <meta property="og:url" content="{SITE_URL}">
 <meta property="og:image" content="{SITE_URL}og-image.png">
 <meta property="og:image:width" content="1200">
@@ -76,7 +76,7 @@ idx = f'''<!doctype html>
 <meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia previdenciária e em Direito Público. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"]}}
+{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia nas vias administrativa e judicial. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"]}}
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">

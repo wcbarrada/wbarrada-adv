@@ -132,7 +132,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .skip{position:absolute;left:-999px;top:8px;z-index:60;background:var(--gold);color:var(--gold-ink);padding:.6em 1em;border-radius:var(--r);font-weight:600}
 .skip:focus{left:16px}
 .band{background:var(--panel);border-block:1px solid var(--line)}
-#sobre.profile{background:transparent;border-block:0;border-bottom:1px solid var(--line)}
+#sobre.profile{background:var(--ink);border-block:0;border-bottom:1px solid var(--line)}
 #sobre .grid{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);align-items:center}
 @media (max-width:860px){#sobre .grid{grid-template-columns:1fr}}
 .portrait{margin:0;display:grid;gap:14px;max-width:380px}
@@ -191,3 +191,29 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
+
+/* Hero: quadro de atendimento */
+.at{margin:14px 0 0;display:grid;gap:12px}
+.at div{display:grid;gap:2px;padding-top:12px;border-top:1px solid var(--line)}
+.at dt{font-weight:600;font-size:.92rem}
+.at dd{margin:0;color:var(--muted);font-size:.88rem}
+
+/* Sobre: como trabalho */
+.princ-t{margin-top:clamp(40px,6vw,64px)}
+.princ{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.princ li{background:var(--ink);padding:20px;display:grid;gap:6px;align-content:start}
+.princ b{font-weight:600}
+.princ span{color:var(--muted);font-size:.92rem}
+@media (max-width:960px){.princ{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.princ{grid-template-columns:1fr}}
+
+/* Contato: aviso contra golpes */
+.aviso{margin-top:18px;padding:14px 18px;border:1px solid var(--line-2);border-left:3px solid var(--gold);border-radius:var(--r);font-size:.92rem;color:var(--muted);max-width:78ch}
+.aviso b{color:var(--fg);font-weight:600}
+
+/* Seções claras, para leitura */
+.paper{--ink:#f7f3ea;--panel:#fcfaf5;--panel-2:#efe9db;--line:#dcd3bf;--line-2:#c2b69c;--field-line:#857a62;
+  --fg:#1f1b14;--muted:#574f40;--gold:#775720;--gold-2:#775720;--gold-ink:#ffffff;
+  color-scheme:light;background:var(--ink);color:var(--fg)}
+.paper .btn:hover{background:#5f4518}
+.paper .btn.ghost:hover{background:rgba(119,87,32,.1)}

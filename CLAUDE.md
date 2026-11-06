@@ -1,7 +1,7 @@
 # CLAUDE.md — Site WBarrada Advogado
 
 ## Contexto
-Site profissional de advocacia de **Wanderson Corrêa Barrada (OAB/RJ nº 164.135)**, com atendimento em Campos dos Goytacazes, Cordeiro, Cantagalo e por videochamada. Áreas principais: Previdenciário (INSS) e Direito Público / Fazenda Pública.
+Site profissional de advocacia de **Wanderson Corrêa Barrada (OAB/RJ nº 164.135)**, com atendimento em Campos dos Goytacazes, Cordeiro, Cantagalo e por videochamada. O site não destaca área principal (pedido do usuário em 06/11/2026): a apresentação é centrada no advogado, e casos fora do seu campo podem ser indicados a colegas.
 
 Funções do site: página institucional, agenda online com reserva e pagamento da consulta, assistente de WhatsApp, Área do cliente e Área do advogado.
 
@@ -74,6 +74,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Hospedagem prevista: Cloudflare Pages (estático, com `_headers` para CSP). Banco: Supabase (Postgres, Auth e Storage).
 
 ## Estado atual
+- Revisão comparativa com sete sites de escritórios em 06/11/2026: hero com o nome do advogado, Áreas sem hierarquia e em ordem alfabética, bloco "Como trabalho", seções claras (classe `.paper`), aviso contra golpes e mais assuntos no WhatsApp. Não adotar contadores de processos, prêmios, rankings ou "excelência" (Prov. 205/2021). Faltam dados do usuário para trajetória (formação) e horário de atendimento.
 - **Agendamento online suspenso a pedido do usuário em 06/11/2026** (`agendaAtiva: false` em `src/config.js`). O código e o banco foram mantidos. `build.py` oculta os elementos marcados com `data-agenda="on"` e mostra os marcados com `data-agenda="off"`; `#agenda` redireciona para `#whatsapp`. Para reativar: `agendaAtiva: true`, rodar o build e revisar o local nas modalidades. Os testes `e2e.py`, `axe_run.py` e `d2.py` exercitam a agenda: rodar contra um build com `agendaAtiva: true`.
 - Endereços de rua retirados das páginas e do JSON-LD em 06/11/2026: o atendimento presencial não será no endereço usado nas petições. Endereço definitivo pendente (provavelmente sede da OAB). A descrição das modalidades no banco real ainda traz os endereços antigos e só aparece com a agenda ativa.
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
