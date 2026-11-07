@@ -55,12 +55,26 @@ npx serve -l 4173 dist/barrada-site               # servidor local (modo demonst
 pip install playwright && npm i axe-core          # dependências de teste
 BASE_URL=http://localhost:4173/ python3 tests/e2e/e2e.py
 BASE_URL=http://localhost:4173/ AXE_PATH=node_modules/axe-core/axe.min.js python3 tests/e2e/axe_run.py
+BASE_URL=http://localhost:4173/ python3 tests/e2e/must.py   # regressão dos itens Must; exige build com agendaAtiva: true
 # RLS: num Postgres de teste (não no projeto real)
 psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supabase/tests/rls.sql
 ```
 - Lighthouse no Windows: usar `--chrome-flags="--headless=new --disable-backgrounding-occluded-windows --disable-renderer-backgrounding --disable-background-timer-throttling --disable-features=CalculateNativeWinOcclusion"`. Sem elas, o Speed Index variou de 3 s a 16 s na mesma versão do site.
 - Contas do modo demonstração: `cliente@demo.com` e `admin@demo.com`, ambas com o código `123456`. Os dados ficam no `localStorage`.
 - `mock-supabase.sql` cria os papéis `anon` e `authenticated`. Se eles já existirem, remova a primeira linha.
+
+## Onde trabalhar (decisão do usuário em 07/11/2026)
+- **Fonte única: o GitHub** (`wcbarrada/wbarrada-adv`). A branch `main` publica o site a cada envio (`.github/workflows/pages.yml`).
+- **Trabalhar em sessões na nuvem** do Claude Code (ambiente **Cloud**), abertas pelo aplicativo do Claude, pelo navegador (claude.ai/code) ou pelo celular. Elas não dependem de nenhum computador ligado. O Claude GitHub App está instalado só neste repositório.
+- Não usar Remote Control para trabalhar no site: ele depende do PC de origem ligado. Não guardar o código no OneDrive. No PC da Prefeitura, nenhuma cópia local.
+- Cópias locais (`C:\Projetos\wbarrada-adv`, atalhos "Iniciar/Encerrar trabalho - site") são opcionais e podem ser apagadas depois de conferir que não há nada pendente nelas.
+- **Ao concluir uma alteração autorizada** (Fase 3), sem pedir ao usuário que rode comandos:
+  1. commit na branch da sessão e `git push`;
+  2. abrir pull request para a `main` com resumo em português;
+  3. informar ao usuário o que muda no site e **pedir confirmação para publicar**, porque o merge publica;
+  4. com a confirmação, fazer o merge (squash) e conferir no Actions se a publicação terminou;
+  5. nunca deixar trabalho só numa branch sem avisar o usuário.
+- Pendência: os testes extras do `rls.sql` existem só na pasta antiga do PC de casa em Campos; trazer ao repositório na próxima vez que o usuário estiver lá.
 
 ## Arquitetura
 - HTML, CSS e JavaScript puros, sem etapa de build JavaScript. Navegação por hash: `#cliente`, `#admin` e `#privacidade` são telas próprias; as demais âncoras rolam o site.
