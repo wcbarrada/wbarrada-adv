@@ -436,6 +436,43 @@ begin
 end $$;
 -- <<< FIM: acesso a valores e retenção de dados
 
+-- >>> INICIO: validação do cadastro e motivo dos bloqueios (2026-11-09)
+-- O e-mail exibido ao advogado vem do cadastro confirmado: o cliente só altera nome, CPF e telefone
+revoke update on public.profiles from anon, authenticated;
+grant update (nome, cpf, telefone) on public.profiles to authenticated;
+
+create or replace function public.cpf_valido(p text)
+returns boolean language plpgsql immutable set search_path = pg_catalog as $$
+declare d text := regexp_replace(coalesce(p,''), '\D', '', 'g'); s int; r int; i int;
+begin
+  if coalesce(p,'') !~ '^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$' or d ~ '^(\d)\1{10}$' then return false; end if;
+  s := 0; for i in 1..9 loop s := s + substr(d,i,1)::int * (11-i); end loop;
+  r := (s*10) % 11; if r = 10 then r := 0; end if;
+  if r <> substr(d,10,1)::int then return false; end if;
+  s := 0; for i in 1..10 loop s := s + substr(d,i,1)::int * (12-i); end loop;
+  r := (s*10) % 11; if r = 10 then r := 0; end if;
+  return r = substr(d,11,1)::int;
+end $$;
+
+alter table public.profiles drop constraint if exists profiles_nome_tamanho;
+alter table public.profiles add constraint profiles_nome_tamanho check (char_length(nome) <= 120) not valid;
+alter table public.profiles drop constraint if exists profiles_telefone_tamanho;
+alter table public.profiles add constraint profiles_telefone_tamanho check (telefone is null or char_length(telefone) <= 20) not valid;
+alter table public.profiles drop constraint if exists profiles_cpf_valido;
+alter table public.profiles add constraint profiles_cpf_valido check (cpf is null or cpf = '' or public.cpf_valido(cpf)) not valid;
+
+-- O motivo do bloqueio é anotação interna: visitantes e clientes veem só a data
+revoke select on public.bloqueios from anon, authenticated;
+grant select (id, data, modalidade_id) on public.bloqueios to anon, authenticated;
+
+create or replace function public.bloqueios_motivos()
+returns table (id bigint, motivo text) language sql stable security definer set search_path = public as $$
+  select b.id, b.motivo from public.bloqueios b where public.is_admin();
+$$;
+revoke execute on function public.bloqueios_motivos() from public, anon;
+grant execute on function public.bloqueios_motivos() to authenticated;
+-- <<< FIM: validação do cadastro e motivo dos bloqueios
+
 -- =====================================================================
 --  DEPOIS de criar a sua conta pelo site (Área do cliente > Criar conta),
 --  torne-a administradora executando (troque o e-mail):

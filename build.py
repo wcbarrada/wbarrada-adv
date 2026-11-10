@@ -1,4 +1,4 @@
-import base64, os, re, shutil
+import base64, hashlib, os, re, shutil
 # Gera dist/artifact.html (prévia em arquivo único) e dist/barrada-site/ (pacote de hospedagem).
 # Uso: python3 build.py  (executar na raiz do projeto)
 ROOT=os.path.dirname(os.path.abspath(__file__)); os.chdir(ROOT)
@@ -54,6 +54,8 @@ shutil.copy('supabase/schema.sql', d+'/supabase/schema.sql')
 shutil.copy(os.path.join(SRC,'LEIA-ME.md'), d+'/LEIA-ME.md')
 # Em modo demonstração, a barra de aviso já vem visível: revelá-la por JS deslocaria a página (CLS)
 HOST_BODY = body.replace('__LOGO__','logo.png')
+# A Cloudflare e o navegador guardam JS por horas: a versão no endereço garante o arquivo novo a cada publicação
+ASSET_V = hashlib.sha256((app + rd(os.path.join(SRC,'config.js'))).encode('utf-8')).hexdigest()[:10]
 if DEMO and AGENDA: HOST_BODY = HOST_BODY.replace('id="demoBar" aria-label="Aviso de demonstração" hidden>','id="demoBar" aria-label="Aviso de demonstração">')
 idx = f'''<!doctype html>
 <html lang="pt-BR">
@@ -88,8 +90,8 @@ idx = f'''<!doctype html>
 {HOST_BODY}
 {QR.replace('<script src','<script defer src')}
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="config.js"></script>
-<script defer src="app.js"></script>
+<script defer src="config.js?v={ASSET_V}"></script>
+<script defer src="app.js?v={ASSET_V}"></script>
 </body>
 </html>
 '''
