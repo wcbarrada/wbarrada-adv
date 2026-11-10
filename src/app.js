@@ -345,23 +345,54 @@ async function refreshPublic(){
   waUpdate();
 }
 
+/* ---------------- processo em andamento: hipótese e número obrigatórios ---------------- */
+// Só atende processo sem advogado constituído; a situação e o número são exigidos na agenda e no WhatsApp
+const PROC_ADM=/administrativo/i;
+function cnjOK(v){ const d=String(v).replace(/\D/g,""); if(d.length!==20) return false;
+  try{ return BigInt(d.slice(0,7)+d.slice(9)+d.slice(7,9)) % 97n === 1n; }catch(e){ return false; } } // dígito verificador da numeração única (Res. CNJ 65/2008)
+const maskCNJ=v=>{ const d=v.replace(/\D/g,"").slice(0,20); return d.slice(0,7)+(d.length>7?"-"+d.slice(7,9):"")+(d.length>9?"."+d.slice(9,13):"")+(d.length>13?"."+d.slice(13,14):"")+(d.length>14?"."+d.slice(14,16):"")+(d.length>16?"."+d.slice(16,20):""); };
+function procCheck(p){
+  const sit=$(`#${p}ProcSit`).value, num=$(`#${p}ProcNum`).value.trim();
+  if(!sit) return {erro:"Informe a situação do processo."};
+  if(sit==="com-advogado") return {erro:"Por respeito ao colega que acompanha o caso, não atendo nem oriento sobre processo com advogado constituído."};
+  if(PROC_ADM.test(sit) ? num.replace(/\s/g,"").length<5 : !cnjOK(num)) return {erro: PROC_ADM.test(sit) ? "Informe o número do protocolo do processo administrativo." : "Número do processo inválido. Confira os 20 dígitos da numeração do CNJ."};
+  return {ok:true, texto:`${sit}, nº ${num}`};
+}
+function procSync(p, ativo){
+  $(`#${p}Proc`).hidden=!ativo;
+  const sit=$(`#${p}ProcSit`).value, n=$(`#${p}ProcNum`), adm=PROC_ADM.test(sit);
+  $(`#${p}ProcAviso`).hidden = sit!=="com-advogado";
+  n.inputMode = adm ? "text" : "numeric"; n.placeholder = adm ? "Número do protocolo" : "0000000-00.0000.0.00.0000";
+}
+["ag","wa"].forEach(p=>{
+  $(`#${p}ProcSit`).addEventListener("change",()=>{ procSync(p,true); if(p==="ag") $("#msg1").textContent=""; else waUpdate(); });
+  $(`#${p}ProcNum`).addEventListener("input",e=>{ if(!PROC_ADM.test($(`#${p}ProcSit`).value)) e.target.value=maskCNJ(e.target.value); if(p==="ag") $("#msg1").textContent=""; else waUpdate(); });
+});
+const AG_PROC="Processo em andamento";
+const assuntoAgenda = () => W.area===AG_PROC ? `${W.area}: ${procCheck("ag").texto}` : W.area;
+
 /* ---------------- assistente de WhatsApp (nada é gravado) ---------------- */
+const waProc = () => $("#waAssunto").value==="processo em andamento";
 function waText(){
   const a=$("#waAssunto").value, l=$("#waLocal").value, p=$("#waPeriodo").value, n=$("#waNome").value.trim();
   if(!a) return "";
-  return `Olá, Dr. Wanderson.${n?` Meu nome é ${n}.`:""} Gostaria de agendar uma consulta sobre ${a}, ${l}, de preferência ${p}. Vi o contato pelo site.`;
+  let sobre=a;
+  if(waProc()){ const r=procCheck("wa"); if(!r.ok) return ""; sobre=`processo em andamento (${r.texto})`; }
+  return `Olá, Dr. Wanderson.${n?` Meu nome é ${n}.`:""} Gostaria de agendar uma consulta sobre ${sobre}, ${l}, de preferência ${p}. Vi o contato pelo site.`;
 }
+const waErro = () => !$("#waAssunto").value ? "Escolha o assunto para montar a mensagem." : waProc() ? (procCheck("wa").erro||"") : "";
 function waUpdate(){
   if(!$("#waForm") || !App.pub) return;
+  procSync("wa", waProc());
   const t=waText(), num=App.pub.config.whatsapp;
-  $("#waPreview").value = t || "Escolha o assunto para montar a mensagem.";
+  $("#waPreview").value = t || waErro();
   $("#waGo").innerHTML = !num ? `<span class="note"><span class="ph">[INSERIR WHATSAPP]</span> O número é cadastrado na Área do advogado.</span>`
     : t ? `<a class="btn" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Abrir no WhatsApp</a>`
     : `<button type="button" class="btn" disabled>Abrir no WhatsApp</button>`;
 }
 ["#waAssunto","#waLocal","#waPeriodo","#waNome"].forEach(id=>{ const el=$(id); if(el){ el.addEventListener("input",waUpdate); el.addEventListener("change",waUpdate); } });
 $("#waForm").addEventListener("submit",e=>e.preventDefault());
-$("#waCopy").onclick=e=>{ const t=waText(); if(!t){ $("#waMsg").textContent="Escolha o assunto antes de copiar."; return; } $("#waMsg").textContent=""; copyText(t,e.currentTarget,$("#waPreview")); };
+$("#waCopy").onclick=e=>{ const t=waText(); if(!t){ $("#waMsg").textContent=waProc() ? waErro() : "Escolha o assunto antes de copiar."; return; } $("#waMsg").textContent=""; copyText(t,e.currentTarget,$("#waPreview")); };
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-copytext]"); if(b) copyText(b.dataset.copytext,b); });
 
 /* ---------------- próximos horários (hero) ---------------- */
@@ -377,7 +408,7 @@ function renderNext(){
     b.innerHTML=`<span class="d">${brDate(f.ds).slice(0,5)}<br>${f.slot.time}</span><span><b style="font-weight:600;font-size:.92rem">${WDL[dowOf(f.ds)]}</b><br><span class="m">${esc(f.mod.nome)}</span></span><span class="go">Agendar ›</span>`;
     b.onclick=()=>{ W.mod=f.mod.id; W.date=f.ds; W.time=f.slot.time; W.month=f.ds.slice(0,7); renderMods();
       if(location.hash==="#agenda") $("#agenda").scrollIntoView({behavior:"smooth"}); else location.hash="agenda";
-      if(W.area) goStep(2); else { goStep(1); $("#msg1").textContent="Horário pré-selecionado. Informe o assunto da consulta para continuar."; } };
+      if(W.area && (W.area!==AG_PROC || procCheck("ag").ok)) goStep(2); else { goStep(1); $("#msg1").textContent="Horário pré-selecionado. Informe o assunto da consulta para continuar."; } };
     li.appendChild(b); list.appendChild(li);
   }
   if(!found.length) list.innerHTML=`<li class="muted" style="font-size:.9rem">Sem horários livres nos próximos dias.</li>`;
@@ -410,10 +441,11 @@ function renderMods(){
     box.appendChild(div);
   }
 }
-$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; };
+$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; procSync("ag", W.area===AG_PROC); };
 $("#to2").onclick=()=>{
   if(!W.mod) return $("#msg1").textContent="Escolha a modalidade de atendimento.";
   if(!W.area) return $("#msg1").textContent="Selecione o assunto da consulta.";
+  if(W.area===AG_PROC){ const r=procCheck("ag"); if(!r.ok) return $("#msg1").textContent=r.erro; }
   $("#msg1").textContent=""; goStep(2);
 };
 
@@ -561,7 +593,7 @@ $("#to4").onclick=async e=>{
         if(r.codeSent){ await renderAuthSlot(); $("#wz-codigo")?.focus(); msg.innerHTML=`Digite o código recebido por e-mail e confirme novamente. <b>O horário ainda não está reservado.</b>`; return; }
         App.user=r.user; onAuthChanged(true);
       }
-      W.booking = await API.createBooking({ modalidade_id:W.mod, inicio:toISO(W.date,W.time), assunto:W.area, parte:$("#parte").value.trim(), resumo, forma:"pix" });
+      W.booking = await API.createBooking({ modalidade_id:W.mod, inicio:toISO(W.date,W.time), assunto:assuntoAgenda(), parte:$("#parte").value.trim(), resumo, forma:"pix" });
       await refreshPublic(); renderNext();
       goStep(4);
     }catch(err){
@@ -604,7 +636,7 @@ function renderDone(){
   const txt=encodeURIComponent(`Olá. Agendei uma consulta pelo site. Protocolo ${bk.protocolo}, ${longWhen(bk.inicio)}. Segue o comprovante de pagamento.`);
   $("#waAction").innerHTML = c.whatsapp ? `<a class="btn ghost" href="https://wa.me/${esc(c.whatsapp)}?text=${txt}" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>` : "";
 }
-$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#parte").value=""; $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
+$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#agProcSit").value=""; $("#agProcNum").value=""; procSync("ag",false); $("#parte").value=""; $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
 
 /* =====================================================================
    Área do cliente
