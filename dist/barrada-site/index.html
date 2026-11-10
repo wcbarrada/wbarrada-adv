@@ -495,6 +495,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .wa-float:hover{transform:translateY(-2px)}
 .wa-float svg{width:22px;height:22px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
+.to-top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--panel-2);color:var(--gold);border:1px solid var(--field-line);box-shadow:0 8px 26px rgba(0,0,0,.45);transition:transform .2s}
+.to-top:hover{transform:translateY(-2px)}
+.to-top svg{width:20px;height:20px}
+.to-top:focus-visible{outline:2px solid var(--gold);outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
 
@@ -854,7 +858,7 @@ footer{padding-bottom:88px}
         <details><summary>Atende em Cordeiro?</summary><p>Sim, com hora marcada. Informe a preferência pelo WhatsApp. Também há atendimento presencial em Campos dos Goytacazes e em Cantagalo, e por videochamada para qualquer cidade.</p></details>
         <details hidden><summary>Posso cancelar ou remarcar?</summary><p id="faqPolicy"></p></details>
         <details><summary>O que o site faz com os meus dados?</summary><p><span hidden>O agendamento guarda apenas os dados necessários para identificar você e preparar a consulta, sob sigilo profissional. </span>A mensagem montada na seção de WhatsApp não é gravada. Os detalhes estão na <a href="#privacidade">Política de Privacidade</a>.</p></details>
-        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Pode, para uma segunda opinião. A atuação em processo com advogado constituído segue as regras do Código de Ética da OAB sobre substabelecimento e revogação do mandato, explicadas na consulta.</p></details>
+        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Pode, para esclarecer dúvidas sobre a sua situação. Para assumir processo com advogado constituído, o patrono atual precisa ter prévio conhecimento, salvo motivo plenamente justificável ou medida urgente e inadiável (Código de Ética da OAB, art. 14).</p></details>
       </div>
     </div>
   </section>
@@ -875,6 +879,7 @@ footer{padding-bottom:88px}
       <p class="aviso"><b>Atenção a golpes.</b> Não peço depósito, transferência ou senha por mensagem para liberar valores de processos. Em caso de dúvida, confirme pelos contatos desta página.</p>
     </div>
   </section>
+  <a class="to-top" id="toTop" href="#inicio" aria-label="Voltar ao topo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
 </main>
 </div>
 

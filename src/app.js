@@ -220,14 +220,16 @@ function SupabaseAPI(){
     : m;
   let cachedUser; const uidNow = async()=> (await sb.auth.getSession()).data.session?.user?.id;
   sb.auth.onAuthStateChange((ev)=>{ cachedUser=undefined;
-    if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(()=>{ if(App.pub) onAuthChanged(true); },0); } });
+    if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(async()=>{ if(App.pub){ await refreshPublic().catch(()=>{}); onAuthChanged(true); } },0); } });
   return {
     mode:"supabase", sb,
     async getPublicData(){
       const t=addDays(todaySP(),-1);
+      // Sem sessão, o banco só libera as colunas sem valor, PIX e política (Prov. 205/2021, art. 3º, I)
+      const logado=!!await uidNow();
       const [c,m,d,b,x] = await Promise.all([
-        sb.from("configuracoes").select("*").eq("id",1).single(),
-        sb.from("modalidades").select("*").order("ordem"),
+        sb.from("configuracoes").select(logado?"*":"id,duracao_min,intervalo_min,antecedencia_horas,horizonte_dias,cancelamento_horas,whatsapp").eq("id",1).single(),
+        sb.from("modalidades").select(logado?"*":"id,nome,descricao,tipo,ativo,ordem").order("ordem"),
         sb.from("disponibilidade").select("*"),
         sb.from("bloqueios").select("*").gte("data",t).order("data"),
         sb.from("horarios_extras").select("*").gte("data",t).order("data")]);
@@ -261,6 +263,11 @@ function SupabaseAPI(){
       return chk(await sb.rpc("anexar_comprovante",{p_id:id,p_path:path}));
     },
     async receiptUrl(path){ return chk(await sb.storage.from("comprovantes").createSignedUrl(path,600)).signedUrl; },
+    async purgeReceipts(){
+      const paths=chk(await sb.from("comprovantes_a_excluir").select("path")).map(r=>r.path); if(!paths.length) return;
+      chk(await sb.storage.from("comprovantes").remove(paths));
+      chk(await sb.from("comprovantes_a_excluir").delete().in("path",paths));
+    },
     async listBookings(){
       const de=new Date(Date.now()-120*864e5).toISOString();
       const rows=chk(await sb.from("agendamentos").select("*, cliente:profiles(nome,cpf,telefone,email), nota:agendamento_notas(obs)").gte("inicio",de).order("inicio"));
@@ -326,7 +333,7 @@ async function refreshPublic(){
   App.busy = await API.getBusy(toISO(t,"00:00"), toISO(addDays(t,App.pub.config.horizonte_dias+2),"00:00"));
   const c=App.pub.config;
   const cd=$("#credDur"); if(cd) cd.textContent=`${c.duracao_min} min`;
-  $("#faqPolicy").textContent=(c.politica||"")+" Cancelamentos e acompanhamento ficam na Área do cliente.";
+  $("#faqPolicy").textContent=`Sim. O cancelamento ou a remarcação podem ser feitos com até ${c.cancelamento_horas} horas de antecedência. Cancelamentos e acompanhamento ficam na Área do cliente.`;
   const telFmt = c.whatsapp ? c.whatsapp.replace(/^55(\d{2})(\d{4,5})(\d{4})$/,"($1) $2-$3") : "";
   $("#footTel").innerHTML = telFmt ? esc(telFmt) : `<span class="ph">[INSERIR WHATSAPP]</span>`;
   $("#ctTel").innerHTML = telFmt ? `<span style="user-select:all">${esc(telFmt)}</span>` : `<span class="ph">[INSERIR WHATSAPP]</span>`;
@@ -684,6 +691,7 @@ const Admin = {
       $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
       return;
     }
+    API.purgeReceipts?.().catch(()=>{}); // conclui a exclusão dos comprovantes vencidos (rotina de retenção do banco)
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
       <div class="btns"><a class="btn ghost sm" href="${AGENDA?"#agenda":"#inicio"}">${AGENDA?"Ver agenda pública":"Ver o site"}</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
@@ -812,7 +820,7 @@ const Admin = {
       <td><input data-k="ordem" type="number" value="${m.ordem??0}" aria-label="Ordem" style="width:4.5em"></td>
       <td><button class="btn ghost sm" data-msave="${esc(m.id)}">Salvar</button></td></tr>`;
     $("#adBody").innerHTML=`
-      <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor ao escolher a modalidade no agendamento, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
+      <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor depois de se identificar, na etapa de reserva, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
       <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th>Ação</th></tr></thead>
       <tbody>${mods.map(row).join("")}</tbody></table></div>
       <div class="panel" style="margin-top:28px;max-width:760px"><h2>Nova modalidade</h2>
@@ -884,6 +892,9 @@ window.addEventListener("hashchange", route);
 $(".skip").onclick=e=>{ e.preventDefault(); focusView(); };
 $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded",o); };
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
+// Voltar ao topo: aparece quando o banner sai da tela; o foco vai para o título, pois o botão some ao chegar lá
+new IntersectionObserver(es=>{ $("#toTop").hidden=es[es.length-1].isIntersecting; }).observe($(".hero"));
+$("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteView h1"); t.tabIndex=-1; t.focus({preventScroll:true}); window.scrollTo(0,0); });
 
 (async function init(){
   $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;

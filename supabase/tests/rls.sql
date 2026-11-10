@@ -66,3 +66,50 @@ select pg_temp.t('A lê observações internas','select count(*)::text from agen
 select pg_temp.t('A lê coluna obs_admin (removida)','select count(obs_admin)::text from agendamentos','ERRO%');
 reset role;
 select pg_temp.t('Bucket comprovantes: 5 MB e tipos restritos','select file_size_limit::text||'' ''||array_to_string(allowed_mime_types,'','') from storage.buckets where id=''comprovantes''','5242880 image/jpeg,image/png,application/pdf');
+-- Prov. 205/2021: valor, PIX e política só depois da identificação
+set role anon; set request.jwt.sub='';
+select pg_temp.t('anon lê chave PIX','select pix_chave from configuracoes','ERRO%');
+select pg_temp.t('anon lê política','select politica from configuracoes','ERRO%');
+select pg_temp.t('anon lê valor','select valor::text from modalidades limit 1','ERRO%');
+select pg_temp.t('anon usa select * em modalidades','select count(*)::text from (select * from modalidades) m','ERRO%');
+select pg_temp.t('anon lê regras da agenda','select duracao_min::text from configuracoes','50');
+select pg_temp.t('anon lê modalidades sem valor','select count(nome)::text from modalidades','3');
+select pg_temp.t('anon executa retenção','select aplicar_retencao()::text','ERRO%');
+select pg_temp.t('anon lê fila de exclusão','select count(*)::text from comprovantes_a_excluir','ERRO%');
+reset role;
+set role authenticated; set request.jwt.sub='22222222-2222-2222-2222-222222222222';
+select pg_temp.t('A lê dados de pagamento na etapa 4','select count(pix_nome)::text from configuracoes','1');
+select pg_temp.t('A lê valor das modalidades','select count(*)::text from (select valor from modalidades) m','3');
+select pg_temp.t('A executa retenção','select aplicar_retencao()::text','ERRO%');
+select pg_temp.t('A lê fila de exclusão','select count(*)::text from comprovantes_a_excluir','0');
+reset role;
+-- Retenção: cenários com datas no passado
+update auth.users set last_sign_in_at = now() - interval '2 years' where id = '11111111-1111-1111-1111-111111111111';
+insert into auth.users (id,email,last_sign_in_at) values
+ ('44444444-4444-4444-4444-444444444444','u4@x.com', now() - interval '7 months'),
+ ('55555555-5555-5555-5555-555555555555','u5@x.com', now() - interval '1 month'),
+ ('66666666-6666-6666-6666-666666666666','u6@x.com', now() - interval '7 months'),
+ ('77777777-7777-7777-7777-777777777777','u7@x.com', now() - interval '7 months'),
+ ('88888888-8888-8888-8888-888888888888','u8@x.com', now() - interval '2 years'),
+ ('99999999-9999-9999-9999-999999999999','u9@x.com', now() - interval '5 years 2 months'),
+ ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','ua@x.com', now() - interval '7 months');
+insert into public.agendamentos (protocolo,cliente_id,modalidade_id,inicio,fim,status,comprovante_path,pago_informado_em) values
+ ('R6','66666666-6666-6666-6666-666666666666','campos',now()-interval '7 months',now()-interval '7 months'+interval '50 min','expirado',null,null),
+ ('R7','77777777-7777-7777-7777-777777777777','campos',now()-interval '5 months',now()-interval '5 months'+interval '50 min','expirado',null,null),
+ ('R8','88888888-8888-8888-8888-888888888888','campos',now()-interval '2 years',now()-interval '2 years'+interval '50 min','realizado','u8/a.pdf',now()-interval '2 years'),
+ ('R9','99999999-9999-9999-9999-999999999999','campos',now()-interval '5 years 1 month',now()-interval '5 years 1 month'+interval '50 min','realizado','u9/b.pdf',now()-interval '5 years 1 month'),
+ ('RA','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa','campos',now()-interval '7 months',now()-interval '7 months'+interval '50 min','cancelado','ua/c.pdf',now()-interval '7 months');
+select pg_temp.t('Retenção: totais da execução','select aplicar_retencao()::text','{"pagos": 1, "reservas": 1, "cadastros": 3}');
+select pg_temp.t('Retenção: reserva não paga com 7 meses sai','select count(*)::text from agendamentos where protocolo=''R6''','0');
+select pg_temp.t('Retenção: reserva não paga com 5 meses fica','select count(*)::text from agendamentos where protocolo=''R7''','1');
+select pg_temp.t('Retenção: consulta paga com 2 anos fica','select count(*)::text from agendamentos where protocolo=''R8''','1');
+select pg_temp.t('Retenção: consulta paga com mais de 5 anos sai','select count(*)::text from agendamentos where protocolo=''R9''','0');
+select pg_temp.t('Retenção: cancelada com comprovante fica','select count(*)::text from agendamentos where protocolo=''RA''','1');
+select pg_temp.t('Retenção: comprovante antigo entra na fila','select string_agg(path,'','') from comprovantes_a_excluir','u9/b.pdf');
+select pg_temp.t('Retenção: cadastro sem reserva e 7 meses sai','select count(*)::text from auth.users where email=''u4@x.com''','0');
+select pg_temp.t('Retenção: cadastro com uso recente fica','select count(*)::text from auth.users where email=''u5@x.com''','1');
+select pg_temp.t('Retenção: cadastro da reserva removida sai','select count(*)::text from auth.users where email=''u6@x.com''','0');
+select pg_temp.t('Retenção: cadastro com reserva guardada fica','select count(*)::text from auth.users where email=''u7@x.com''','1');
+select pg_temp.t('Retenção: perfil acompanha o cadastro','select count(*)::text from profiles where email=''u4@x.com''','0');
+select pg_temp.t('Retenção: conta do advogado nunca sai','select count(*)::text from auth.users where email=''adv@x.com''','1');
+select pg_temp.t('Retenção: segunda execução não remove nada','select aplicar_retencao()::text','{"pagos": 0, "reservas": 0, "cadastros": 0}');

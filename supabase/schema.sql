@@ -371,6 +371,71 @@ drop policy if exists comprovante_ler on storage.objects;
 create policy comprovante_ler on storage.objects for select to authenticated
   using (bucket_id = 'comprovantes' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
 
+-- >>> INICIO: acesso a valores e retenção de dados (2026-11-09)
+-- Prov. CFOAB 205/2021, art. 3º, I: valor, PIX e política de cancelamento só depois da identificação
+revoke select on public.configuracoes from anon;
+grant select (id, duracao_min, intervalo_min, antecedencia_horas, horizonte_dias, cancelamento_horas, whatsapp)
+  on public.configuracoes to anon;
+revoke select on public.modalidades from anon;
+grant select (id, nome, descricao, tipo, ativo, ordem) on public.modalidades to anon;
+grant select on public.configuracoes, public.modalidades to authenticated;
+
+-- Arquivos só podem ser apagados pela API do Storage: a rotina anota aqui e o painel do advogado apaga
+create table if not exists public.comprovantes_a_excluir (
+  path       text primary key,
+  criado_em  timestamptz not null default now()
+);
+alter table public.comprovantes_a_excluir enable row level security;
+drop policy if exists comprovantes_a_excluir_admin on public.comprovantes_a_excluir;
+create policy comprovantes_a_excluir_admin on public.comprovantes_a_excluir for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+revoke all on public.comprovantes_a_excluir from anon;
+
+drop policy if exists comprovante_excluir on storage.objects;
+create policy comprovante_excluir on storage.objects for delete to authenticated
+  using (bucket_id = 'comprovantes' and public.is_admin());
+
+-- Prazos aprovados em 06/11/2026: reservas não pagas, 6 meses; consultas pagas e comprovantes, 5 anos;
+-- cadastro sem consulta guardada, 6 meses após o último uso. A conta do advogado nunca é excluída.
+create or replace function public.aplicar_retencao()
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
+declare n_reservas int; n_pagos int; n_cadastros int;
+begin
+  delete from public.agendamentos
+   where status in ('aguardando_pagamento','expirado','cancelado')
+     and pago_informado_em is null and comprovante_path is null
+     and inicio < now() - interval '6 months';
+  get diagnostics n_reservas = row_count;
+
+  with removidos as (
+    delete from public.agendamentos where fim < now() - interval '5 years' returning comprovante_path
+  ), fila as (
+    insert into public.comprovantes_a_excluir (path)
+    select comprovante_path from removidos where comprovante_path is not null
+    on conflict (path) do nothing
+  )
+  select count(*) into n_pagos from removidos;
+
+  delete from auth.users u
+   where coalesce(u.last_sign_in_at, u.created_at) < now() - interval '6 months'
+     and not exists (select 1 from public.admins a where a.user_id = u.id)
+     and not exists (select 1 from public.agendamentos g where g.cliente_id = u.id);
+  get diagnostics n_cadastros = row_count;
+
+  return jsonb_build_object('reservas', n_reservas, 'pagos', n_pagos, 'cadastros', n_cadastros);
+end $$;
+revoke execute on function public.aplicar_retencao() from public, anon, authenticated;
+
+-- Execução diária às 03:30 de Brasília, onde o pg_cron estiver disponível
+do $$
+begin
+  if exists (select 1 from pg_available_extensions where name = 'pg_cron') then
+    create extension if not exists pg_cron;
+    perform cron.schedule('retencao-diaria', '30 6 * * *', 'select public.aplicar_retencao()');
+  end if;
+end $$;
+-- <<< FIM: acesso a valores e retenção de dados
+
 -- =====================================================================
 --  DEPOIS de criar a sua conta pelo site (Área do cliente > Criar conta),
 --  torne-a administradora executando (troque o e-mail):
