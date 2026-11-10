@@ -268,8 +268,9 @@ function SupabaseAPI(){
     async receiptUrl(path){ return chk(await sb.storage.from("comprovantes").createSignedUrl(path,600)).signedUrl; },
     async purgeReceipts(){
       const paths=chk(await sb.from("comprovantes_a_excluir").select("path")).map(r=>r.path); if(!paths.length) return;
-      chk(await sb.storage.from("comprovantes").remove(paths));
-      chk(await sb.from("comprovantes_a_excluir").delete().in("path",paths));
+      // Só sai da fila o que o Storage confirmou como apagado
+      const apagados=(chk(await sb.storage.from("comprovantes").remove(paths))||[]).map(o=>o.name);
+      if(apagados.length) chk(await sb.from("comprovantes_a_excluir").delete().in("path",apagados));
     },
     async listBookings(){
       const de=new Date(Date.now()-120*864e5).toISOString();
@@ -887,7 +888,7 @@ function route(ev){
   document.title = r==="site" ? BASE_TITLE : `${TITLES[r]} · WBarrada Advogado`;
   const done = r==="cliente" ? Client.render() : r==="admin" ? Admin.render() : null;
   if(r==="site" && h){ const el=document.getElementById(h); if(el) requestAnimationFrame(()=>el.scrollIntoView({behavior:"smooth"})); }
-  else window.scrollTo(0,0);
+  else if(ev) window.scrollTo(0,0); // na carga inicial, não puxa de volta quem já rolou a página enquanto os dados chegavam
   // Em troca de tela (hashchange), o foco vai para o título da nova tela
   if(ev && r!=="site") Promise.resolve(done).then(focusView);
 }
