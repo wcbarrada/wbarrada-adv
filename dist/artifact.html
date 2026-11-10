@@ -1106,9 +1106,12 @@ function SupabaseAPI(){
         sb.from("configuracoes").select(logado?"*":"id,duracao_min,intervalo_min,antecedencia_horas,horizonte_dias,cancelamento_horas,whatsapp").eq("id",1).single(),
         sb.from("modalidades").select(logado?"*":"id,nome,descricao,tipo,ativo,ordem").order("ordem"),
         sb.from("disponibilidade").select("*"),
-        sb.from("bloqueios").select("*").gte("data",t).order("data"),
+        sb.from("bloqueios").select("id,data,modalidade_id").gte("data",t).order("data"),
         sb.from("horarios_extras").select("*").gte("data",t).order("data")]);
-      return { config:chk(c), modalidades:chk(m), disponibilidade:chk(d), bloqueios:chk(b), extras:chk(x) };
+      const bloqueios=chk(b);
+      // O motivo é anotação interna: só o advogado lê, por função própria
+      if(logado && (await this.getUser())?.isAdmin){ const mot=chk(await sb.rpc("bloqueios_motivos")); bloqueios.forEach(x=>{ x.motivo=mot.find(y=>y.id===x.id)?.motivo??null; }); }
+      return { config:chk(c), modalidades:chk(m), disponibilidade:chk(d), bloqueios, extras:chk(x) };
     },
     async getBusy(de,ate){ return chk(await sb.rpc("horarios_ocupados",{p_de:de,p_ate:ate})) || []; },
     async getUser(){

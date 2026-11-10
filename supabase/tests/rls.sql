@@ -21,7 +21,7 @@ select pg_temp.t('anon insere agendamento direto','insert into agendamentos(prot
 select pg_temp.t('anon chama criar_agendamento','select (criar_agendamento(''campos'',(select t from s),''a'',''b'',''c'',''pix'')).protocolo','ERRO%');
 select pg_temp.t('anon altera valor','with u as (update modalidades set valor=1 returning 1) select count(*)::text from u','0');
 select pg_temp.t('anon lê horários ocupados (sem identidade)','select count(*)::text from horarios_ocupados(now(),now()+interval ''60 days'')','0');
-select pg_temp.t('anon lê admins','select count(*)::text from admins','ERRO%');
+select pg_temp.t('anon lê admins','select count(*)::text from admins','0');
 reset role;
 -- CLIENTE A
 set role authenticated; set request.jwt.sub='22222222-2222-2222-2222-222222222222';
@@ -32,9 +32,14 @@ select pg_temp.t('A se promove a admin','insert into admins values(''22222222-22
 select pg_temp.t('A altera grade semanal','with u as (delete from disponibilidade returning 1) select count(*)::text from u','0');
 select pg_temp.t('A lê perfil de B','select count(*)::text from profiles where id=''33333333-3333-3333-3333-333333333333''','0');
 select pg_temp.t('A altera perfil de B','with u as (update profiles set nome=''x'' where id=''33333333-3333-3333-3333-333333333333'' returning 1) select count(*)::text from u','0');
-select pg_temp.t('A altera e-mail exibido no próprio perfil','with u as (update profiles set email=''falso@x.com'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','0');
-select pg_temp.t('A grava nome com 10.000 caracteres','with u as (update profiles set nome=repeat(''a'',10000) where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','0');
-select pg_temp.t('A grava CPF inválido','with u as (update profiles set cpf=''123'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','0');
+select pg_temp.t('A altera e-mail exibido no próprio perfil','with u as (update profiles set email=''falso@x.com'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A grava nome com 10.000 caracteres','with u as (update profiles set nome=repeat(''a'',10000) where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A grava CPF inválido','with u as (update profiles set cpf=''123'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A grava CPF com dígito errado','with u as (update profiles set cpf=''529.982.247-26'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A grava CPF de dígitos repetidos','with u as (update profiles set cpf=''111.111.111-11'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A grava CPF válido com máscara','with u as (update profiles set cpf=''529.982.247-25'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
+select pg_temp.t('A deixa o CPF em branco','with u as (update profiles set cpf='''' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
+select pg_temp.t('A altera nome e telefone válidos','with u as (update profiles set nome=''Cliente A'',telefone=''(22) 99999-0000'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
 select pg_temp.t('A anexa caminho de outra pasta','select (anexar_comprovante((select id from agendamentos limit 1),''33333333-3333-3333-3333-333333333333/x.pdf'')).id::text','ERRO%');
 select pg_temp.t('A grava horário desalinhado','select (criar_agendamento(''campos'',(select t from s)+interval ''7 min'',''x'','''',''y'',''pix'')).id::text','ERRO%');
 select pg_temp.t('A tenta valor via parâmetro (valor vem do banco)','select (criar_agendamento(''campos'',(select t from s)+interval ''1 hour'',''x'','''',''y'',''pix'')).valor::text','(null)');
@@ -113,3 +118,19 @@ select pg_temp.t('Retenção: cadastro com reserva guardada fica','select count(
 select pg_temp.t('Retenção: perfil acompanha o cadastro','select count(*)::text from profiles where email=''u4@x.com''','0');
 select pg_temp.t('Retenção: conta do advogado nunca sai','select count(*)::text from auth.users where email=''adv@x.com''','1');
 select pg_temp.t('Retenção: segunda execução não remove nada','select aplicar_retencao()::text','{"pagos": 0, "reservas": 0, "cadastros": 0}');
+-- Motivo dos bloqueios: anotação interna
+set role anon; set request.jwt.sub='';
+select pg_temp.t('anon lê motivo do bloqueio','select motivo from bloqueios limit 1','ERRO%');
+select pg_temp.t('anon lê datas bloqueadas','select count(data)::text from bloqueios','6');
+select pg_temp.t('anon chama bloqueios_motivos','select count(*)::text from bloqueios_motivos()','ERRO%');
+reset role;
+set role authenticated; set request.jwt.sub='22222222-2222-2222-2222-222222222222';
+select pg_temp.t('A lê motivo do bloqueio','select motivo from bloqueios limit 1','ERRO%');
+select pg_temp.t('A lê datas bloqueadas','select count(data)::text from bloqueios','6');
+select pg_temp.t('A chama bloqueios_motivos','select count(*)::text from bloqueios_motivos()','0');
+reset role;
+set role authenticated; set request.jwt.sub='11111111-1111-1111-1111-111111111111';
+select pg_temp.t('Admin lê motivos pela função','select count(motivo)::text from bloqueios_motivos()','6');
+select pg_temp.t('Admin cria bloqueio','with u as (insert into bloqueios(data,motivo) values(''2030-01-02'',''interno'') returning 1) select count(*)::text from u','1');
+select pg_temp.t('Admin remove bloqueio','with u as (delete from bloqueios where data=''2030-01-02'' returning 1) select count(*)::text from u','1');
+reset role;
