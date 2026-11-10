@@ -695,9 +695,31 @@ footer{padding-bottom:88px}
                 <option>Plano de saúde ou consumidor</option>
                 <option>Família e sucessões</option>
                 <option>Trabalhista</option>
+                <option>Processo em andamento</option>
                 <option>Outro assunto</option>
               </select>
               <p class="note" style="margin-top:8px">Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não atuo contra a Fazenda Pública do Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
+            </div>
+            <div class="full" id="agProc" hidden>
+              <div class="fgrid">
+                <div class="field"><label for="agProcSit">Situação do processo</label>
+                  <select id="agProcSit" required aria-describedby="agProcAviso">
+                    <option value="">Selecione</option>
+                    <option>Atendido pela Defensoria Pública</option>
+                    <option>Juizado Especial, sem advogado</option>
+                    <option>Processo sem advogado constituído</option>
+                    <option>O advogado renunciou ao mandato</option>
+                    <option>Revoguei a procuração do advogado</option>
+                    <option>O advogado faleceu ou está impedido de atuar</option>
+                    <option>Processo encerrado, sem advogado atuando</option>
+                    <option>Processo administrativo (INSS ou outro órgão), sem advogado</option>
+                    <option value="com-advogado">Tenho advogado atuando no processo</option>
+                  </select></div>
+                <div class="field"><label for="agProcNum">Número do processo</label>
+                  <input id="agProcNum" required inputmode="numeric" maxlength="40" autocomplete="off" placeholder="0000000-00.0000.0.00.0000" aria-describedby="agProcAjuda">
+                  <p class="note" id="agProcAjuda">Numeração do CNJ, com 20 dígitos. Em processo administrativo, informe o número do protocolo.</p></div>
+              </div>
+              <p class="note warn" id="agProcAviso" hidden>Por respeito ao colega que acompanha o caso, não atendo nem oriento sobre processo com advogado constituído. Procure o advogado responsável.</p>
             </div>
           </div>
           <p class="msg" role="alert" id="msg1"></p>
@@ -788,6 +810,25 @@ footer{padding-bottom:88px}
             <option>processo em andamento</option>
             <option>outro assunto</option>
           </select></div>
+        <div id="waProc" hidden style="display:grid;gap:16px">
+          <div class="field"><label for="waProcSit">Situação do processo</label>
+            <select id="waProcSit" required aria-describedby="waProcAviso">
+              <option value="">Selecione</option>
+              <option>Atendido pela Defensoria Pública</option>
+              <option>Juizado Especial, sem advogado</option>
+              <option>Processo sem advogado constituído</option>
+              <option>O advogado renunciou ao mandato</option>
+              <option>Revoguei a procuração do advogado</option>
+              <option>O advogado faleceu ou está impedido de atuar</option>
+              <option>Processo encerrado, sem advogado atuando</option>
+              <option>Processo administrativo (INSS ou outro órgão), sem advogado</option>
+              <option value="com-advogado">Tenho advogado atuando no processo</option>
+            </select></div>
+          <div class="field"><label for="waProcNum">Número do processo</label>
+            <input id="waProcNum" required inputmode="numeric" maxlength="40" autocomplete="off" placeholder="0000000-00.0000.0.00.0000" aria-describedby="waProcAjuda">
+            <p class="note" id="waProcAjuda">Numeração do CNJ, com 20 dígitos. Em processo administrativo, informe o número do protocolo.</p></div>
+          <p class="note warn" id="waProcAviso" hidden>Por respeito ao colega que acompanha o caso, não atendo nem oriento sobre processo com advogado constituído. Procure o advogado responsável.</p>
+        </div>
         <div class="fgrid">
           <div class="field"><label for="waLocal">Atendimento</label>
             <select id="waLocal"><option>por videochamada</option><option>presencial em Campos dos Goytacazes</option><option>presencial em Cantagalo</option><option>presencial em Cordeiro</option><option>sem preferência</option></select></div>
@@ -853,12 +894,12 @@ footer{padding-bottom:88px}
       </div>
       <div>
         <details><summary>O que acontece na consulta?</summary><p>O caso é analisado com base no seu relato e nos documentos. Você recebe a avaliação jurídica da situação, os caminhos possíveis e, se for o caso, a proposta de contratação para o acompanhamento.</p></details>
-        <details><summary>Que documentos devo separar?</summary><ul><li>Documento de identidade e CPF.</li><li>INSS: extrato do CNIS, carta de concessão ou de indeferimento, laudos e exames.</li><li>Servidor público: contracheques, ficha funcional, portarias e decisões administrativas.</li><li>Tributário: notificações, CDA, certidões de protesto e comprovantes de quitação.</li><li>Processo em andamento: o número do processo.</li></ul></details>
+        <details><summary>Que documentos devo separar?</summary><ul><li>Documento de identidade e CPF.</li><li>INSS: extrato do CNIS, carta de concessão ou de indeferimento, laudos e exames.</li><li>Servidor público: contracheques, ficha funcional, portarias e decisões administrativas.</li><li>Tributário: notificações, CDA, certidões de protesto e comprovantes de quitação.</li><li>Processo em andamento, sem advogado constituído: o número do processo ou do protocolo.</li></ul></details>
         <details><summary>A consulta online tem o mesmo conteúdo da presencial?</summary><p>Sim. A análise e a orientação são as mesmas. Os documentos podem ser enviados antes da videochamada.</p></details>
         <details><summary>Atende em Cordeiro?</summary><p>Sim, com hora marcada. Informe a preferência pelo WhatsApp. Também há atendimento presencial em Campos dos Goytacazes e em Cantagalo, e por videochamada para qualquer cidade.</p></details>
         <details><summary>Posso cancelar ou remarcar?</summary><p id="faqPolicy"></p></details>
         <details><summary>O que o site faz com os meus dados?</summary><p><span>O agendamento guarda apenas os dados necessários para identificar você e preparar a consulta, sob sigilo profissional. </span>A mensagem montada na seção de WhatsApp não é gravada. Os detalhes estão na <a href="#privacidade">Política de Privacidade</a>.</p></details>
-        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Não. Por respeito ao colega que já acompanha o caso, não atendo nem oriento sobre processo que tenha advogado constituído. As dúvidas sobre ele devem ser levadas ao advogado responsável. Se ele deixar o caso, por renúncia ou revogação do mandato, posso avaliar o atendimento.</p></details>
+        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Não. Por respeito ao colega que já acompanha o caso, não atendo nem oriento sobre processo que tenha advogado constituído. As dúvidas sobre ele devem ser levadas ao advogado responsável. Se ele deixar o caso, por renúncia ou revogação do mandato, posso avaliar o atendimento.</p><p>Processos em andamento são atendidos quando não há advogado atuando: acompanhamento pela Defensoria Pública, Juizado Especial sem advogado, renúncia ou revogação do mandato, falecimento ou impedimento do advogado, processo encerrado ou processo administrativo sem advogado. Ao agendar, informe a situação e o número do processo.</p></details>
       </div>
     </div>
   </section>
@@ -894,7 +935,7 @@ footer{padding-bottom:88px}
     <h2>Quais dados são coletados</h2>
     <ul>
       <li><b>Cadastro na Área do cliente:</b> nome, CPF, telefone e e-mail. O acesso é feito por código enviado ao e-mail, sem senha.</li>
-      <li><b>Agendamento:</b> modalidade, data e horário, assunto, parte contrária informada, resumo do caso e comprovante enviado.</li>
+      <li><b>Agendamento:</b> modalidade, data e horário, assunto, situação e número do processo (quando o assunto for processo em andamento), parte contrária informada, resumo do caso e comprovante enviado.</li>
       <li><b>Seção de WhatsApp:</b> nada é gravado. A mensagem é montada no seu navegador e enviada por você, pelo aplicativo.</li>
       <li hidden><b>Contato direto:</b> o que você enviar por WhatsApp ou e-mail é usado para responder e preparar a consulta, sob sigilo profissional.</li>
     </ul>
@@ -963,7 +1004,7 @@ footer{padding-bottom:88px}
 
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
-<script defer src="config.js?v=3390359604"></script>
-<script defer src="app.js?v=3390359604"></script>
+<script defer src="config.js?v=22a71a600a"></script>
+<script defer src="app.js?v=22a71a600a"></script>
 </body>
 </html>
