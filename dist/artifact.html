@@ -408,6 +408,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .wa-float:hover{transform:translateY(-2px)}
 .wa-float svg{width:22px;height:22px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
+.to-top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--panel-2);color:var(--gold);border:1px solid var(--field-line);box-shadow:0 8px 26px rgba(0,0,0,.45);transition:transform .2s}
+.to-top:hover{transform:translateY(-2px)}
+.to-top svg{width:20px;height:20px}
+.to-top:focus-visible{outline:2px solid var(--gold);outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
 
@@ -764,7 +768,7 @@ footer{padding-bottom:88px}
         <details><summary>Atende em Cordeiro?</summary><p>Sim, com hora marcada. Informe a preferência pelo WhatsApp. Também há atendimento presencial em Campos dos Goytacazes e em Cantagalo, e por videochamada para qualquer cidade.</p></details>
         <details hidden><summary>Posso cancelar ou remarcar?</summary><p id="faqPolicy"></p></details>
         <details><summary>O que o site faz com os meus dados?</summary><p><span hidden>O agendamento guarda apenas os dados necessários para identificar você e preparar a consulta, sob sigilo profissional. </span>A mensagem montada na seção de WhatsApp não é gravada. Os detalhes estão na <a href="#privacidade">Política de Privacidade</a>.</p></details>
-        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Pode, para uma segunda opinião. A atuação em processo com advogado constituído segue as regras do Código de Ética da OAB sobre substabelecimento e revogação do mandato, explicadas na consulta.</p></details>
+        <details><summary>Já tenho advogado no processo. Posso marcar uma consulta?</summary><p>Pode, para esclarecer dúvidas sobre a sua situação. Para assumir processo com advogado constituído, o patrono atual precisa ter prévio conhecimento, salvo motivo plenamente justificável ou medida urgente e inadiável (Código de Ética da OAB, art. 14).</p></details>
       </div>
     </div>
   </section>
@@ -785,6 +789,7 @@ footer{padding-bottom:88px}
       <p class="aviso"><b>Atenção a golpes.</b> Não peço depósito, transferência ou senha por mensagem para liberar valores de processos. Em caso de dúvida, confirme pelos contatos desta página.</p>
     </div>
   </section>
+  <a class="to-top" id="toTop" href="#inicio" aria-label="Voltar ao topo" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
 </main>
 </div>
 
@@ -1090,14 +1095,16 @@ function SupabaseAPI(){
     : m;
   let cachedUser; const uidNow = async()=> (await sb.auth.getSession()).data.session?.user?.id;
   sb.auth.onAuthStateChange((ev)=>{ cachedUser=undefined;
-    if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(()=>{ if(App.pub) onAuthChanged(true); },0); } });
+    if(ev==="SIGNED_IN" || ev==="SIGNED_OUT"){ setTimeout(async()=>{ if(App.pub){ await refreshPublic().catch(()=>{}); onAuthChanged(true); } },0); } });
   return {
     mode:"supabase", sb,
     async getPublicData(){
       const t=addDays(todaySP(),-1);
+      // Sem sessão, o banco só libera as colunas sem valor, PIX e política (Prov. 205/2021, art. 3º, I)
+      const logado=!!await uidNow();
       const [c,m,d,b,x] = await Promise.all([
-        sb.from("configuracoes").select("*").eq("id",1).single(),
-        sb.from("modalidades").select("*").order("ordem"),
+        sb.from("configuracoes").select(logado?"*":"id,duracao_min,intervalo_min,antecedencia_horas,horizonte_dias,cancelamento_horas,whatsapp").eq("id",1).single(),
+        sb.from("modalidades").select(logado?"*":"id,nome,descricao,tipo,ativo,ordem").order("ordem"),
         sb.from("disponibilidade").select("*"),
         sb.from("bloqueios").select("*").gte("data",t).order("data"),
         sb.from("horarios_extras").select("*").gte("data",t).order("data")]);
@@ -1131,6 +1138,11 @@ function SupabaseAPI(){
       return chk(await sb.rpc("anexar_comprovante",{p_id:id,p_path:path}));
     },
     async receiptUrl(path){ return chk(await sb.storage.from("comprovantes").createSignedUrl(path,600)).signedUrl; },
+    async purgeReceipts(){
+      const paths=chk(await sb.from("comprovantes_a_excluir").select("path")).map(r=>r.path); if(!paths.length) return;
+      chk(await sb.storage.from("comprovantes").remove(paths));
+      chk(await sb.from("comprovantes_a_excluir").delete().in("path",paths));
+    },
     async listBookings(){
       const de=new Date(Date.now()-120*864e5).toISOString();
       const rows=chk(await sb.from("agendamentos").select("*, cliente:profiles(nome,cpf,telefone,email), nota:agendamento_notas(obs)").gte("inicio",de).order("inicio"));
@@ -1196,7 +1208,7 @@ async function refreshPublic(){
   App.busy = await API.getBusy(toISO(t,"00:00"), toISO(addDays(t,App.pub.config.horizonte_dias+2),"00:00"));
   const c=App.pub.config;
   const cd=$("#credDur"); if(cd) cd.textContent=`${c.duracao_min} min`;
-  $("#faqPolicy").textContent=(c.politica||"")+" Cancelamentos e acompanhamento ficam na Área do cliente.";
+  $("#faqPolicy").textContent=`Sim. O cancelamento ou a remarcação podem ser feitos com até ${c.cancelamento_horas} horas de antecedência. Cancelamentos e acompanhamento ficam na Área do cliente.`;
   const telFmt = c.whatsapp ? c.whatsapp.replace(/^55(\d{2})(\d{4,5})(\d{4})$/,"($1) $2-$3") : "";
   $("#footTel").innerHTML = telFmt ? esc(telFmt) : `<span class="ph">[INSERIR WHATSAPP]</span>`;
   $("#ctTel").innerHTML = telFmt ? `<span style="user-select:all">${esc(telFmt)}</span>` : `<span class="ph">[INSERIR WHATSAPP]</span>`;
@@ -1554,6 +1566,7 @@ const Admin = {
       $("#adOut").onclick=async()=>{ await API.signOut(); App.user=null; onAuthChanged(); };
       return;
     }
+    API.purgeReceipts?.().catch(()=>{}); // conclui a exclusão dos comprovantes vencidos (rotina de retenção do banco)
     const T=[["agendamentos","Agendamentos"],["agenda","Agenda e horários"],["valores","Modalidades e valores"],["config","Configurações"]];
     root.innerHTML=`<div class="app-head"><div><p class="eyebrow"><b>§</b>Área do advogado</p><h1>Painel do escritório</h1><p class="who">${esc(App.user.nome||App.user.email)}</p></div>
       <div class="btns"><a class="btn ghost sm" href="${AGENDA?"#agenda":"#inicio"}">${AGENDA?"Ver agenda pública":"Ver o site"}</a><button class="btn ghost sm" id="adOut">Sair</button></div></div>
@@ -1682,7 +1695,7 @@ const Admin = {
       <td><input data-k="ordem" type="number" value="${m.ordem??0}" aria-label="Ordem" style="width:4.5em"></td>
       <td><button class="btn ghost sm" data-msave="${esc(m.id)}">Salvar</button></td></tr>`;
     $("#adBody").innerHTML=`
-      <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor ao escolher a modalidade no agendamento, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
+      <p class="note" style="margin-bottom:16px;max-width:70ch">Defina o valor de cada modalidade. O cliente vê o valor depois de se identificar, na etapa de reserva, e ele fica gravado em cada reserva. Uma modalidade desativada some da agenda pública, mas mantém o histórico.</p>
       <div class="tbl-wrap"><table class="tbl mods-tbl"><thead><tr><th>Nome</th><th>Tipo</th><th>Endereço ou descrição</th><th>Valor (R$)</th><th>Ativa</th><th>Ordem</th><th>Ação</th></tr></thead>
       <tbody>${mods.map(row).join("")}</tbody></table></div>
       <div class="panel" style="margin-top:28px;max-width:760px"><h2>Nova modalidade</h2>
@@ -1754,6 +1767,9 @@ window.addEventListener("hashchange", route);
 $(".skip").onclick=e=>{ e.preventDefault(); focusView(); };
 $("#menuBtn").onclick=()=>{ const o=$("#nav").classList.toggle("open"); $("#menuBtn").setAttribute("aria-expanded",o); };
 $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false"); }));
+// Voltar ao topo: aparece quando o banner sai da tela; o foco vai para o título, pois o botão some ao chegar lá
+new IntersectionObserver(es=>{ $("#toTop").hidden=es[es.length-1].isIntersecting; }).observe($(".hero"));
+$("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteView h1"); t.tabIndex=-1; t.focus({preventScroll:true}); window.scrollTo(0,0); });
 
 (async function init(){
   $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;

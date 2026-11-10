@@ -189,6 +189,10 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 .wa-float:hover{transform:translateY(-2px)}
 .wa-float svg{width:22px;height:22px}
 @media (max-width:520px){.wa-float span{display:none}.wa-float{padding:.8em}}
+.to-top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--panel-2);color:var(--gold);border:1px solid var(--field-line);box-shadow:0 8px 26px rgba(0,0,0,.45);transition:transform .2s}
+.to-top:hover{transform:translateY(-2px)}
+.to-top svg{width:20px;height:20px}
+.to-top:focus-visible{outline:2px solid var(--gold);outline-offset:2px;box-shadow:0 0 0 5px var(--ink)}
 footer{padding-bottom:88px}
 [hidden]{display:none!important}
 
