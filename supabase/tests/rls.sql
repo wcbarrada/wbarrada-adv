@@ -40,6 +40,11 @@ select pg_temp.t('A grava CPF de dígitos repetidos','with u as (update profiles
 select pg_temp.t('A grava CPF válido com máscara','with u as (update profiles set cpf=''529.982.247-25'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
 select pg_temp.t('A deixa o CPF em branco','with u as (update profiles set cpf='''' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
 select pg_temp.t('A altera nome e telefone válidos','with u as (update profiles set nome=''Cliente A'',telefone=''(22) 99999-0000'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','1');
+select pg_temp.t('A grava telefone com 50 caracteres','with u as (update profiles set telefone=repeat(''9'',50) where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A troca o id do próprio perfil','with u as (update profiles set id=''33333333-3333-3333-3333-333333333333'' where id=''22222222-2222-2222-2222-222222222222'' returning 1) select count(*)::text from u','ERRO%');
+select pg_temp.t('A cria perfil para B','insert into profiles(id,nome,email) values(''33333333-3333-3333-3333-333333333333'',''x'',''x@x.com'') returning 1','ERRO%');
+select pg_temp.t('A apaga perfis','with u as (delete from profiles returning 1) select count(*)::text from u','0');
+select pg_temp.t('A lê admins','select count(*)::text from admins','0');
 select pg_temp.t('A anexa caminho de outra pasta','select (anexar_comprovante((select id from agendamentos limit 1),''33333333-3333-3333-3333-333333333333/x.pdf'')).id::text','ERRO%');
 select pg_temp.t('A grava horário desalinhado','select (criar_agendamento(''campos'',(select t from s)+interval ''7 min'',''x'','''',''y'',''pix'')).id::text','ERRO%');
 select pg_temp.t('A tenta valor via parâmetro (valor vem do banco)','select (criar_agendamento(''campos'',(select t from s)+interval ''1 hour'',''x'','''',''y'',''pix'')).valor::text','(null)');
