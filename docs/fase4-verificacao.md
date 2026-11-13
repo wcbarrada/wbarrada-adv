@@ -218,3 +218,36 @@ Não testados: exibição do link de videochamada, restrição de `https:` no ba
 Causa: scripts síncronos no fim da página e CSS externo. Correção: scripts com `defer` e CSS embutido no `index.html`. Efeito colateral a acompanhar: ao abrir direto `#cliente` ou `#admin`, a home pode aparecer por instantes antes de o JavaScript trocar a tela.
 
 Resultado publicado (celular): FCP simulado de 1,08 s (mediana de 7 rodadas, era 2,07 s) e FCP em rede lenta simulada de 808 ms (era 1.172 ms). O TBT passou de cerca de 0 para mediana de 227 ms (faixa de 27 a 372, sem contar 1 rodada anômala de 2.483 ms). As tarefas longas são de estilo e layout, sem aumento relevante de script; antes ocorriam antes do FCP e não entravam nessa métrica. Desempenho: mediana de 94, era 97.
+
+# Matriz de RLS — conferência de 13/11/2026
+
+**Resultado: os 4 casos reprovados em 05/11 estão fechados no código desde 09/11/2026 (PR #3).** A contagem "35 casos, 31 aprovados" registrada acima refere-se à matriz de 05/11 e ficou superada.
+
+## Método
+- PostgreSQL 16.15 local de teste (não o Supabase real): `mock-supabase.sql` e `schema.sql` executado duas vezes, seguidos de `rls.sql`.
+- Matriz antiga (35 casos, commit `70912bc`) rodada contra o schema de 05/11 e contra o atual, para separar falha real de falso positivo.
+- Simulação do banco real: schema anterior ao PR #3 (commit `3a479af`), com perfil preexistente de CPF inválido e nome de 200 caracteres, seguido do trecho "validação do cadastro e motivo dos bloqueios" executado 3 vezes.
+
+## Os 4 casos
+| Caso | Em 05/11 | Hoje | Natureza | Risco atual |
+|---|---|---|---|---|
+| Visitante lê `admins` | 0 linhas (teste esperava erro) | 0 linhas | Falso positivo do teste; corrigido o esperado | Nenhum |
+| Cliente altera o `email` do próprio perfil | 1 linha alterada | `permission denied` (cliente só altera nome, CPF e telefone) | Falha real de integridade, só no próprio cadastro | Nenhum |
+| Nome com 10.000 caracteres | 1 linha | Recusado (`profiles_nome_tamanho`, até 120) | Falha real de validação | Nenhum |
+| CPF inválido | 1 linha | Recusado (`profiles_cpf_valido`) | Falha real de validação | Nenhum |
+
+Nenhum dos 4 permitia ler ou alterar dados de outro cliente.
+
+## Resultado
+| Matriz | Schema | Aprovados |
+|---|---|---|
+| 35 casos (`70912bc`) | 05/11 (`70912bc`) | 31 de 35 (reproduz a Fase 4) |
+| Atual, com 5 casos novos de `profiles` e `admins` | atual | **80 de 80** |
+| Atual | anterior ao PR #3 + trecho aplicado 2 vezes | **80 de 80** |
+
+Casos novos: telefone com 50 caracteres, troca do `id` do próprio perfil, criação de perfil para outro cliente, exclusão de perfis e leitura de `admins` pelo cliente. Todos bloqueados.
+
+Trecho para o banco real: idempotente (3 execuções seguidas sem erro, mesmo estado final). As restrições são `not valid`: cadastros antigos fora da regra continuam gravados e só novas alterações são validadas.
+
+## Banco real
+Não consultado nesta conferência. `supabase/conferir-banco-real.sql` (somente leitura) mostra se o trecho já foi aplicado; se não, aplicar o trecho indicado no próprio arquivo. Enquanto o `revoke`/`grant` de `bloqueios` não estiver aplicado, visitantes leem o motivo dos bloqueios.
