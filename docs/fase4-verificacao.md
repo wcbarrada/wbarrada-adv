@@ -251,3 +251,6 @@ Trecho para o banco real: idempotente (3 execuções seguidas sem erro, mesmo es
 
 ## Banco real
 Não consultado nesta conferência. `supabase/conferir-banco-real.sql` (somente leitura) mostra se o trecho já foi aplicado; se não, aplicar o trecho indicado no próprio arquivo. Enquanto o `revoke`/`grant` de `bloqueios` não estiver aplicado, visitantes leem o motivo dos bloqueios.
+
+### Atualização de 18/11/2026
+Teste no banco real com a chave pública (como visitante): antes da correção, o visitante lia `bloqueios.motivo` ("Feriado nacional"). O advogado aplicou no SQL Editor o `revoke select on public.bloqueios from anon, authenticated` e o `grant select (id, data, modalidade_id)`. Depois: `motivo` e `select *` recusados (42501); `id`, `data` e `modalidade_id` continuam legíveis; chave PIX, política e valor seguem recusados; perfis, agendamentos e administradores retornam vazio. Falta conferir as restrições de `profiles` com `supabase/conferir-banco-real.sql`.
