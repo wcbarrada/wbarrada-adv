@@ -11,6 +11,12 @@ node ferramentas/carrossel/gerar.js post.json pasta-de-saida
 - O último slide (nome, OAB, cidades, site e aviso de conteúdo informativo) é fixo e fica em `gerar.js`.
 - Se o texto não couber num slide, o script para com erro em vez de gerar a imagem cortada.
 
+## Estilo visual
+Com `"estilo": "visual"` no JSON, a capa traz a foto do advogado (`src/assets/foto.jpg`), cada slide traz o perfil no alto e os fundos alternam entre claro e escuro.
+- `icone`: nome de um arquivo em `icones/` (sem `.svg`). Os ícones são do Lucide (licença ISC, em `icones/LICENSE-lucide.txt`).
+- `destaque`: texto curto em tamanho grande, como uma data.
+- A foto atual é provisória; ao trocar `src/assets/foto.jpg`, o carrossel passa a usar a nova.
+
 ## Uso pela tarefa agendada
 Nos dias úteis de manhã, uma tarefa agendada do Claude Code pesquisa um tema, confere cada afirmação em fonte oficial, gera o carrossel e envia ao advogado por e-mail para aprovação. Nada é publicado sem ele.
 
