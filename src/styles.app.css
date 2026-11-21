@@ -153,6 +153,11 @@ table.tbl{width:100%;border-collapse:collapse;font-size:.9rem;min-width:720px}
 @media (max-width:960px){.area-wide{grid-column:span 2}}
 @media (max-width:700px){.area-wide{grid-column:auto;grid-template-columns:1fr}.area-wide ul.cols{grid-column:1;grid-row:auto}}
 @media (max-width:420px){.area-wide ul.cols{grid-template-columns:1fr}}
+/* Último cartão de área sozinho na linha: ocupa a largura toda, sem destaque visual (áreas sem hierarquia) */
+.area-full{grid-column:1 / -1;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:36px}
+.area-full .ref,.area-full h3,.area-full>p{grid-column:1}
+.area-full ul{grid-column:2;grid-row:1 / span 3;align-self:start}
+@media (max-width:700px){.area-full{grid-template-columns:1fr}.area-full ul{grid-column:1;grid-row:auto}}
 .how{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:h;border-top:1px solid var(--line-2)}
 .how li{counter-increment:h;padding:22px 22px 4px 0;display:grid;gap:8px;align-content:start;position:relative}
 .how li::before{content:counter(h,decimal-leading-zero);font:500 .8rem var(--mono);color:var(--gold-2)}
