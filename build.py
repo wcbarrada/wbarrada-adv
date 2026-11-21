@@ -76,7 +76,7 @@ idx = f'''<!doctype html>
 <meta property="og:image" content="{SITE_URL}og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
+<meta property="og:image:alt" content="WBarrada Advogados. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia nas vias administrativa e judicial. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"]}}
@@ -105,7 +105,7 @@ wr(d+'/404.html', f'''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Página não encontrada · WBarrada Advogado</title>
+<title>Página não encontrada · WBarrada Advogados</title>
 <link rel="icon" href="{SITE_URL}icon.png">
 <style>body{{margin:0;min-height:100vh;display:grid;place-content:center;gap:16px;padding:24px;background:#0e0d0b;color:#f2ebdb;font:1rem/1.5 system-ui,sans-serif;text-align:center}}h1{{margin:0;font:500 2rem Georgia,serif}}p{{margin:0;color:#aba38e}}a{{color:#e4c58e}}</style>
 </head>
