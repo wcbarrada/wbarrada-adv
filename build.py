@@ -79,7 +79,7 @@ idx = f'''<!doctype html>
 <meta property="og:image:alt" content="WBarrada Advogado. Wanderson Corrêa Barrada, OAB/RJ nº 164.135">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
-{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia nas vias administrativa e judicial. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/"]}}
+{{"@context":"https://schema.org","@type":"LegalService","name":"Wanderson Corrêa Barrada · Advogado","description":"Advocacia nas vias administrativa e judicial. OAB/RJ nº 164.135.","url":"{SITE_URL}","image":"{SITE_URL}og-image.png","email":"wcbarrada.adv@gmail.com","telephone":"+5522998285300","areaServed":["Campos dos Goytacazes","Cordeiro","Cantagalo"],"sameAs":["https://www.instagram.com/wbarrada.adv/","https://www.facebook.com/wcbarrada/"]}}
 </script>
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
