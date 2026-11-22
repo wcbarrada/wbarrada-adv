@@ -959,6 +959,32 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
 new IntersectionObserver(es=>{ $("#toTop").hidden=es[es.length-1].isIntersecting; }).observe($(".hero"));
 $("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteView h1"); t.tabIndex=-1; t.focus({preventScroll:true}); window.scrollTo(0,0); });
 
+/* ---------------- prazos: agendar sobre o assunto ou tirar dúvida pelo WhatsApp ---------------- */
+// Mapeamento em config.js (prazosAssunto). Nos temas de governo, a nota do art. 30, I acompanha os botões.
+const NOTA_ART30 = "Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.";
+function agendarAssunto(assunto){
+  const sel=$("#area");
+  if([...sel.options].some(o=>o.value===assunto)){ sel.value=assunto; W.area=assunto; procSync("ag",assunto===AG_PROC); impSync(); }
+  if(location.hash==="#agenda") $("#agenda").scrollIntoView({behavior:"smooth"}); else location.hash="agenda";
+  goStep(1);
+  $("#msg1").textContent = `Assunto selecionado: ${assunto}. Escolha como prefere ser atendido para continuar.`;
+}
+function prazosCTA(){
+  const mapa=SITE.prazosAssunto||{}, gov=SITE.prazosTemasGoverno||[];
+  $$(".pz-p").forEach(p=>{
+    const rola=p.querySelector(".pz-rola"), rod=p.querySelector(".pz-rod"); if(!rola||!rod) return;
+    p.querySelector(".pz-cta")?.remove();
+    const titulo=p.querySelector("h3")?.textContent.trim()||"", grupo=p.querySelector(".pz-grupo")?.textContent.trim()||"";
+    const assunto=mapa[titulo]||"Outro assunto";
+    const msg=`Olá, Dr. Wanderson. Tenho uma dúvida sobre o prazo de "${titulo}". Vi a explicação no site.`;
+    const div=document.createElement("div"); div.className="pz-cta";
+    div.innerHTML=`${gov.includes(grupo)?`<p class="pz-cta-nota">${esc(NOTA_ART30)}</p>`:""}
+      <div class="pz-cta-bts">${AGENDA?`<button type="button" class="btn" data-assunto="${esc(assunto)}">Agendar consulta sobre este assunto</button>`:""}${waBtn("prazo", msg, AGENDA?"btn ghost":"btn").replace("Falar pelo WhatsApp","Tirar dúvida pelo WhatsApp")}</div>`;
+    rola.insertBefore(div, rod);
+  });
+}
+document.addEventListener("click",e=>{ const b=e.target.closest(".pz-cta [data-assunto]"); if(b) agendarAssunto(b.dataset.assunto); });
+
 (async function init(){
   $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;
   $("#year").textContent = todaySP().slice(0,4);
@@ -967,6 +993,7 @@ $("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteVi
   if(SITE.foto){ const ph=$("#portrait .portrait-ph"); const img=new Image(); img.alt="Wanderson Corrêa Barrada, advogado"; img.src=SITE.foto; img.onload=()=>ph.replaceWith(img); }
   try{
     await refreshPublic();
+    prazosCTA();
     App.user = await API.getUser();
     if(AGENDA){ renderMods(); renderNext(); goStep(1,true); }
   }catch(err){

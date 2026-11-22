@@ -371,6 +371,13 @@ footer{padding-bottom:88px}
 .nc[aria-expanded="true"]::before{opacity:1;animation:ncGira 3s linear infinite}
 @keyframes ncGira{to{--ang:360deg}}
 @media (prefers-reduced-motion:reduce){.nc[aria-expanded="true"]{transform:none}.nc[aria-expanded="true"]::before{animation:none;background:rgba(255,244,214,.9)}}
+/* Prazos: botões no fim de cada explicação */
+.pz-cta{margin-top:22px;padding-top:18px;border-top:1px solid #34363a;display:grid;gap:12px}
+.pz-cta-nota{font-size:.86rem!important;color:#c9c8c2!important}
+.pz-cta-bts{display:flex;flex-wrap:wrap;gap:10px}
+.pz-cta-bts .btn{min-height:44px}
+.pz-cta-bts .btn{background:var(--amb);border-color:var(--amb);color:#18191b}
+.pz-cta-bts .btn.ghost{background:transparent;color:var(--amb);border-color:var(--amb)}
 /* Assuntos com poder público: aviso do art. 30, I e campo obrigatório */
 .imp{display:grid;gap:12px}
 /* Agenda sem horários: aviso com saída pelo WhatsApp (topo e seção Agendamento) */
