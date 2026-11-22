@@ -8,6 +8,32 @@
 const TZ = "America/Sao_Paulo";
 const SITE = window.SITE_CONFIG || {};
 
+/* ---------------- medição: trackEvent (sem terceiros) ----------------
+   Hoje os eventos só entram em window.dataLayer, na memória da própria página: nada é enviado,
+   nada é gravado (sem cookie, sem localStorage) e nenhum dado pessoal ou texto digitado entra.
+   Só passam as chaves da lista abaixo, com valores definidos pelo próprio site.
+   Eventos: whatsapp_clique {origem} · agenda_inicio {assunto, modalidade} · agenda_concluida {assunto, modalidade}
+            nicho_aberto {nicho} · prazo_aberto {prazo}
+   Integração futura (Meta Pixel e GA4), só depois do aviso de consentimento e da atualização da
+   Política de Privacidade (decisão do advogado, fora desta rodada):
+     1. carregar o script do provedor somente após o aceite registrado pelo aviso de consentimento;
+     2. ler window.dataLayer (o GA4 via Google Tag Manager já entende esse formato) ou trocar o
+        corpo de enviar() abaixo por fbq("trackCustom", nome, dados) e gtag("event", nome, dados);
+     3. atualizar a CSP no build.py e na regra "Cabecalhos de seguranca" da Cloudflare. */
+const EVENTO_CHAVES=["origem","assunto","modalidade","nicho","prazo"];
+window.dataLayer = window.dataLayer || [];
+function trackEvent(nome, dados={}){
+  const d={event:String(nome)};
+  for(const k of EVENTO_CHAVES) if(typeof dados[k]==="string" && dados[k]) d[k]=dados[k].slice(0,80);
+  window.dataLayer.push(d); // enviar(): ponto de integração futura
+}
+window.trackEvent = trackEvent;
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href*="wa.me/"],a[href="#whatsapp"]'); if(!a) return;
+  const origem=a.dataset.wa || (a.id==="waFloat"?"botao_flutuante":"") || a.closest("section[id],aside[id],footer")?.id || a.closest("footer")&&"rodape" || "site";
+  trackEvent("whatsapp_clique",{origem: origem==="conteudo" ? "topo" : origem});
+});
+
 /* ---------------- utilitários ---------------- */
 const $ = (s, r=document) => r.querySelector(s);
 // O build.py oculta a seção #agenda quando config.js traz agendaAtiva:false
@@ -431,6 +457,7 @@ const VAZIO_HTML = origem => `<p><b>No momento não há horários livres na agen
 const W = { step:1, mod:null, area:"", date:null, time:null, month:null, booking:null, authTab:"login" };
 
 function goStep(n,noFocus){
+  if(n===2 && !W.iniciou){ W.iniciou=true; trackEvent("agenda_inicio",{assunto:W.area, modalidade:W.mod}); }
   W.step=n;
   $$(".pane[data-step]").forEach(p=>p.hidden = Number(p.dataset.step)!==n);
   $$("#steps li").forEach((li,i)=>{ li.className = i+1===n?"on":(i+1<n?"done":""); });
@@ -622,6 +649,7 @@ $("#to4").onclick=async e=>{
       }
       W.booking = await API.createBooking({ modalidade_id:W.mod, inicio:toISO(W.date,W.time), assunto:assuntoAgenda(), parte:$("#parte").value.trim(), resumo, forma:"pix" });
       await refreshPublic(); renderNext();
+      trackEvent("agenda_concluida",{assunto:W.area, modalidade:W.mod});
       goStep(4);
     }catch(err){
       msg.textContent=err.message;
@@ -1081,7 +1109,10 @@ if(ax){
   addEventListener("pointermove",e=>{if(!ativo)return;const dx=e.clientX-x0;if(Math.abs(dx)>6&&!mov){mov=true;tr.classList.add("arrasta");}if(mov)tr.scrollLeft=s0-dx;});
   addEventListener("pointerup",()=>{if(!ativo)return;ativo=false;if(mov){tr.classList.remove("arrasta");tr.scrollTo({left:Math.round(tr.scrollLeft/passoX())*passoX(),behavior:"smooth"});}});
   tr.addEventListener("click",e=>{if(mov){e.preventDefault();e.stopPropagation();mov=false;}},true);
+  let aberto=cards.findIndex(c=>c.getAttribute("aria-expanded")==="true");
   function abre(i){
+    if(i>=0 && i!==aberto && window.trackEvent) window.trackEvent("nicho_aberto",{nicho:cards[i].querySelector(".nc-t").textContent.trim()});
+    aberto=i;
     cards.forEach((c,k)=>c.setAttribute("aria-expanded",k===i));
     pains.forEach((p,k)=>{p.classList.toggle("on",k===i);p.setAttribute("aria-hidden",k!==i);});}
   pains.forEach((p,k)=>p.setAttribute("aria-hidden",!p.classList.contains("on")));
@@ -1107,7 +1138,9 @@ if(px){
     if(fino){let t;g.addEventListener("mouseenter",()=>{t=setTimeout(()=>tema(g,true),220);});g.addEventListener("mouseleave",()=>clearTimeout(t));}
     // Teclado: o foco abre o tema (como o mouse); Enter e Espaço abrem e fecham
     g.addEventListener("focus",()=>{ if(g.matches(":focus-visible")) tema(g,true); });});
-  function escolhe(b,foco){bts.forEach(x=>x.setAttribute("aria-pressed",x===b));ps.forEach(p=>p.hidden=p.id!==b.getAttribute("aria-controls"));
+  function escolhe(b,foco){
+    if(b.getAttribute("aria-pressed")!=="true" && window.trackEvent) window.trackEvent("prazo_aberto",{prazo:b.textContent.trim()});
+    bts.forEach(x=>x.setAttribute("aria-pressed",x===b));ps.forEach(p=>p.hidden=p.id!==b.getAttribute("aria-controls"));
     const p=document.getElementById(b.getAttribute("aria-controls"));p.querySelector(".pz-rola").scrollTop=0;
     if(foco)b.focus();else if(matchMedia("(max-width:860px)").matches)p.scrollIntoView({behavior:RED?"auto":"smooth",block:"start"});}
   bts.forEach(b=>{b.addEventListener("click",()=>escolhe(b));
