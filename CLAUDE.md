@@ -115,6 +115,14 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
   - Prazos que dependem do STJ (DPVAT, condomínio, monitória do cheque) ficam fora até a conferência na fonte oficial; o site do STJ não abre nas sessões na nuvem.
   - A EC 136/2025 mudou a correção de precatórios e RPVs (IPCA + 2% a.a., limitado à SELIC); o item antigo da SELIC foi substituído.
   - A Lei 7.357/1985 aparece no Planalto com "DOU de 3.9.1986" `[VERIFICAR]`.
+- **Rodada de conversão (aprovada em 22/11/2026, PR sem merge até a confirmação):**
+  - Agenda sem horários mostra saída pelo WhatsApp.
+  - Seletores de assunto seguem os 11 nichos.
+  - Servidor público, Precatórios e RPV e Execução fiscal exigem "Contra quem é a questão?" só na tela; `criar_agendamento` não valida esse campo.
+  - Prazos têm "Agendar consulta sobre este assunto" e "Tirar dúvida pelo WhatsApp". O mapeamento prazo → assunto fica em `config.js` (`prazosAssunto`); "Imposto recolhido a mais" vai para "Outro assunto".
+  - No celular, o painel mostra um prazo por vez e os botões do topo ficam na primeira tela.
+  - `trackEvent` grava só no `dataLayer` local; Pixel e GA4 só depois do consentimento e da atualização da política.
+  - O og-image é estático e ainda traz "Previdenciário e Direito Público": a arte nova será entregue pelo usuário.
 - Endereços de rua retirados das páginas e do JSON-LD em 06/11/2026: o atendimento presencial não será no endereço usado nas petições. Endereço definitivo pendente (provavelmente sede da OAB). As descrições das modalidades no banco real foram conferidas em 21/11/2026 e não trazem mais endereço.
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4. Matriz de RLS conferida em 13/11/2026: 80 de 80 em Postgres 16 local (ver `docs/fase4-verificacao.md`).
