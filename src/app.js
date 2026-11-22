@@ -8,6 +8,32 @@
 const TZ = "America/Sao_Paulo";
 const SITE = window.SITE_CONFIG || {};
 
+/* ---------------- medição: trackEvent (sem terceiros) ----------------
+   Hoje os eventos só entram em window.dataLayer, na memória da própria página: nada é enviado,
+   nada é gravado (sem cookie, sem localStorage) e nenhum dado pessoal ou texto digitado entra.
+   Só passam as chaves da lista abaixo, com valores definidos pelo próprio site.
+   Eventos: whatsapp_clique {origem} · agenda_inicio {assunto, modalidade} · agenda_concluida {assunto, modalidade}
+            nicho_aberto {nicho} · prazo_aberto {prazo}
+   Integração futura (Meta Pixel e GA4), só depois do aviso de consentimento e da atualização da
+   Política de Privacidade (decisão do advogado, fora desta rodada):
+     1. carregar o script do provedor somente após o aceite registrado pelo aviso de consentimento;
+     2. ler window.dataLayer (o GA4 via Google Tag Manager já entende esse formato) ou trocar o
+        corpo de enviar() abaixo por fbq("trackCustom", nome, dados) e gtag("event", nome, dados);
+     3. atualizar a CSP no build.py e na regra "Cabecalhos de seguranca" da Cloudflare. */
+const EVENTO_CHAVES=["origem","assunto","modalidade","nicho","prazo"];
+window.dataLayer = window.dataLayer || [];
+function trackEvent(nome, dados={}){
+  const d={event:String(nome)};
+  for(const k of EVENTO_CHAVES) if(typeof dados[k]==="string" && dados[k]) d[k]=dados[k].slice(0,80);
+  window.dataLayer.push(d); // enviar(): ponto de integração futura
+}
+window.trackEvent = trackEvent;
+document.addEventListener("click",e=>{
+  const a=e.target.closest('a[href*="wa.me/"],a[href="#whatsapp"]'); if(!a) return;
+  const origem=a.dataset.wa || (a.id==="waFloat"?"botao_flutuante":"") || a.closest("section[id],aside[id],footer")?.id || a.closest("footer")&&"rodape" || "site";
+  trackEvent("whatsapp_clique",{origem: origem==="conteudo" ? "topo" : origem});
+});
+
 /* ---------------- utilitários ---------------- */
 const $ = (s, r=document) => r.querySelector(s);
 // O build.py oculta a seção #agenda quando config.js traz agendaAtiva:false
@@ -373,24 +399,27 @@ const assuntoAgenda = () => W.area===AG_PROC ? `${W.area}: ${procCheck("ag").tex
 
 /* ---------------- assistente de WhatsApp (nada é gravado) ---------------- */
 const waProc = () => $("#waAssunto").value==="processo em andamento";
+const WA_IMP=["direitos de servidor público","precatório ou RPV","execução fiscal"];
+const waImp = () => WA_IMP.includes($("#waAssunto").value);
 function waText(){
   const a=$("#waAssunto").value, l=$("#waLocal").value, p=$("#waPeriodo").value, n=$("#waNome").value.trim();
   if(!a) return "";
   let sobre=a;
   if(waProc()){ const r=procCheck("wa"); if(!r.ok) return ""; sobre=`processo em andamento (${r.texto})`; }
+  if(waImp()){ const pt=$("#waImpParte").value.trim(); if(!parteOK(pt)) return ""; sobre=`${a} (contra ${pt})`; }
   return `Olá, Dr. Wanderson.${n?` Meu nome é ${n}.`:""} Gostaria de agendar uma consulta sobre ${sobre}, ${l}, de preferência ${p}. Vi o contato pelo site.`;
 }
-const waErro = () => !$("#waAssunto").value ? "Escolha o assunto para montar a mensagem." : waProc() ? (procCheck("wa").erro||"") : "";
+const waErro = () => !$("#waAssunto").value ? "Escolha o assunto para montar a mensagem." : waProc() ? (procCheck("wa").erro||"") : (waImp() && !parteOK($("#waImpParte").value)) ? "Informe contra quem é a questão." : "";
 function waUpdate(){
   if(!$("#waForm") || !App.pub) return;
-  procSync("wa", waProc());
+  procSync("wa", waProc()); $("#waImp").hidden=!waImp();
   const t=waText(), num=App.pub.config.whatsapp;
   $("#waPreview").value = t || waErro();
   $("#waGo").innerHTML = !num ? `<span class="note"><span class="ph">[INSERIR WHATSAPP]</span> O número é cadastrado na Área do advogado.</span>`
     : t ? `<a class="btn" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Abrir no WhatsApp</a>`
     : `<button type="button" class="btn" disabled>Abrir no WhatsApp</button>`;
 }
-["#waAssunto","#waLocal","#waPeriodo","#waNome"].forEach(id=>{ const el=$(id); if(el){ el.addEventListener("input",waUpdate); el.addEventListener("change",waUpdate); } });
+["#waAssunto","#waImpParte","#waLocal","#waPeriodo","#waNome"].forEach(id=>{ const el=$(id); if(el){ el.addEventListener("input",waUpdate); el.addEventListener("change",waUpdate); } });
 $("#waForm").addEventListener("submit",e=>e.preventDefault());
 $("#waCopy").onclick=e=>{ const t=waText(); if(!t){ $("#waMsg").textContent=waProc() ? waErro() : "Escolha o assunto antes de copiar."; return; } $("#waMsg").textContent=""; copyText(t,e.currentTarget,$("#waPreview")); };
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-copytext]"); if(b) copyText(b.dataset.copytext,b); });
@@ -411,13 +440,24 @@ function renderNext(){
       if(W.area && (W.area!==AG_PROC || procCheck("ag").ok)) goStep(2); else { goStep(1); $("#msg1").textContent="Horário pré-selecionado. Informe o assunto da consulta para continuar."; } };
     li.appendChild(b); list.appendChild(li);
   }
-  if(!found.length) list.innerHTML=`<li class="muted" style="font-size:.9rem">Sem horários livres nos próximos dias.</li>`;
+  App.semHorario = !found.length;
+  if(!found.length) list.innerHTML=`<li class="vazio">${VAZIO_HTML("agenda_topo")}</li>`;
+  const av=$("#agVazio"); if(av){ av.hidden=!App.semHorario; av.innerHTML=App.semHorario?VAZIO_HTML("agenda_secao"):""; }
 }
+/* Agenda sem horários: mesma mensagem inicial do assistente de WhatsApp, sem valores nem forma de pagamento */
+const WA_BASE = "Olá, Dr. Wanderson. Gostaria de agendar uma consulta. Vi o contato pelo site.";
+function waBtn(origem, texto=WA_BASE, cls="btn"){
+  const num=App.pub && App.pub.config.whatsapp;
+  return num ? `<a class="${cls}" data-wa="${esc(origem)}" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Falar pelo WhatsApp</a>`
+             : `<a class="${cls}" data-wa="${esc(origem)}" href="#whatsapp">Falar pelo WhatsApp</a>`;
+}
+const VAZIO_HTML = origem => `<p><b>No momento não há horários livres na agenda online.</b></p><p>Fale pelo WhatsApp para combinar um horário.</p>${waBtn(origem)}`;
 
 /* ---------------- agendamento (wizard) ---------------- */
 const W = { step:1, mod:null, area:"", date:null, time:null, month:null, booking:null, authTab:"login" };
 
 function goStep(n,noFocus){
+  if(n===2 && !W.iniciou){ W.iniciou=true; trackEvent("agenda_inicio",{assunto:W.area, modalidade:W.mod}); }
   W.step=n;
   $$(".pane[data-step]").forEach(p=>p.hidden = Number(p.dataset.step)!==n);
   $$("#steps li").forEach((li,i)=>{ li.className = i+1===n?"on":(i+1<n?"done":""); });
@@ -441,11 +481,20 @@ function renderMods(){
     box.appendChild(div);
   }
 }
-$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; procSync("ag", W.area===AG_PROC); };
+/* Assuntos que podem envolver o poder público: aviso do art. 30, I e "Contra quem é a questão?" obrigatório
+   (só na tela; o banco aceita o campo vazio). A resposta vai para o campo #parte (parte_contraria). */
+const AG_IMP=["Servidor público","Precatórios e RPV","Execução fiscal"];
+const agImp = () => AG_IMP.includes(W.area);
+const parteOK = v => String(v||"").trim().length>=2;
+function impSync(){ $("#agImp").hidden=!agImp(); $("#parteLbl").textContent = agImp() ? "Contra quem é a questão?" : "Contra quem é a questão? (opcional)"; }
+$("#agImpParte").addEventListener("input",e=>{ $("#parte").value=e.target.value; $("#msg1").textContent=""; });
+$("#parte").addEventListener("input",e=>{ $("#agImpParte").value=e.target.value; });
+$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; procSync("ag", W.area===AG_PROC); impSync(); };
 $("#to2").onclick=()=>{
   if(!W.mod) return $("#msg1").textContent="Escolha a modalidade de atendimento.";
   if(!W.area) return $("#msg1").textContent="Selecione o assunto da consulta.";
   if(W.area===AG_PROC){ const r=procCheck("ag"); if(!r.ok) return $("#msg1").textContent=r.erro; }
+  if(agImp() && !parteOK($("#agImpParte").value)){ $("#agImpParte").focus(); return $("#msg1").textContent="Informe contra quem é a questão."; }
   $("#msg1").textContent=""; goStep(2);
 };
 
@@ -476,7 +525,11 @@ $("#prevM").onclick=()=>{ const [y,m]=W.month.split("-").map(Number); const d=ne
 $("#nextM").onclick=()=>{ const [y,m]=W.month.split("-").map(Number); const d=new Date(Date.UTC(y,m,1)); W.month=d.toISOString().slice(0,7); renderCal(); };
 function renderSlots(){
   const g=$("#slotGrid"); g.innerHTML="";
-  if(!W.date){ $("#dayLbl").textContent="Selecione um dia"; $("#daySub").textContent="Os dias marcados no calendário têm horários livres."; return; }
+  if(!W.date){ $("#dayLbl").textContent="Selecione um dia";
+    const temDia=[...$$("#cal button.av")].length>0;
+    if(temDia) $("#daySub").textContent="Os dias marcados no calendário têm horários livres.";
+    else { $("#daySub").textContent="No momento não há horários livres nesta modalidade. Fale pelo WhatsApp para combinar um horário."; g.innerHTML=waBtn("agenda_calendario"); }
+    return; }
   $("#dayLbl").textContent=`${WDL[dowOf(W.date)]}, ${Number(W.date.slice(8))} de ${MES[Number(W.date.slice(5,7))-1]}`;
   const sl=slotsFor(W.date,W.mod);
   $("#daySub").textContent=`${sl.filter(s=>!s.busy).length} horário(s) livre(s). Horários riscados já estão ocupados.`;
@@ -584,6 +637,7 @@ $("#to4").onclick=async e=>{
   const msg=$("#msg3"); msg.textContent="";
   const resumo=$("#resumo").value.trim();
   if(resumo.length<20) return msg.textContent="Descreva o caso em pelo menos uma frase no resumo.";
+  if(agImp() && !parteOK($("#parte").value)){ $("#parte").focus(); return msg.textContent="Informe contra quem é a questão."; }
   if(!$("#lgpd").checked) return msg.textContent="Para continuar, confirme que leu a Política de Privacidade.";
   await busy(e.currentTarget, async()=>{
     try{
@@ -595,6 +649,7 @@ $("#to4").onclick=async e=>{
       }
       W.booking = await API.createBooking({ modalidade_id:W.mod, inicio:toISO(W.date,W.time), assunto:assuntoAgenda(), parte:$("#parte").value.trim(), resumo, forma:"pix" });
       await refreshPublic(); renderNext();
+      trackEvent("agenda_concluida",{assunto:W.area, modalidade:W.mod});
       goStep(4);
     }catch(err){
       msg.textContent=err.message;
@@ -636,7 +691,7 @@ function renderDone(){
   const txt=encodeURIComponent(`Olá. Agendei uma consulta pelo site. Protocolo ${bk.protocolo}, ${longWhen(bk.inicio)}. Segue o comprovante de pagamento.`);
   $("#waAction").innerHTML = c.whatsapp ? `<a class="btn ghost" href="https://wa.me/${esc(c.whatsapp)}?text=${txt}" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>` : "";
 }
-$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#agProcSit").value=""; $("#agProcNum").value=""; procSync("ag",false); $("#parte").value=""; $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
+$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#agProcSit").value=""; $("#agProcNum").value=""; procSync("ag",false); $("#parte").value=""; $("#agImpParte").value=""; impSync(); $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
 
 /* =====================================================================
    Área do cliente
@@ -932,6 +987,32 @@ $$("#nav a").forEach(a=>a.addEventListener("click",()=>{ $("#nav").classList.rem
 new IntersectionObserver(es=>{ $("#toTop").hidden=es[es.length-1].isIntersecting; }).observe($(".hero"));
 $("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteView h1"); t.tabIndex=-1; t.focus({preventScroll:true}); window.scrollTo(0,0); });
 
+/* ---------------- prazos: agendar sobre o assunto ou tirar dúvida pelo WhatsApp ---------------- */
+// Mapeamento em config.js (prazosAssunto). Nos temas de governo, a nota do art. 30, I acompanha os botões.
+const NOTA_ART30 = "Por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.";
+function agendarAssunto(assunto){
+  const sel=$("#area");
+  if([...sel.options].some(o=>o.value===assunto)){ sel.value=assunto; W.area=assunto; procSync("ag",assunto===AG_PROC); impSync(); }
+  if(location.hash==="#agenda") $("#agenda").scrollIntoView({behavior:"smooth"}); else location.hash="agenda";
+  goStep(1);
+  $("#msg1").textContent = `Assunto selecionado: ${assunto}. Escolha como prefere ser atendido para continuar.`;
+}
+function prazosCTA(){
+  const mapa=SITE.prazosAssunto||{}, gov=SITE.prazosTemasGoverno||[];
+  $$(".pz-p").forEach(p=>{
+    const rola=p.querySelector(".pz-rola"), rod=p.querySelector(".pz-rod"); if(!rola||!rod) return;
+    p.querySelector(".pz-cta")?.remove();
+    const titulo=p.querySelector("h3")?.textContent.trim()||"", grupo=p.querySelector(".pz-grupo")?.textContent.trim()||"";
+    const assunto=mapa[titulo]||"Outro assunto";
+    const msg=`Olá, Dr. Wanderson. Tenho uma dúvida sobre o prazo de "${titulo}". Vi a explicação no site.`;
+    const div=document.createElement("div"); div.className="pz-cta";
+    div.innerHTML=`${gov.includes(grupo)?`<p class="pz-cta-nota">${esc(NOTA_ART30)}</p>`:""}
+      <div class="pz-cta-bts">${AGENDA?`<button type="button" class="btn" data-assunto="${esc(assunto)}">Agendar consulta sobre este assunto</button>`:""}${waBtn("prazo", msg, AGENDA?"btn ghost":"btn").replace("Falar pelo WhatsApp","Tirar dúvida pelo WhatsApp")}</div>`;
+    rola.insertBefore(div, rod);
+  });
+}
+document.addEventListener("click",e=>{ const b=e.target.closest(".pz-cta [data-assunto]"); if(b) agendarAssunto(b.dataset.assunto); });
+
 (async function init(){
   $("#demoBar").hidden = API.mode!=="demo" || !AGENDA;
   $("#year").textContent = todaySP().slice(0,4);
@@ -940,6 +1021,7 @@ $("#toTop").addEventListener("click",e=>{ e.preventDefault(); const t=$("#siteVi
   if(SITE.foto){ const ph=$("#portrait .portrait-ph"); const img=new Image(); img.alt="Wanderson Corrêa Barrada, advogado"; img.src=SITE.foto; img.onload=()=>ph.replaceWith(img); }
   try{
     await refreshPublic();
+    prazosCTA();
     App.user = await API.getUser();
     if(AGENDA){ renderMods(); renderNext(); goStep(1,true); }
   }catch(err){
@@ -960,7 +1042,8 @@ if(grade){
   const LETRAS="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let celulas=[],modo="",pagina=0,pausado=false,visivel=true,timer=null,ocupado=false;
   const sorteia=()=>LETRAS[Math.floor(Math.random()*LETRAS.length)];
-  const cfg=()=>modo==="largo"?{cols:31,linhas:3,por:3,gap:3}:{cols:20,linhas:6,por:3,gap:2};
+  // No celular, um prazo por vez (2 linhas), para os botões do topo caberem na primeira tela
+  const cfg=()=>modo==="largo"?{cols:31,linhas:3,por:3,gap:3}:{cols:20,linhas:2,por:1,gap:2};
   function paginas(){
     const {cols,linhas:nl,por}=cfg(),out=[];
     for(let i=0;i<DADOS.length;i+=por){
@@ -1026,14 +1109,21 @@ if(ax){
   addEventListener("pointermove",e=>{if(!ativo)return;const dx=e.clientX-x0;if(Math.abs(dx)>6&&!mov){mov=true;tr.classList.add("arrasta");}if(mov)tr.scrollLeft=s0-dx;});
   addEventListener("pointerup",()=>{if(!ativo)return;ativo=false;if(mov){tr.classList.remove("arrasta");tr.scrollTo({left:Math.round(tr.scrollLeft/passoX())*passoX(),behavior:"smooth"});}});
   tr.addEventListener("click",e=>{if(mov){e.preventDefault();e.stopPropagation();mov=false;}},true);
+  let aberto=cards.findIndex(c=>c.getAttribute("aria-expanded")==="true");
   function abre(i){
+    if(i>=0 && i!==aberto && window.trackEvent) window.trackEvent("nicho_aberto",{nicho:cards[i].querySelector(".nc-t").textContent.trim()});
+    aberto=i;
     cards.forEach((c,k)=>c.setAttribute("aria-expanded",k===i));
     pains.forEach((p,k)=>{p.classList.toggle("on",k===i);p.setAttribute("aria-hidden",k!==i);});}
   pains.forEach((p,k)=>p.setAttribute("aria-hidden",!p.classList.contains("on")));
   cards.forEach((c,i)=>{c.addEventListener("click",()=>abre(i));
     let t;const v=c.querySelector(".nc-ver");
     v.addEventListener("mouseenter",()=>{if(ativo)return;t=setTimeout(()=>abre(i),120);});
-    v.addEventListener("mouseleave",()=>clearTimeout(t));});
+    v.addEventListener("mouseleave",()=>clearTimeout(t));
+    // Teclado: o foco abre os detalhes (como o mouse); setas ← → andam entre os cartões
+    c.addEventListener("focus",()=>{ if(c.matches(":focus-visible")) abre(i); });
+    c.addEventListener("keydown",e=>{const d={ArrowRight:1,ArrowLeft:-1,Home:-99,End:99}[e.key];if(!d)return;e.preventDefault();
+      const n=cards[Math.max(0,Math.min(cards.length-1,i+d))];n.focus();n.scrollIntoView({block:"nearest",inline:"nearest",behavior:RED?"auto":"smooth"});abre(cards.indexOf(n));});});
   tr.addEventListener("wheel",e=>{if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;const max=tr.scrollWidth-tr.clientWidth;
     if((e.deltaY>0&&tr.scrollLeft<max-1)||(e.deltaY<0&&tr.scrollLeft>0)){e.preventDefault();tr.scrollLeft+=e.deltaY;}},{passive:false});
 }
@@ -1045,8 +1135,12 @@ if(px){
   function tema(g,v){gts.forEach(x=>{const on=x===g?v:(v?false:x.closest(".pz-g").classList.contains("aberto"));x.closest(".pz-g").classList.toggle("aberto",on);x.setAttribute("aria-expanded",on);});}
   const fino=matchMedia("(hover: hover) and (pointer: fine)").matches;
   gts.forEach(g=>{g.addEventListener("click",()=>tema(g,!g.closest(".pz-g").classList.contains("aberto")));
-    if(fino){let t;g.addEventListener("mouseenter",()=>{t=setTimeout(()=>tema(g,true),220);});g.addEventListener("mouseleave",()=>clearTimeout(t));}});
-  function escolhe(b,foco){bts.forEach(x=>x.setAttribute("aria-pressed",x===b));ps.forEach(p=>p.hidden=p.id!==b.getAttribute("aria-controls"));
+    if(fino){let t;g.addEventListener("mouseenter",()=>{t=setTimeout(()=>tema(g,true),220);});g.addEventListener("mouseleave",()=>clearTimeout(t));}
+    // Teclado: o foco abre o tema (como o mouse); Enter e Espaço abrem e fecham
+    g.addEventListener("focus",()=>{ if(g.matches(":focus-visible")) tema(g,true); });});
+  function escolhe(b,foco){
+    if(b.getAttribute("aria-pressed")!=="true" && window.trackEvent) window.trackEvent("prazo_aberto",{prazo:b.textContent.trim()});
+    bts.forEach(x=>x.setAttribute("aria-pressed",x===b));ps.forEach(p=>p.hidden=p.id!==b.getAttribute("aria-controls"));
     const p=document.getElementById(b.getAttribute("aria-controls"));p.querySelector(".pz-rola").scrollTop=0;
     if(foco)b.focus();else if(matchMedia("(max-width:860px)").matches)p.scrollIntoView({behavior:RED?"auto":"smooth",block:"start"});}
   bts.forEach(b=>{b.addEventListener("click",()=>escolhe(b));

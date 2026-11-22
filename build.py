@@ -67,7 +67,7 @@ idx = f'''<!doctype html>
 <title>Wanderson Barrada · Advogado em Campos, Cordeiro e Cantagalo</title>
 {NOINDEX}<link rel="canonical" href="{SITE_URL}">
 <meta name="description" content="Wanderson Corrêa Barrada, advogado, OAB/RJ nº 164.135. Atuação nas vias administrativa e judicial, em Campos dos Goytacazes, Cordeiro e Cantagalo/RJ, presencial e por videochamada.">
-<meta name="theme-color" content="#0e0d0b">
+<meta name="theme-color" content="#141517">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:title" content="Wanderson Corrêa Barrada · Advogado">

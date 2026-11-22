@@ -104,7 +104,7 @@
 
   <section id="areas" class="ax">
     <div class="wrap ax-cab">
-      <div><h2>Assuntos atendidos</h2><p>Deslize para o lado e passe o mouse em “Ver detalhes” para conhecer cada assunto.</p></div>
+      <div><h2>Assuntos atendidos</h2><p>Deslize para o lado e toque ou passe o mouse em “Ver detalhes” para conhecer cada assunto.</p></div>
       <div class="ax-nav"><p class="ax-cont"><b>01</b> / 11</p><span class="ax-bar" aria-hidden="true"><i></i></span>
         <button type="button" class="ax-seta" data-d="-1" aria-label="Assuntos anteriores"></button><button type="button" class="ax-seta" data-d="1" aria-label="Próximos assuntos"></button></div>
     </div>
@@ -116,7 +116,7 @@
       <button type="button" class="nc" style="--c:#D1AD69;--f:#17130A" aria-expanded="false" aria-controls="np-4"><span class="nc-ico ico ico-heart-pulse" aria-hidden="true"></span><span class="nc-t">Plano de saúde</span><span class="nc-d">Reajuste, cancelamento e negativa de cobertura.</span><span class="nc-ver">Ver detalhes</span></button>
       <button type="button" class="nc" style="--c:#BC9756;--f:#17130A" aria-expanded="false" aria-controls="np-5"><span class="nc-ico ico ico-receipt" aria-hidden="true"></span><span class="nc-t">Consumidor</span><span class="nc-d">Concessionárias de serviços, nome negativado e cobranças indevidas.</span><span class="nc-ver">Ver detalhes</span></button>
       <button type="button" class="nc" style="--c:#A78144;--f:#17130A" aria-expanded="false" aria-controls="np-6"><span class="nc-ico ico ico-percent" aria-hidden="true"></span><span class="nc-t">Banco</span><span class="nc-d">Empréstimos e descontos que você não reconhece.</span><span class="nc-ver">Ver detalhes</span></button>
-      <button type="button" class="nc" style="--c:#8C6B37;--f:#F4EEE2" aria-expanded="false" aria-controls="np-7"><span class="nc-ico ico ico-briefcase" aria-hidden="true"></span><span class="nc-t">Trabalhista</span><span class="nc-d">Direitos de quem trabalha, na saída do emprego e durante o contrato.</span><span class="nc-ver">Ver detalhes</span></button>
+      <button type="button" class="nc" style="--c:#8C6B37;--f:#FFFFFF" aria-expanded="false" aria-controls="np-7"><span class="nc-ico ico ico-briefcase" aria-hidden="true"></span><span class="nc-t">Trabalhista</span><span class="nc-d">Direitos de quem trabalha, na saída do emprego e durante o contrato.</span><span class="nc-ver">Ver detalhes</span></button>
       <button type="button" class="nc" style="--c:#6D5530;--f:#F4EEE2" aria-expanded="false" aria-controls="np-8"><span class="nc-ico ico ico-building-2" aria-hidden="true"></span><span class="nc-t">Servidor público</span><span class="nc-d">Direitos funcionais de servidores estaduais e municipais.</span><span class="nc-ver">Ver detalhes</span></button>
       <button type="button" class="nc" style="--c:#4D3F29;--f:#F4EEE2" aria-expanded="false" aria-controls="np-9"><span class="nc-ico ico ico-file-search" aria-hidden="true"></span><span class="nc-t">Precatórios e RPV</span><span class="nc-d">Cálculo, cobrança e recebimento de valores devidos pelo governo.</span><span class="nc-ver">Ver detalhes</span></button>
       <button type="button" class="nc" style="--c:#2E2922;--f:#F4EEE2" aria-expanded="false" aria-controls="np-10"><span class="nc-ico ico ico-receipt" aria-hidden="true"></span><span class="nc-t">Execução fiscal</span><span class="nc-d">Defesa do contribuinte em cobranças de impostos municipais.</span><span class="nc-ver">Ver detalhes</span></button>
@@ -208,6 +208,7 @@
         <p>Escolha a modalidade e o horário. Para concluir, entre ou crie sua conta na Área do cliente, onde você acompanha a confirmação.</p>
       </div>
 
+      <div class="ag-vazio" id="agVazio" role="status" hidden></div>
       <div class="booking" id="booking">
         <ol class="steps" id="steps" style="margin:0;padding:0">
           <li><span>Atendimento</span></li><li><span>Data e horário</span></li><li><span>Identificação</span></li><li><span>Reserva</span></li><li><span>Concluído</span></li>
@@ -222,13 +223,17 @@
               <label for="area">Assunto da consulta</label>
               <select id="area">
                 <option value="">Selecione</option>
-                <option>Previdenciário (INSS, BPC/LOAS)</option>
-                <option>Servidor público (progressão, gratificações, férias)</option>
-                <option>Execução contra a Fazenda (RPV, precatório, cálculos)</option>
-                <option>Tributário municipal (ISS, execução fiscal, protesto)</option>
-                <option>Plano de saúde ou consumidor</option>
-                <option>Família e sucessões</option>
+                <option>Imobiliário e contratos</option>
+                <option>Família</option>
+                <option>Inventário</option>
+                <option>INSS</option>
+                <option>Plano de saúde</option>
+                <option>Consumidor</option>
+                <option>Banco</option>
                 <option>Trabalhista</option>
+                <option>Servidor público</option>
+                <option>Precatórios e RPV</option>
+                <option>Execução fiscal</option>
                 <option>Processo em andamento</option>
                 <option>Outro assunto</option>
               </select>
@@ -254,6 +259,11 @@
                   <p class="note" id="agProcAjuda">Numeração do CNJ, com 20 dígitos. Em processo administrativo, informe o número do protocolo.</p></div>
               </div>
               <p class="note warn" id="agProcAviso" hidden>Por respeito ao colega que acompanha o caso, não atendo nem oriento sobre processo com advogado constituído. Procure o advogado responsável.</p>
+            </div>
+            <div class="full imp" id="agImp" hidden>
+              <p class="note warn" id="agImpNota">Atenção: por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
+              <div class="field"><label for="agImpParte">Contra quem é a questão?</label>
+                <input id="agImpParte" maxlength="200" autocomplete="off" aria-describedby="agImpNota" placeholder="Ex.: INSS, Estado do Rio de Janeiro, Município de …"></div>
             </div>
           </div>
           <p class="msg" role="alert" id="msg1"></p>
@@ -284,7 +294,7 @@
           <p class="hint">Com a conta, você acompanha a confirmação e cancela pela Área do cliente.</p>
           <div id="authSlot"></div>
           <div class="fgrid" style="margin-top:22px">
-            <div class="field full"><label for="parte">Contra quem é a questão? (opcional)</label><input id="parte" placeholder="Ex.: INSS, Município de …, operadora de saúde"></div>
+            <div class="field full"><label for="parte" id="parteLbl">Contra quem é a questão? (opcional)</label><input id="parte" placeholder="Ex.: INSS, Município de …, operadora de saúde"></div>
             <div class="field full"><label for="resumo">Resumo do caso</label><textarea id="resumo" placeholder="Conte em poucas linhas o que aconteceu e o que você precisa. Se já houver processo, informe o número. Não é preciso descrever doenças ou laudos aqui: isso fica para a consulta."></textarea></div>
             <label class="check full"><input type="checkbox" id="lgpd"><span>Li a <a href="#privacidade">Política de Privacidade</a> e concordo com o uso destes dados para o agendamento e a análise preliminar do caso, sob sigilo profissional.</span></label>
           </div>
@@ -333,17 +343,25 @@
         <div class="field"><label for="waAssunto">Sobre o que você quer falar?</label>
           <select id="waAssunto">
             <option value="">Selecione</option>
-            <option>benefício do INSS (aposentadoria, auxílio, BPC/LOAS, pensão)</option>
-            <option>benefício negado, cortado ou com desconto</option>
-            <option>direitos de servidor público</option>
-            <option>RPV, precatório ou cálculo de processo</option>
-            <option>cobrança de imposto ou taxa municipal</option>
-            <option>plano de saúde ou consumidor</option>
-            <option>família, herança ou inventário</option>
-            <option>questão trabalhista</option>
-            <option>processo em andamento</option>
-            <option>outro assunto</option>
+            <option value="imóveis e contratos">Imobiliário e contratos</option>
+            <option value="direito de família">Família</option>
+            <option value="inventário">Inventário</option>
+            <option value="benefício do INSS">INSS</option>
+            <option value="plano de saúde">Plano de saúde</option>
+            <option value="direito do consumidor">Consumidor</option>
+            <option value="questão bancária">Banco</option>
+            <option value="questão trabalhista">Trabalhista</option>
+            <option value="direitos de servidor público">Servidor público</option>
+            <option value="precatório ou RPV">Precatórios e RPV</option>
+            <option value="execução fiscal">Execução fiscal</option>
+            <option value="processo em andamento">Processo em andamento</option>
+            <option value="outro assunto">Outro assunto</option>
           </select></div>
+        <div class="imp" id="waImp" hidden>
+          <p class="note warn" id="waImpNota">Atenção: por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
+          <div class="field"><label for="waImpParte">Contra quem é a questão?</label>
+            <input id="waImpParte" maxlength="120" autocomplete="off" aria-describedby="waImpNota" placeholder="Ex.: INSS, Estado do Rio de Janeiro, Município de …"></div>
+        </div>
         <div id="waProc" hidden style="display:grid;gap:16px">
           <div class="field"><label for="waProcSit">Situação do processo</label>
             <select id="waProcSit" required aria-describedby="waProcAviso">
@@ -380,7 +398,7 @@
   <section id="orientacoes" class="paper px">
     <div class="wrap">
       <div class="sec-head"><h2>Prazos que costumam passar despercebidos</h2>
-        <p>Passe o mouse sobre um tema e escolha um assunto para ver a explicação.</p></div>
+        <p>Toque ou passe o mouse sobre um tema e escolha um assunto para ver a explicação.</p></div>
       <div class="px-g">
         <div class="px-lista"><ul>
         <li class="pz-g aberto"><h3><button type="button" class="pz-gt" aria-expanded="true" aria-controls="pzg-0"><span>Compras e seguros</span><small>3 assuntos</small></button></h3><div class="pz-gav" id="pzg-0"><div><ul><li><button type="button" class="pz-bt" aria-pressed="true" aria-controls="pz-0">Desistir de compra feita fora da loja</button></li><li><button type="button" class="pz-bt" aria-pressed="false" aria-controls="pz-1">Defeito fácil de ver em produto ou serviço</button></li><li><button type="button" class="pz-bt" aria-pressed="false" aria-controls="pz-2">Seguro negado</button></li></ul></div></div></li>
