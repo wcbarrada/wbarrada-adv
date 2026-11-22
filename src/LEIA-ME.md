@@ -65,7 +65,7 @@ select id from auth.users where email = 'wcbarrada.adv@gmail.com';
 ## 6. Depois de publicar
 
 1. **Google Meu Negócio:** troque o site do perfil pelo novo domínio. O link atual do perfil não gera cliques.
-2. **Instagram @wbarrada.adv:** coloque o novo domínio no link da bio (ou mantenha o WhatsApp e acrescente o site).
+2. **Instagram @wandersonbarrada.adv:** coloque o novo domínio no link da bio (ou mantenha o WhatsApp e acrescente o site).
 3. **Política de Privacidade:** preencha a data em `config.js` > `privacidadeAtualizada` e defina o prazo de retenção marcado com [VERIFICAR] no texto.
 
 ## Como funciona o agendamento

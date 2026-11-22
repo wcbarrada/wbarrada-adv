@@ -146,7 +146,7 @@ function cssVisual() {
 function paginasVisual(post) {
   const total = post.slides.length + 2;
   const foto = `url(data:image/jpeg;base64,${b64('foto.jpg')})`;
-  const perfil = `<div class="perfil"><div class="avatar" style="background-image:${foto}"></div><div><b>${ASSINATURA.nome}</b><span>@wbarrada.adv · Advogado</span></div></div>`;
+  const perfil = `<div class="perfil"><div class="avatar" style="background-image:${foto}"></div><div><b>${ASSINATURA.nome}</b><span>@wandersonbarrada.adv · Advogado</span></div></div>`;
   const cont = (i) => `<div class="cont">${i}/${total}</div>`;
   const base = (seta) => `<div class="base"><div>${post.fonte ? 'Fonte: ' + esc(post.fonte) : ''}</div><div class="site">${seta ? '<span class="seta">deslize →</span>' : ASSINATURA.site}</div></div>`;
   const out = [];
