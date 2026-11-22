@@ -103,7 +103,7 @@ function cssVisual() {
   .v.escuro{background:radial-gradient(110% 80% at 100% 0%,#2a241a 0%,#0e0d0b 62%);color:#f2ebdb}
   .v.claro{background:#f2ebdb;color:#17150f}
   .perfil{position:absolute;left:80px;top:72px;display:flex;align-items:center;gap:22px}
-  .avatar{width:92px;height:92px;border-radius:50%;background-size:250%;background-position:50% 22%;border:3px solid #e4c58e}
+  .avatar{width:92px;height:92px;border-radius:50%;background-size:cover;background-position:50% 30%;border:3px solid #e4c58e}
   .perfil b{display:block;font-size:32px;font-weight:700}
   .perfil span{font-size:26px;opacity:.7}
   .cont{position:absolute;right:80px;top:96px;font-family:'IBM Plex Mono',monospace;font-size:26px;padding:8px 18px;border-radius:40px}
@@ -123,17 +123,17 @@ function cssVisual() {
   .escuro .base .site{color:#e4c58e} .claro .base .site{color:#8a6420}
   .escuro .seta{color:#e4c58e} .claro .seta{color:#8a6420}
   /* capa */
-  .capa-v .foto{position:absolute;right:-60px;bottom:0;width:820px;height:1025px;background-size:cover;background-position:center top;
+  .capa-v .foto{position:absolute;right:-110px;bottom:0;width:680px;height:850px;background-size:cover;background-position:center top;
      -webkit-mask-image:linear-gradient(to top,#000 62%,transparent 98%),linear-gradient(to right,transparent 0%,#000 30%);
      -webkit-mask-composite:source-in;mask-composite:intersect}
-  .capa-v .txt{position:absolute;left:80px;top:250px;width:640px;z-index:2}
+  .capa-v .txt{position:absolute;left:80px;top:250px;width:540px;z-index:2}
   .chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:26px;letter-spacing:.1em;text-transform:uppercase;
      background:#e4c58e;color:#1a150c;padding:12px 24px;border-radius:40px;margin-bottom:44px}
-  .capa-v h1{font-family:'Bodoni Moda',serif;font-weight:700;font-size:96px;line-height:1.04;text-shadow:0 2px 30px rgba(0,0,0,.6)}
+  .capa-v h1{font-family:'Bodoni Moda',serif;font-weight:700;font-size:86px;line-height:1.04;text-shadow:0 2px 30px rgba(0,0,0,.6)}
   .capa-v h1 em{font-style:italic;color:#e4c58e}
   .capa-v .deslize{margin-top:48px;display:inline-block;font-size:30px;border:2px solid #e4c58e;color:#e4c58e;padding:14px 28px;border-radius:40px}
   /* fim */
-  .fim-v .grande{width:300px;height:300px;border-radius:50%;background-size:250%;background-position:50% 22%;border:5px solid #e4c58e;margin-bottom:48px}
+  .fim-v .grande{width:300px;height:300px;border-radius:50%;background-size:cover;background-position:50% 30%;border:5px solid #e4c58e;margin-bottom:48px}
   .fim-v .nome{font-family:'Bodoni Moda',serif;font-size:80px;font-weight:700;line-height:1.05}
   .fim-v .linha{font-size:38px;color:#e4c58e;margin:16px 0 40px}
   .fim-v .at{font-size:38px;line-height:1.35}
