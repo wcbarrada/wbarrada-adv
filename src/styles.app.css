@@ -371,6 +371,14 @@ footer{padding-bottom:88px}
 .nc[aria-expanded="true"]::before{opacity:1;animation:ncGira 3s linear infinite}
 @keyframes ncGira{to{--ang:360deg}}
 @media (prefers-reduced-motion:reduce){.nc[aria-expanded="true"]{transform:none}.nc[aria-expanded="true"]::before{animation:none;background:rgba(255,244,214,.9)}}
+/* Agenda sem horários: aviso com saída pelo WhatsApp (topo e seção Agendamento) */
+.next li.vazio{display:grid;gap:8px;align-content:start;padding:6px 0;color:var(--muted);font-size:.92rem}
+.next li.vazio b{color:var(--fg);font-weight:600}
+.next li.vazio .btn{justify-self:start;margin-top:8px}
+.ag-vazio{display:grid;gap:6px;justify-items:start;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:18px 20px;margin-bottom:24px;color:var(--muted)}
+.ag-vazio b{color:var(--fg);font-weight:600}
+.ag-vazio .btn{margin-top:8px}
+#slotGrid>.btn{grid-column:1 / -1;justify-self:start}
 /* Caixa de detalhes: título e botão na mesma linha; a lista ocupa o resto */
 .np{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);column-gap:24px}
 .np-cab{grid-column:1;grid-row:1}

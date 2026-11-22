@@ -411,8 +411,18 @@ function renderNext(){
       if(W.area && (W.area!==AG_PROC || procCheck("ag").ok)) goStep(2); else { goStep(1); $("#msg1").textContent="Horário pré-selecionado. Informe o assunto da consulta para continuar."; } };
     li.appendChild(b); list.appendChild(li);
   }
-  if(!found.length) list.innerHTML=`<li class="muted" style="font-size:.9rem">Sem horários livres nos próximos dias.</li>`;
+  App.semHorario = !found.length;
+  if(!found.length) list.innerHTML=`<li class="vazio">${VAZIO_HTML("agenda_topo")}</li>`;
+  const av=$("#agVazio"); if(av){ av.hidden=!App.semHorario; av.innerHTML=App.semHorario?VAZIO_HTML("agenda_secao"):""; }
 }
+/* Agenda sem horários: mesma mensagem inicial do assistente de WhatsApp, sem valores nem forma de pagamento */
+const WA_BASE = "Olá, Dr. Wanderson. Gostaria de agendar uma consulta. Vi o contato pelo site.";
+function waBtn(origem, texto=WA_BASE, cls="btn"){
+  const num=App.pub && App.pub.config.whatsapp;
+  return num ? `<a class="${cls}" data-wa="${esc(origem)}" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Falar pelo WhatsApp</a>`
+             : `<a class="${cls}" data-wa="${esc(origem)}" href="#whatsapp">Falar pelo WhatsApp</a>`;
+}
+const VAZIO_HTML = origem => `<p><b>No momento não há horários livres na agenda online.</b></p><p>Fale pelo WhatsApp para combinar um horário.</p>${waBtn(origem)}`;
 
 /* ---------------- agendamento (wizard) ---------------- */
 const W = { step:1, mod:null, area:"", date:null, time:null, month:null, booking:null, authTab:"login" };
@@ -476,7 +486,11 @@ $("#prevM").onclick=()=>{ const [y,m]=W.month.split("-").map(Number); const d=ne
 $("#nextM").onclick=()=>{ const [y,m]=W.month.split("-").map(Number); const d=new Date(Date.UTC(y,m,1)); W.month=d.toISOString().slice(0,7); renderCal(); };
 function renderSlots(){
   const g=$("#slotGrid"); g.innerHTML="";
-  if(!W.date){ $("#dayLbl").textContent="Selecione um dia"; $("#daySub").textContent="Os dias marcados no calendário têm horários livres."; return; }
+  if(!W.date){ $("#dayLbl").textContent="Selecione um dia";
+    const temDia=[...$$("#cal button.av")].length>0;
+    if(temDia) $("#daySub").textContent="Os dias marcados no calendário têm horários livres.";
+    else { $("#daySub").textContent="No momento não há horários livres nesta modalidade. Fale pelo WhatsApp para combinar um horário."; g.innerHTML=waBtn("agenda_calendario"); }
+    return; }
   $("#dayLbl").textContent=`${WDL[dowOf(W.date)]}, ${Number(W.date.slice(8))} de ${MES[Number(W.date.slice(5,7))-1]}`;
   const sl=slotsFor(W.date,W.mod);
   $("#daySub").textContent=`${sl.filter(s=>!s.busy).length} horário(s) livre(s). Horários riscados já estão ocupados.`;
