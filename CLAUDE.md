@@ -154,7 +154,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Captcha.
 
 ## Pendências de conteúdo
-Foto definitiva (a atual, `src/assets/foto.jpg`, é provisória, recortada de um story com fundo trocado), link de cartão (InfinitePay). Valores, WhatsApp e chave PIX já estão no banco real.
+Foto definitiva adotada em 22/11/2026 (`src/assets/foto.jpg`, 800 × 1000, retrato de frente fornecido pelo usuário, também usado no Facebook e no carrossel); evitar fotos com relógio ou outros bens em destaque (Prov. 205/2021, art. 6º, parágrafo único). Link de cartão (InfinitePay) pendente. Valores, WhatsApp e chave PIX já estão no banco real.
 
 ## Prazos de guarda (aprovados pelo usuário em 06/11/2026)
 Comprovantes e dados de consultas pagas: 5 anos após a consulta. Cadastro sem consulta realizada: 6 meses após o último uso. Reservas não pagas ou expiradas, com o resumo: 6 meses. Rotina de exclusão criada e agendada em 09/11/2026 (`aplicar_retencao`, em `supabase/schema.sql`).
