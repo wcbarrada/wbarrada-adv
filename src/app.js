@@ -1014,7 +1014,8 @@ if(grade){
   const LETRAS="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let celulas=[],modo="",pagina=0,pausado=false,visivel=true,timer=null,ocupado=false;
   const sorteia=()=>LETRAS[Math.floor(Math.random()*LETRAS.length)];
-  const cfg=()=>modo==="largo"?{cols:31,linhas:3,por:3,gap:3}:{cols:20,linhas:6,por:3,gap:2};
+  // No celular, um prazo por vez (2 linhas), para os botões do topo caberem na primeira tela
+  const cfg=()=>modo==="largo"?{cols:31,linhas:3,por:3,gap:3}:{cols:20,linhas:2,por:1,gap:2};
   function paginas(){
     const {cols,linhas:nl,por}=cfg(),out=[];
     for(let i=0;i<DADOS.length;i+=por){
@@ -1087,7 +1088,11 @@ if(ax){
   cards.forEach((c,i)=>{c.addEventListener("click",()=>abre(i));
     let t;const v=c.querySelector(".nc-ver");
     v.addEventListener("mouseenter",()=>{if(ativo)return;t=setTimeout(()=>abre(i),120);});
-    v.addEventListener("mouseleave",()=>clearTimeout(t));});
+    v.addEventListener("mouseleave",()=>clearTimeout(t));
+    // Teclado: o foco abre os detalhes (como o mouse); setas ← → andam entre os cartões
+    c.addEventListener("focus",()=>{ if(c.matches(":focus-visible")) abre(i); });
+    c.addEventListener("keydown",e=>{const d={ArrowRight:1,ArrowLeft:-1,Home:-99,End:99}[e.key];if(!d)return;e.preventDefault();
+      const n=cards[Math.max(0,Math.min(cards.length-1,i+d))];n.focus();n.scrollIntoView({block:"nearest",inline:"nearest",behavior:RED?"auto":"smooth"});abre(cards.indexOf(n));});});
   tr.addEventListener("wheel",e=>{if(Math.abs(e.deltaY)<=Math.abs(e.deltaX))return;const max=tr.scrollWidth-tr.clientWidth;
     if((e.deltaY>0&&tr.scrollLeft<max-1)||(e.deltaY<0&&tr.scrollLeft>0)){e.preventDefault();tr.scrollLeft+=e.deltaY;}},{passive:false});
 }
@@ -1099,7 +1104,9 @@ if(px){
   function tema(g,v){gts.forEach(x=>{const on=x===g?v:(v?false:x.closest(".pz-g").classList.contains("aberto"));x.closest(".pz-g").classList.toggle("aberto",on);x.setAttribute("aria-expanded",on);});}
   const fino=matchMedia("(hover: hover) and (pointer: fine)").matches;
   gts.forEach(g=>{g.addEventListener("click",()=>tema(g,!g.closest(".pz-g").classList.contains("aberto")));
-    if(fino){let t;g.addEventListener("mouseenter",()=>{t=setTimeout(()=>tema(g,true),220);});g.addEventListener("mouseleave",()=>clearTimeout(t));}});
+    if(fino){let t;g.addEventListener("mouseenter",()=>{t=setTimeout(()=>tema(g,true),220);});g.addEventListener("mouseleave",()=>clearTimeout(t));}
+    // Teclado: o foco abre o tema (como o mouse); Enter e Espaço abrem e fecham
+    g.addEventListener("focus",()=>{ if(g.matches(":focus-visible")) tema(g,true); });});
   function escolhe(b,foco){bts.forEach(x=>x.setAttribute("aria-pressed",x===b));ps.forEach(p=>p.hidden=p.id!==b.getAttribute("aria-controls"));
     const p=document.getElementById(b.getAttribute("aria-controls"));p.querySelector(".pz-rola").scrollTop=0;
     if(foco)b.focus();else if(matchMedia("(max-width:860px)").matches)p.scrollIntoView({behavior:RED?"auto":"smooth",block:"start"});}

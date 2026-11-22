@@ -371,6 +371,20 @@ footer{padding-bottom:88px}
 .nc[aria-expanded="true"]::before{opacity:1;animation:ncGira 3s linear infinite}
 @keyframes ncGira{to{--ang:360deg}}
 @media (prefers-reduced-motion:reduce){.nc[aria-expanded="true"]{transform:none}.nc[aria-expanded="true"]::before{animation:none;background:rgba(255,244,214,.9)}}
+/* Celular: painel com um prazo por vez e botões do topo na primeira tela (texto de apresentação abaixo deles) */
+@media (max-width:760px){
+  #inicio>.hero{padding-block:18px 40px}
+  .hero .pnl-caixa{margin-bottom:22px}
+  .pnl-topo{margin-bottom:8px}.pnl-topo p{font-size:1rem}
+  .pnl-pe{margin-top:8px;font-size:.8rem;gap:8px 14px}
+  .hero .grid>div:first-child{display:flex;flex-direction:column}
+  .hero h1{margin-block:12px 0}
+  .hero .ctas{order:3;margin-top:20px}
+  .hero .lead{order:4;margin-top:24px}
+  .hero .cred{order:5}
+}
+.wa-float{right:calc(16px + env(safe-area-inset-right,0px))}
+.to-top{left:calc(16px + env(safe-area-inset-left,0px))}
 /* Prazos: botões no fim de cada explicação */
 .pz-cta{margin-top:22px;padding-top:18px;border-top:1px solid #34363a;display:grid;gap:12px}
 .pz-cta-nota{font-size:.86rem!important;color:#c9c8c2!important}
