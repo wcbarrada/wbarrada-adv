@@ -1058,7 +1058,26 @@ if(px){
 (()=>{const box=document.querySelector(".faq>div:last-child");if(!box)return;const ds=[...box.querySelectorAll("details")];
  function mede(){box.style.height="";const ab=ds.filter(d=>d.open);ds.forEach(d=>d.open=false);const base=box.scrollHeight;let extra=0;
   ds.forEach(d=>{d.open=true;extra=Math.max(extra,box.scrollHeight-base);d.open=false;});ab.forEach(d=>d.open=true);
-  box.style.height=Math.min(base+extra,Math.round(innerHeight*.75))+"px";}
+  const hdr=(document.querySelector(".top")||{}).offsetHeight||75;
+  box.style.height=Math.min(base+extra,Math.max(260,innerHeight-hdr-140))+"px";}
  ds.forEach(d=>d.addEventListener("toggle",()=>{if(d.open)ds.forEach(o=>{if(o!==d)o.open=false;});}));
  mede();setTimeout(mede,1500);let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(mede,200);});})();
+/* ---- Rolagem sem clique: perto da borda da caixa, o conteúdo rola sozinho ---- */
+(()=>{if(!matchMedia("(hover: hover) and (pointer: fine)").matches)return;
+ function borda(el,eixo){let vel=0,raf=null;
+  const passo=()=>{if(!vel){raf=null;if(eixo==="x")el.classList.remove("arrasta");return;}
+   if(eixo==="y")el.scrollTop+=vel;else el.scrollLeft+=vel;raf=requestAnimationFrame(passo);};
+  el.addEventListener("mousemove",e=>{const r=el.getBoundingClientRect();
+   const tam=eixo==="y"?r.height:r.width,pos=eixo==="y"?e.clientY-r.top:e.clientX-r.left;
+   const zona=eixo==="y"?Math.min(56,tam*.18):Math.max(48,parseFloat(getComputedStyle(el).paddingLeft)||0);
+   let v=0;if(pos<zona)v=-(1-pos/zona);else if(pos>tam-zona)v=1-(tam-pos)/zona;
+   const max=eixo==="y"?el.scrollHeight-el.clientHeight:el.scrollWidth-el.clientWidth;
+   vel=max>0?Math.round(v*(eixo==="y"?7:12)):0;
+   if(vel&&eixo==="x")el.classList.add("arrasta");if(vel&&!raf)raf=requestAnimationFrame(passo);});
+  el.addEventListener("mouseleave",()=>{vel=0;});}
+ document.querySelectorAll(".px-lista,.pz-rola,.np-rola,.faq>div:last-child").forEach(el=>borda(el,"y"));
+ const tr=document.querySelector(".ax-trilho");if(tr)borda(tr,"x");})();
+/* ---- Altura do cabeçalho: a rolagem do menu para exatamente abaixo dele ---- */
+(()=>{const t=document.querySelector(".top");if(!t)return;
+ const f=()=>document.documentElement.style.setProperty("--hdr",t.offsetHeight+"px");f();addEventListener("resize",f);})();
 /* <<< v6 */
