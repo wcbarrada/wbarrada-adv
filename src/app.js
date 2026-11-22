@@ -373,24 +373,27 @@ const assuntoAgenda = () => W.area===AG_PROC ? `${W.area}: ${procCheck("ag").tex
 
 /* ---------------- assistente de WhatsApp (nada é gravado) ---------------- */
 const waProc = () => $("#waAssunto").value==="processo em andamento";
+const WA_IMP=["direitos de servidor público","precatório ou RPV","execução fiscal"];
+const waImp = () => WA_IMP.includes($("#waAssunto").value);
 function waText(){
   const a=$("#waAssunto").value, l=$("#waLocal").value, p=$("#waPeriodo").value, n=$("#waNome").value.trim();
   if(!a) return "";
   let sobre=a;
   if(waProc()){ const r=procCheck("wa"); if(!r.ok) return ""; sobre=`processo em andamento (${r.texto})`; }
+  if(waImp()){ const pt=$("#waImpParte").value.trim(); if(!parteOK(pt)) return ""; sobre=`${a} (contra ${pt})`; }
   return `Olá, Dr. Wanderson.${n?` Meu nome é ${n}.`:""} Gostaria de agendar uma consulta sobre ${sobre}, ${l}, de preferência ${p}. Vi o contato pelo site.`;
 }
-const waErro = () => !$("#waAssunto").value ? "Escolha o assunto para montar a mensagem." : waProc() ? (procCheck("wa").erro||"") : "";
+const waErro = () => !$("#waAssunto").value ? "Escolha o assunto para montar a mensagem." : waProc() ? (procCheck("wa").erro||"") : (waImp() && !parteOK($("#waImpParte").value)) ? "Informe contra quem é a questão." : "";
 function waUpdate(){
   if(!$("#waForm") || !App.pub) return;
-  procSync("wa", waProc());
+  procSync("wa", waProc()); $("#waImp").hidden=!waImp();
   const t=waText(), num=App.pub.config.whatsapp;
   $("#waPreview").value = t || waErro();
   $("#waGo").innerHTML = !num ? `<span class="note"><span class="ph">[INSERIR WHATSAPP]</span> O número é cadastrado na Área do advogado.</span>`
     : t ? `<a class="btn" href="https://wa.me/${esc(num)}?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Abrir no WhatsApp</a>`
     : `<button type="button" class="btn" disabled>Abrir no WhatsApp</button>`;
 }
-["#waAssunto","#waLocal","#waPeriodo","#waNome"].forEach(id=>{ const el=$(id); if(el){ el.addEventListener("input",waUpdate); el.addEventListener("change",waUpdate); } });
+["#waAssunto","#waImpParte","#waLocal","#waPeriodo","#waNome"].forEach(id=>{ const el=$(id); if(el){ el.addEventListener("input",waUpdate); el.addEventListener("change",waUpdate); } });
 $("#waForm").addEventListener("submit",e=>e.preventDefault());
 $("#waCopy").onclick=e=>{ const t=waText(); if(!t){ $("#waMsg").textContent=waProc() ? waErro() : "Escolha o assunto antes de copiar."; return; } $("#waMsg").textContent=""; copyText(t,e.currentTarget,$("#waPreview")); };
 document.addEventListener("click", e=>{ const b=e.target.closest("[data-copytext]"); if(b) copyText(b.dataset.copytext,b); });
@@ -451,11 +454,20 @@ function renderMods(){
     box.appendChild(div);
   }
 }
-$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; procSync("ag", W.area===AG_PROC); };
+/* Assuntos que podem envolver o poder público: aviso do art. 30, I e "Contra quem é a questão?" obrigatório
+   (só na tela; o banco aceita o campo vazio). A resposta vai para o campo #parte (parte_contraria). */
+const AG_IMP=["Servidor público","Precatórios e RPV","Execução fiscal"];
+const agImp = () => AG_IMP.includes(W.area);
+const parteOK = v => String(v||"").trim().length>=2;
+function impSync(){ $("#agImp").hidden=!agImp(); $("#parteLbl").textContent = agImp() ? "Contra quem é a questão?" : "Contra quem é a questão? (opcional)"; }
+$("#agImpParte").addEventListener("input",e=>{ $("#parte").value=e.target.value; $("#msg1").textContent=""; });
+$("#parte").addEventListener("input",e=>{ $("#agImpParte").value=e.target.value; });
+$("#area").onchange=e=>{ W.area=e.target.value; $("#msg1").textContent=""; procSync("ag", W.area===AG_PROC); impSync(); };
 $("#to2").onclick=()=>{
   if(!W.mod) return $("#msg1").textContent="Escolha a modalidade de atendimento.";
   if(!W.area) return $("#msg1").textContent="Selecione o assunto da consulta.";
   if(W.area===AG_PROC){ const r=procCheck("ag"); if(!r.ok) return $("#msg1").textContent=r.erro; }
+  if(agImp() && !parteOK($("#agImpParte").value)){ $("#agImpParte").focus(); return $("#msg1").textContent="Informe contra quem é a questão."; }
   $("#msg1").textContent=""; goStep(2);
 };
 
@@ -598,6 +610,7 @@ $("#to4").onclick=async e=>{
   const msg=$("#msg3"); msg.textContent="";
   const resumo=$("#resumo").value.trim();
   if(resumo.length<20) return msg.textContent="Descreva o caso em pelo menos uma frase no resumo.";
+  if(agImp() && !parteOK($("#parte").value)){ $("#parte").focus(); return msg.textContent="Informe contra quem é a questão."; }
   if(!$("#lgpd").checked) return msg.textContent="Para continuar, confirme que leu a Política de Privacidade.";
   await busy(e.currentTarget, async()=>{
     try{
@@ -650,7 +663,7 @@ function renderDone(){
   const txt=encodeURIComponent(`Olá. Agendei uma consulta pelo site. Protocolo ${bk.protocolo}, ${longWhen(bk.inicio)}. Segue o comprovante de pagamento.`);
   $("#waAction").innerHTML = c.whatsapp ? `<a class="btn ghost" href="https://wa.me/${esc(c.whatsapp)}?text=${txt}" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>` : "";
 }
-$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#agProcSit").value=""; $("#agProcNum").value=""; procSync("ag",false); $("#parte").value=""; $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
+$("#restart").onclick=()=>{ Object.assign(W,{mod:null,area:"",date:null,time:null,month:null,booking:null}); $("#area").value=""; $("#agProcSit").value=""; $("#agProcNum").value=""; procSync("ag",false); $("#parte").value=""; $("#agImpParte").value=""; impSync(); $("#resumo").value=""; $("#lgpd").checked=false; renderMods(); goStep(1); };
 
 /* =====================================================================
    Área do cliente

@@ -223,13 +223,17 @@
               <label for="area">Assunto da consulta</label>
               <select id="area">
                 <option value="">Selecione</option>
-                <option>Previdenciário (INSS, BPC/LOAS)</option>
-                <option>Servidor público (progressão, gratificações, férias)</option>
-                <option>Execução contra a Fazenda (RPV, precatório, cálculos)</option>
-                <option>Tributário municipal (ISS, execução fiscal, protesto)</option>
-                <option>Plano de saúde ou consumidor</option>
-                <option>Família e sucessões</option>
+                <option>Imobiliário e contratos</option>
+                <option>Família</option>
+                <option>Inventário</option>
+                <option>INSS</option>
+                <option>Plano de saúde</option>
+                <option>Consumidor</option>
+                <option>Banco</option>
                 <option>Trabalhista</option>
+                <option>Servidor público</option>
+                <option>Precatórios e RPV</option>
+                <option>Execução fiscal</option>
                 <option>Processo em andamento</option>
                 <option>Outro assunto</option>
               </select>
@@ -255,6 +259,11 @@
                   <p class="note" id="agProcAjuda">Numeração do CNJ, com 20 dígitos. Em processo administrativo, informe o número do protocolo.</p></div>
               </div>
               <p class="note warn" id="agProcAviso" hidden>Por respeito ao colega que acompanha o caso, não atendo nem oriento sobre processo com advogado constituído. Procure o advogado responsável.</p>
+            </div>
+            <div class="full imp" id="agImp" hidden>
+              <p class="note warn" id="agImpNota">Atenção: por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
+              <div class="field"><label for="agImpParte">Contra quem é a questão?</label>
+                <input id="agImpParte" maxlength="200" autocomplete="off" aria-describedby="agImpNota" placeholder="Ex.: INSS, Estado do Rio de Janeiro, Município de …"></div>
             </div>
           </div>
           <p class="msg" role="alert" id="msg1"></p>
@@ -285,7 +294,7 @@
           <p class="hint">Com a conta, você acompanha a confirmação e cancela pela Área do cliente.</p>
           <div id="authSlot"></div>
           <div class="fgrid" style="margin-top:22px">
-            <div class="field full"><label for="parte">Contra quem é a questão? (opcional)</label><input id="parte" placeholder="Ex.: INSS, Município de …, operadora de saúde"></div>
+            <div class="field full"><label for="parte" id="parteLbl">Contra quem é a questão? (opcional)</label><input id="parte" placeholder="Ex.: INSS, Município de …, operadora de saúde"></div>
             <div class="field full"><label for="resumo">Resumo do caso</label><textarea id="resumo" placeholder="Conte em poucas linhas o que aconteceu e o que você precisa. Se já houver processo, informe o número. Não é preciso descrever doenças ou laudos aqui: isso fica para a consulta."></textarea></div>
             <label class="check full"><input type="checkbox" id="lgpd"><span>Li a <a href="#privacidade">Política de Privacidade</a> e concordo com o uso destes dados para o agendamento e a análise preliminar do caso, sob sigilo profissional.</span></label>
           </div>
@@ -334,17 +343,25 @@
         <div class="field"><label for="waAssunto">Sobre o que você quer falar?</label>
           <select id="waAssunto">
             <option value="">Selecione</option>
-            <option>benefício do INSS (aposentadoria, auxílio, BPC/LOAS, pensão)</option>
-            <option>benefício negado, cortado ou com desconto</option>
-            <option>direitos de servidor público</option>
-            <option>RPV, precatório ou cálculo de processo</option>
-            <option>cobrança de imposto ou taxa municipal</option>
-            <option>plano de saúde ou consumidor</option>
-            <option>família, herança ou inventário</option>
-            <option>questão trabalhista</option>
-            <option>processo em andamento</option>
-            <option>outro assunto</option>
+            <option value="imóveis e contratos">Imobiliário e contratos</option>
+            <option value="direito de família">Família</option>
+            <option value="inventário">Inventário</option>
+            <option value="benefício do INSS">INSS</option>
+            <option value="plano de saúde">Plano de saúde</option>
+            <option value="direito do consumidor">Consumidor</option>
+            <option value="questão bancária">Banco</option>
+            <option value="questão trabalhista">Trabalhista</option>
+            <option value="direitos de servidor público">Servidor público</option>
+            <option value="precatório ou RPV">Precatórios e RPV</option>
+            <option value="execução fiscal">Execução fiscal</option>
+            <option value="processo em andamento">Processo em andamento</option>
+            <option value="outro assunto">Outro assunto</option>
           </select></div>
+        <div class="imp" id="waImp" hidden>
+          <p class="note warn" id="waImpNota">Atenção: por impedimento legal (Lei nº 8.906/1994, art. 30, I), não há atuação contra o Município de Campos dos Goytacazes, incluídas suas autarquias e fundações.</p>
+          <div class="field"><label for="waImpParte">Contra quem é a questão?</label>
+            <input id="waImpParte" maxlength="120" autocomplete="off" aria-describedby="waImpNota" placeholder="Ex.: INSS, Estado do Rio de Janeiro, Município de …"></div>
+        </div>
         <div id="waProc" hidden style="display:grid;gap:16px">
           <div class="field"><label for="waProcSit">Situação do processo</label>
             <select id="waProcSit" required aria-describedby="waProcAviso">
