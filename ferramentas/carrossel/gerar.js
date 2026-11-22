@@ -43,7 +43,7 @@ function css() {
   .topo{display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:26px;
         letter-spacing:.12em;text-transform:uppercase;color:#e4c58e}
   .num{color:#aba38e}
-  .corpo{position:absolute;left:92px;right:92px;top:230px;bottom:250px;display:flex;flex-direction:column;justify-content:center}
+  .corpo{position:absolute;left:92px;right:92px;top:300px;bottom:250px;display:flex;flex-direction:column;justify-content:flex-start}
   .capa h1{font-family:'Bodoni Moda',serif;font-weight:600;font-size:92px;line-height:1.06;letter-spacing:-.01em}
   .capa h1 em{font-style:italic;color:#e4c58e}
   .capa .seta{margin-top:56px;font-size:30px;color:#aba38e}
@@ -109,11 +109,13 @@ function cssVisual() {
   .cont{position:absolute;right:80px;top:96px;font-family:'IBM Plex Mono',monospace;font-size:26px;padding:8px 18px;border-radius:40px}
   .escuro .cont{background:#211d15;color:#e4c58e}
   .claro .cont{background:#e3d8c0;color:#5b4a2a}
-  .miolo{position:absolute;left:80px;right:80px;top:250px;bottom:230px;display:flex;flex-direction:column;justify-content:center}
-  .ic{width:150px;height:150px;border-radius:36px;padding:34px;margin-bottom:44px}
+  /* Conteúdo ancorado no topo, na mesma altura em todos os slides: ao passar para o lado, ícone, título e texto não "pulam" */
+  .miolo{position:absolute;left:80px;right:80px;top:300px;bottom:230px;display:flex;flex-direction:column;justify-content:flex-start}
+  .cab{display:flex;align-items:center;gap:36px;height:150px;margin-bottom:52px}
+  .ic{width:150px;height:150px;flex:none;border-radius:36px;padding:34px}
   .escuro .ic{background:#e4c58e;color:#1a150c}
   .claro .ic{background:#17150f;color:#e4c58e}
-  .dest{font-family:'Bodoni Moda',serif;font-weight:700;font-size:120px;line-height:1;margin-bottom:24px}
+  .dest{font-family:'Bodoni Moda',serif;font-weight:700;font-size:92px;line-height:1;white-space:nowrap}
   .escuro .dest{color:#e4c58e} .claro .dest{color:#8a6420}
   .v h2{font-family:'Bodoni Moda',serif;font-weight:600;font-size:68px;line-height:1.1;margin-bottom:34px;color:inherit}
   .v p{font-size:44px;line-height:1.38}
@@ -155,7 +157,7 @@ function paginasVisual(post) {
   post.slides.forEach((sl, k) => {
     const tom = k % 2 === 0 ? 'claro' : 'escuro';
     out.push(`<div class="v ${tom}">${perfil}${cont(k + 2)}<div class="miolo">
-      ${sl.icone ? `<div class="ic">${icone(sl.icone)}</div>` : ''}${sl.destaque ? `<div class="dest">${esc(sl.destaque)}</div>` : ''}
+      <div class="cab">${sl.icone ? `<div class="ic">${icone(sl.icone)}</div>` : ''}${sl.destaque ? `<div class="dest">${esc(sl.destaque)}</div>` : ''}</div>
       ${sl.titulo ? `<h2>${fmt(sl.titulo)}</h2>` : ''}<p>${fmt(sl.texto)}</p></div>${base(k < post.slides.length - 1)}</div>`);
   });
   out.push(`<div class="v escuro fim-v">${cont(total)}<div class="miolo"><div class="grande" style="background-image:${foto}"></div>
