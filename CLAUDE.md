@@ -97,6 +97,24 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Testes de banco na sessão na nuvem: o contêiner tem PostgreSQL 16; criar um cluster com `initdb` como usuário `postgres` (fora do scratchpad), rodar `mock-supabase.sql`, `schema.sql` e `rls.sql`. Se os papéis `anon` e `authenticated` já existirem no cluster, retirar a primeira linha do mock.
 - Testes de banco no Windows sem psql nem Docker (sem uso enquanto não houver cópia local): `pip install pgserver tzdata`, copiar `tzdata/zoneinfo` para `pginstall/share/postgresql/timezone` e rodar `mock-supabase.sql`, `schema.sql` e `rls.sql` com o `psql` do pacote.
 - **Decisões do usuário em 21/11/2026:** atua em todas as áreas, exceto a criminal; quer redirecionar aos poucos para **previdenciário e trabalhista** (trabalhista hoje para empregado e empregador; no futuro, só empregado). O local do atendimento presencial não fica registrado no site: é informado ao combinar a consulta (as modalidades no banco real já dizem "Local informado na confirmação"). Redes do escritório: Instagram `@wandersonbarrada.adv` (renomeado pelo usuário em 22/11/2026; o nome antigo `@wbarrada.adv` ficou livre) e Facebook `/wcbarrada` (no site e no JSON-LD); as contas pessoais (`@wanderson.barrada` e `/wandersoncorreabarrada`) não entram no site. Carrossel diário no estilo visual. A abrangência ("todas as áreas, exceto a criminal") não é escrita no site, a pedido do usuário. Google Search Console: domínio `wbarrada.adv.br` verificado pelo provedor de DNS (21/11/2026).
+- **Versão de 23/11/2026 (aprovada pelo usuário):**
+  - Topo: painel de prazos com letras que viram, antes do nome. A balança animada e a foto no topo foram descartadas.
+  - Paleta neutra (grafite e branco); dourado só em destaques.
+  - **Assuntos atendidos:**
+    - 11 nichos definidos pelo usuário, na ordem de procura (substitui a ordem alfabética de 06/11/2026);
+    - cartões em degradê do champanhe ao grafite;
+    - caixa de detalhes de altura fixa, que troca ao passar o mouse em "Ver detalhes".
+  - Nos nichos Servidor público, Precatórios e RPV e Execução fiscal, a nota "Não há atuação contra o Município de Campos dos Goytacazes". Nomes de empresas não entram (usar "concessionárias de água, luz, telefonia, internet").
+  - **Prazos:**
+    - agrupados por tema, abrindo com o mouse;
+    - texto em linguagem simples;
+    - rodapé com o artigo, a data de publicação no DOU e a data da conferência no Planalto;
+    - aviso de que podem estar desatualizados.
+  - Lista, painel e dúvidas frequentes têm altura fixa, para o rodapé não se mover.
+  - Título do WhatsApp: "Dúvidas antes de agendar?".
+  - Prazos que dependem do STJ (DPVAT, condomínio, monitória do cheque) ficam fora até a conferência na fonte oficial; o site do STJ não abre nas sessões na nuvem.
+  - A EC 136/2025 mudou a correção de precatórios e RPVs (IPCA + 2% a.a., limitado à SELIC); o item antigo da SELIC foi substituído.
+  - A Lei 7.357/1985 aparece no Planalto com "DOU de 3.9.1986" `[VERIFICAR]`.
 - Endereços de rua retirados das páginas e do JSON-LD em 06/11/2026: o atendimento presencial não será no endereço usado nas petições. Endereço definitivo pendente (provavelmente sede da OAB). As descrições das modalidades no banco real foram conferidas em 21/11/2026 e não trazem mais endereço.
 - v3 publicada como prévia. Fases 0 a 2 apresentadas. **Fase 4 executada: reprovada** (ver `docs/fase4-verificacao.md`).
 - **Fase 3 autorizada em 23/10/2026.** Itens Must 1–4 e 6–9 implementados. O item 5 (SMTP) é configuração no painel do Supabase. Pendente: nova rodada da Fase 4. Matriz de RLS conferida em 13/11/2026: 80 de 80 em Postgres 16 local (ver `docs/fase4-verificacao.md`).
