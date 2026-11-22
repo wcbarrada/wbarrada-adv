@@ -15,7 +15,17 @@ node ferramentas/carrossel/gerar.js post.json pasta-de-saida
 Com `"estilo": "visual"` no JSON, a capa traz a foto do advogado (`src/assets/foto.jpg`), cada slide traz o perfil no alto e os fundos alternam entre claro e escuro.
 - `icone`: nome de um arquivo em `icones/` (sem `.svg`). Os ícones são do Lucide (licença ISC, em `icones/LICENSE-lucide.txt`).
 - `destaque`: texto curto em tamanho grande, como uma data.
-- A foto atual é provisória; ao trocar `src/assets/foto.jpg`, o carrossel passa a usar a nova.
+- A foto pequena dos slides e da assinatura vem de `src/assets/foto.jpg`.
+
+### Modelos de capa (campo `modelo`)
+Usados conforme o tipo de assunto (decisão do advogado em 22/11/2026):
+| Modelo | Quando usar | Foto padrão |
+|---|---|---|
+| `retrato` | Temas explicativos: lei nova, decisão, direitos | `perfil` (sempre) |
+| `cartao` | Datas, prazos e calendários; `capaDestaque` mostra a data | `frente` |
+| `fundo` | Alertas e perguntas diretas (golpes, "e agora?") | `perfil` |
+
+Campos opcionais: `subtitulo`, `capaDestaque`, `foto` (`frente` ou `perfil`, em `fotos/`). Sem `modelo`, a capa antiga continua disponível.
 
 ## Uso pela tarefa agendada
 Nos dias úteis de manhã, uma tarefa agendada do Claude Code pesquisa um tema, confere cada afirmação em fonte oficial, gera o carrossel e envia ao advogado por e-mail para aprovação. Nada é publicado sem ele.

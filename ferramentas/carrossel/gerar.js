@@ -9,6 +9,9 @@
 //   "slides": [ { "titulo": "opcional", "texto": "..." }, ... ],   // slides do meio
 //   "fonte":  "INSS (gov.br/inss), 27/10/2026"       // rodapé de todos os slides
 // }
+// Estilo visual ("estilo": "visual"): campos opcionais da capa
+//   "modelo": "retrato" | "cartao" | "fundo"  (ver capaModelo), "subtitulo", "capaDestaque",
+//   "foto": "frente" | "perfil" (arquivos em ferramentas/carrossel/fotos)
 // O último slide (assinatura) é fixo e sai deste arquivo, para não variar de um post para outro.
 'use strict';
 const fs = require('fs');
@@ -43,7 +46,7 @@ function css() {
   .topo{display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:26px;
         letter-spacing:.12em;text-transform:uppercase;color:#e4c58e}
   .num{color:#aba38e}
-  .corpo{position:absolute;left:92px;right:92px;top:230px;bottom:250px;display:flex;flex-direction:column;justify-content:center}
+  .corpo{position:absolute;left:92px;right:92px;top:300px;bottom:250px;display:flex;flex-direction:column;justify-content:flex-start}
   .capa h1{font-family:'Bodoni Moda',serif;font-weight:600;font-size:92px;line-height:1.06;letter-spacing:-.01em}
   .capa h1 em{font-style:italic;color:#e4c58e}
   .capa .seta{margin-top:56px;font-size:30px;color:#aba38e}
@@ -109,11 +112,13 @@ function cssVisual() {
   .cont{position:absolute;right:80px;top:96px;font-family:'IBM Plex Mono',monospace;font-size:26px;padding:8px 18px;border-radius:40px}
   .escuro .cont{background:#211d15;color:#e4c58e}
   .claro .cont{background:#e3d8c0;color:#5b4a2a}
-  .miolo{position:absolute;left:80px;right:80px;top:250px;bottom:230px;display:flex;flex-direction:column;justify-content:center}
-  .ic{width:150px;height:150px;border-radius:36px;padding:34px;margin-bottom:44px}
+  /* Conteúdo ancorado no topo, na mesma altura em todos os slides: ao passar para o lado, ícone, título e texto não "pulam" */
+  .miolo{position:absolute;left:80px;right:80px;top:300px;bottom:230px;display:flex;flex-direction:column;justify-content:flex-start}
+  .cab{display:flex;align-items:center;gap:36px;height:150px;margin-bottom:52px}
+  .ic{width:150px;height:150px;flex:none;border-radius:36px;padding:34px}
   .escuro .ic{background:#e4c58e;color:#1a150c}
   .claro .ic{background:#17150f;color:#e4c58e}
-  .dest{font-family:'Bodoni Moda',serif;font-weight:700;font-size:120px;line-height:1;margin-bottom:24px}
+  .dest{font-family:'Bodoni Moda',serif;font-weight:700;font-size:92px;line-height:1;white-space:nowrap}
   .escuro .dest{color:#e4c58e} .claro .dest{color:#8a6420}
   .v h2{font-family:'Bodoni Moda',serif;font-weight:600;font-size:68px;line-height:1.1;margin-bottom:34px;color:inherit}
   .v p{font-size:44px;line-height:1.38}
@@ -140,7 +145,81 @@ function cssVisual() {
   .fim-v .acoes{display:flex;gap:18px;margin-top:48px;flex-wrap:wrap}
   .fim-v .acoes span{font-size:30px;border:2px solid #e4c58e;color:#e4c58e;padding:12px 26px;border-radius:40px}
   .fim-v .aviso{font-size:26px;opacity:.7;margin-top:44px}
+  /* Modelos de capa (campo "modelo"): retrato, cartao e fundo */
+  .cm{position:absolute;inset:0;overflow:hidden}
+  .cm .ft{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat}
+  .cm .chip2{font-family:'IBM Plex Mono',monospace;font-size:26px;letter-spacing:.14em;text-transform:uppercase}
+  .cm h1{font-family:'Bodoni Moda',serif;font-weight:700;line-height:1.03}
+  .cm h1 em{font-style:italic;font-weight:500}
+  .cm .ouro{background:${OURO};-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cm .rod{position:absolute;left:84px;right:84px;bottom:80px;display:flex;justify-content:space-between;align-items:center}
+  .cm .rod img{height:60px}
+  /* retrato: foto à direita, título à esquerda sobre o escuro */
+  .cm-retrato{background:#0e0d0b;color:#fff}
+  .cm-retrato .ft{background-position:0% 20%;left:380px}
+  .cm-retrato .ft::after{content:"";position:absolute;inset:0;background:linear-gradient(to right,#0e0d0b 0%,rgba(14,13,11,.85) 18%,rgba(14,13,11,0) 55%),linear-gradient(to top,rgba(14,13,11,.9) 0%,rgba(14,13,11,0) 30%)}
+  .cm-retrato .cm-txt{position:absolute;left:84px;top:250px;width:560px;bottom:240px;overflow:hidden}
+  .cm-retrato .chip2{color:#e4c58e;margin-bottom:34px}
+  .cm-retrato h1{font-size:88px}.cm-retrato h1 em{color:#e4c58e}
+  .cm-retrato .fio{width:200px;height:3px;background:${OURO};margin:40px 0 28px}
+  .cm-retrato .sub{display:flex;gap:22px}.cm-retrato .sub i{flex:none;width:3px;background:#b98f4c}
+  .cm-retrato .sub p{font-family:'Bodoni Moda',serif;font-style:italic;font-size:40px;line-height:1.3;color:#f2ebdb}
+  .cm-retrato .rod span,.cm-fundo .rod span{font-size:26px;color:#e4c58e;border:2px solid #e4c58e;border-radius:40px;padding:10px 24px}
+  /* cartao: foto no alto, cartão claro com o conteúdo */
+  .cm-cartao{background:#efe6d3;color:#17150f}
+  .cm-cartao .ft{bottom:auto;height:820px;background-position:center 25%}
+  .cm-cartao .cm-txt{position:absolute;left:70px;right:70px;top:620px;bottom:80px;background:#f7f1e4;border-radius:22px;border-top:8px solid #b98f4c;
+     box-shadow:0 20px 60px rgba(0,0,0,.25);padding:50px 60px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden}
+  .cm-cartao .chip2{color:#8a6420;margin-bottom:22px}
+  .cm-cartao h1{font-size:76px}.cm-cartao h1 em{color:#8a6420}
+  .cm-cartao .dq{font-family:'Bodoni Moda',serif;font-weight:700;font-size:64px;color:#8a6420;margin-top:22px;padding:10px 34px;border:2px solid #d9c9a5;border-radius:14px;background:#fffaf0}
+  .cm-cartao .sub p{font-size:32px;color:#5b4a2a;margin-top:22px;line-height:1.3}
+  .cm-cartao .rod2{margin-top:auto;display:flex;justify-content:space-between;width:100%;align-items:center}
+  .cm-cartao .rod2 img{height:54px}.cm-cartao .rod2 span{font-family:'IBM Plex Mono',monospace;font-size:26px;color:#8a6420}
+  /* fundo: foto ocupando a capa, título embaixo sobre o escuro */
+  .cm-fundo{background:#0e0d0b;color:#fff}
+  .cm-fundo .ft{background-position:62% 20%}
+  .cm-fundo .ft::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(14,13,11,.97) 0%,rgba(14,13,11,.86) 34%,rgba(14,13,11,.1) 64%,rgba(14,13,11,.35) 100%)}
+  .cm-fundo .cm-txt{position:absolute;left:84px;right:84px;top:520px;bottom:200px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+  .cm-fundo .chip2{align-self:flex-start;color:#1a150c;background:${OURO};padding:10px 22px;border-radius:40px;margin-bottom:28px}
+  .cm-fundo h1{font-size:96px}.cm-fundo h1 em{color:#e4c58e}
+  .cm-fundo .sub p{font-size:36px;color:#e8e0cc;margin-top:22px;line-height:1.3}
+  .cm-fundo .rod{border-top:1px solid rgba(228,197,142,.4);padding-top:22px}
   `;
+}
+
+// Fotos das capas: ferramentas/carrossel/fotos/<nome>.jpg ("frente" ou "perfil")
+const OURO = 'linear-gradient(135deg,#8a6420 0%,#b98f4c 22%,#f1d9a8 48%,#e4c58e 58%,#b98f4c 80%,#7a5a22 100%)';
+function fotoCapa(nome) {
+  const f = path.join(__dirname, 'fotos', `${nome}.jpg`);
+  if (!fs.existsSync(f)) { console.error(`foto inexistente: ${f}`); process.exit(2); }
+  return `url(data:image/jpeg;base64,${fs.readFileSync(f).toString('base64')})`;
+}
+
+// Escolha do modelo (campo "modelo"):
+// - "retrato": temas explicativos e institucionais (lei nova, decisão, direitos);
+// - "cartao": datas, prazos e calendários ("capaDestaque" mostra a data em destaque);
+// - "fundo": alertas e perguntas diretas (golpes, "e agora?").
+function capaModelo(post) {
+  const m = post.modelo;
+  const nomeFoto = post.foto || (m === 'cartao' ? 'frente' : 'perfil');
+  const foto = fotoCapa(nomeFoto);
+  const logo = `data:image/png;base64,${b64('logo.png')}`;
+  const titulo = fmt(post.capa);
+  const sub = post.subtitulo ? `<div class="sub">${m === 'retrato' ? '<i></i>' : ''}<p>${fmt(post.subtitulo)}</p></div>` : '';
+  // No retrato, enquadra o rosto inteiro na faixa da direita (a foto de frente tem o rosto no centro; a de perfil, mais à esquerda)
+  const posRetrato = nomeFoto === 'frente' ? '64% 20%' : '30% 20%';
+  if (m === 'retrato') return `<div class="cm cm-retrato"><div class="ft" style="background-image:${foto};background-position:${posRetrato}"></div>
+    <div class="cm-txt"><div class="chip2">${esc(post.area)}</div><h1>${titulo}</h1><div class="fio"></div>${sub}</div>
+    <div class="rod"><img src="${logo}" alt=""><span>Deslize →</span></div></div>`;
+  if (m === 'cartao') return `<div class="cm cm-cartao"><div class="ft" style="background-image:${foto}"></div>
+    <div class="cm-txt"><div class="chip2">${esc(post.area)}</div><h1>${titulo}</h1>
+    ${post.capaDestaque ? `<div class="dq">${esc(post.capaDestaque)}</div>` : ''}${sub}
+    <div class="rod2"><img src="${logo}" alt=""><span>deslize →</span></div></div></div>`;
+  if (m === 'fundo') return `<div class="cm cm-fundo"><div class="ft" style="background-image:${foto}"></div>
+    <div class="cm-txt"><div class="chip2">${esc(post.area)}</div><h1>${titulo}</h1>${sub}</div>
+    <div class="rod"><img src="${logo}" alt=""><span>Deslize para o lado →</span></div></div>`;
+  console.error(`modelo de capa desconhecido: ${m} (use retrato, cartao ou fundo)`); process.exit(2);
 }
 
 function paginasVisual(post) {
@@ -150,12 +229,13 @@ function paginasVisual(post) {
   const cont = (i) => `<div class="cont">${i}/${total}</div>`;
   const base = (seta) => `<div class="base"><div>${post.fonte ? 'Fonte: ' + esc(post.fonte) : ''}</div><div class="site">${seta ? '<span class="seta">deslize →</span>' : ASSINATURA.site}</div></div>`;
   const out = [];
-  out.push(`<div class="v escuro capa-v"><div class="foto" style="background-image:${foto}"></div>${perfil}${cont(1)}
+  if (post.modelo) out.push(`<div class="v">${capaModelo(post)}</div>`);
+  else out.push(`<div class="v escuro capa-v"><div class="foto" style="background-image:${foto}"></div>${perfil}${cont(1)}
     <div class="txt"><div class="chip">${esc(post.area)}</div><h1>${fmt(post.capa)}</h1><div class="deslize">Deslize para o lado →</div></div></div>`);
   post.slides.forEach((sl, k) => {
     const tom = k % 2 === 0 ? 'claro' : 'escuro';
     out.push(`<div class="v ${tom}">${perfil}${cont(k + 2)}<div class="miolo">
-      ${sl.icone ? `<div class="ic">${icone(sl.icone)}</div>` : ''}${sl.destaque ? `<div class="dest">${esc(sl.destaque)}</div>` : ''}
+      <div class="cab">${sl.icone ? `<div class="ic">${icone(sl.icone)}</div>` : ''}${sl.destaque ? `<div class="dest">${esc(sl.destaque)}</div>` : ''}</div>
       ${sl.titulo ? `<h2>${fmt(sl.titulo)}</h2>` : ''}<p>${fmt(sl.texto)}</p></div>${base(k < post.slides.length - 1)}</div>`);
   });
   out.push(`<div class="v escuro fim-v">${cont(total)}<div class="miolo"><div class="grande" style="background-image:${foto}"></div>
@@ -183,7 +263,7 @@ function paginasVisual(post) {
     await page.evaluate(() => document.fonts.ready);
     // Texto que não cabe no slide é erro: melhor falhar do que publicar cortado
     const estouro = await page.evaluate(() => {
-      const c = document.querySelector('.corpo, .miolo, .capa-v .txt');
+      const c = document.querySelector('.cm-txt, .corpo, .miolo, .capa-v .txt');
       if (c.classList.contains('txt')) return c.getBoundingClientRect().bottom > 1350 - 60;
       return c.scrollHeight > c.clientHeight + 2;
     });
