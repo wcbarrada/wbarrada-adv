@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Ponte para o Cérebro do Claude (repositório wcbarrada/cerebro-claude) nas sessões na nuvem.
 # Chamado pelos hooks de .claude/settings.json: inicio | pedido | fim
+# No PC, o cofre fica em ~/Cerebro-Claude e os hooks do usuário já o atendem: não fazer nada aqui.
+if [ -z "$CEREBRO_VAULT" ] && [ -d "$HOME/Cerebro-Claude/.claude-cerebro" ]; then
+  exit 0
+fi
 COFRE="${CEREBRO_VAULT:-$(dirname "${CLAUDE_PROJECT_DIR:-$PWD}")/cerebro-claude}"
 HOOK="$COFRE/.claude-cerebro/cerebro_hook.py"
 if [ -f "$HOOK" ]; then
