@@ -38,7 +38,7 @@ src/                  fonte (editar aqui)
   app.js              lógica: dados (Demo/Supabase), agenda, cliente, admin, WhatsApp
   config.js           Supabase URL/anon key, foto, data da política (vazio = modo demonstração)
   LEIA-ME.md          guia de instalação para o usuário final
-  assets/logo.png     logo com fundo transparente (raster; vetorizar em SVG)
+  assets/logo.svg     logo vetorial (fonte); logo.png é gerado dele (940 × 345, fundo transparente)
 supabase/
   schema.sql          tabelas, RLS, funções (criar/cancelar agendamento, anexar comprovante), bucket
   tests/              mock-supabase.sql + rls.sql (matriz de RLS por papel)
@@ -97,6 +97,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - Testes de banco na sessão na nuvem: o contêiner tem PostgreSQL 16; criar um cluster com `initdb` como usuário `postgres` (fora do scratchpad), rodar `mock-supabase.sql`, `schema.sql` e `rls.sql`. Se os papéis `anon` e `authenticated` já existirem no cluster, retirar a primeira linha do mock.
 - Testes de banco no Windows sem psql nem Docker (sem uso enquanto não houver cópia local): `pip install pgserver tzdata`, copiar `tzdata/zoneinfo` para `pginstall/share/postgresql/timezone` e rodar `mock-supabase.sql`, `schema.sql` e `rls.sql` com o `psql` do pacote.
 - **Decisões do usuário em 21/11/2026:** atua em todas as áreas, exceto a criminal; quer redirecionar aos poucos para **previdenciário e trabalhista** (trabalhista hoje para empregado e empregador; no futuro, só empregado). O local do atendimento presencial não fica registrado no site: é informado ao combinar a consulta (as modalidades no banco real já dizem "Local informado na confirmação"). Redes do escritório: Instagram `@wandersonbarrada.adv` (renomeado pelo usuário em 22/11/2026; o nome antigo `@wbarrada.adv` ficou livre) e Facebook `/wcbarrada` (no site e no JSON-LD); as contas pessoais (`@wanderson.barrada` e `/wandersoncorreabarrada`) não entram no site. Carrossel diário no estilo visual. A abrangência ("todas as áreas, exceto a criminal") não é escrita no site, a pedido do usuário. Google Search Console: domínio `wbarrada.adv.br` verificado pelo provedor de DNS (21/11/2026).
+- **Logo (25/11/2026):** adotado o desenho vetorial do PR #9 com "ADVOGADO" no singular. O plural "Advogados" sugere sociedade de advogados, que não existe; não usar no site nem nas peças enquanto não houver sociedade registrada.
 - **Versão de 23/11/2026 (aprovada pelo usuário):**
   - Topo: painel de prazos com letras que viram, antes do nome. A balança animada e a foto no topo foram descartadas.
   - Paleta neutra (grafite e branco); dourado só em destaques.
@@ -175,7 +176,7 @@ psql -d teste -f supabase/tests/mock-supabase.sql -f supabase/schema.sql -f supa
 - `scroll-padding-top`.
 - Título da aba por tela.
 - Carregar QR Code e Supabase sob demanda.
-- Logo em SVG.
+- ~~Logo em SVG~~ — feito em 25/11/2026 (`src/assets/logo.svg`, com "ADVOGADO" no singular).
 - Trilha de auditoria.
 - Captcha.
 
